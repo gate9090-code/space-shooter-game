@@ -1,0 +1,31 @@
+{
+    "score": 75499,
+    "player_upgrades": {
+        "COOLDOWN": 1,
+        "MAX_HP": 3,
+        "SPEED": 0,
+        "REINCARNATION": 0,
+        "STATIC_FIELD": 1,
+        "DRONE": 2,
+        "BULLET_COUNT": 2,
+        "COIN_MAGNET": 1,
+        "HOMING": 1,
+        "PIERCING": 1,
+        "REGENERATION": 5,
+        "EXPLOSIVE": 1,
+        "LIGHTNING": 1,
+        "DAMAGE_REDUCTION": 5,
+        "STORM_SHIELD": 1,
+        "CHAIN_EXPLOSION": 1,
+        "THORNS": 1
+    },
+    "current_ship": "FIGHTER",
+    "player_inventory": {
+        "REPAIR_KIT_50": 1,
+        "REPAIR_KIT_FULL": 1,
+        "EMP_GRENADE": 1,
+        "SHIELD_GENERATOR": 1,
+        "LUCKY_CHARM": 1,
+        "EXTRA_LIFE": 1
+    }
+}

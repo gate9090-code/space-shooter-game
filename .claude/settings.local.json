@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cmd /c:*)",
+      "Bash(if exist config dir config /B)",
+      "Bash(if exist mode_configs dir mode_configs /B)",
+      "Bash(dir /s /b /ad \"c:\\Users\\gate9\\Desktop\\working\\__pycache__\")",
+      "Bash(dir /s /b /ad \"c:\\Users\\gate9\\Desktop\\working\\assets\\siege_mode\")",
+      "Bash(dir:*)",
+      "Bash(find:*)",
+      "Bash(mkdir:*)",
+      "Bash(python main.py:*)",
+      "Bash(python main_new.py:*)",
+      "Bash(if exist savescampaign_progress.json del savescampaign_progress.json)",
+      "Bash(del \"c:\\Users\\gate9\\Desktop\\working\\saves\\campaign_progress.json\")",
+      "Bash(python -c:*)",
+      "Bash(findstr:*)",
+      "Bash(if not exist \"ui\\icons\" mkdir \"ui\\icons\")",
+      "Bash(del \"c:\\Users\\gate9\\Desktop\\working\\ui\\icon_manager.py\")",
+      "Bash(timeout 5 python:*)",
+      "Bash(timeout 8 python:*)",
+      "Bash(copy \"c:\\Users\\gate9\\Desktop\\working\\modes\\siege_mode.py\" \"c:\\Users\\gate9\\Desktop\\working\\modes\\siege_mode_legacy.py\")",
+      "Bash(copy \"c:\\Users\\gate9\\Desktop\\working\\modes\\siege_objects.py\" \"c:\\Users\\gate9\\Desktop\\working\\modes\\siege_objects_legacy.py\")",
+      "Bash(copy:*)",
+      "Bash(timeout 15 python:*)",
+      "Bash(python:*)",
+      "Bash(timeout 20 python:*)",
+      "Bash(timeout 25 python:*)",
+      "Bash(timeout 45 python:*)",
+      "Bash(timeout 30 python:*)",
+      "Bash(cd:*)",
+      "Bash(timeout 10 python:*)",
+      "Bash(timeout 12 python main_new.py:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
