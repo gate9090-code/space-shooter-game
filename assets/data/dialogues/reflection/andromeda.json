@@ -1,0 +1,184 @@
+{
+  "visual_config": {
+    "sky_color": [
+      40,
+      20,
+      60
+    ],
+    "neon_colors": [
+      [
+        0,
+        255,
+        255
+      ],
+      [
+        200,
+        100,
+        255
+      ],
+      [
+        255,
+        150,
+        50
+      ]
+    ],
+    "building_style": "pyramid_with_circuits",
+    "sun_position": "fixed",
+    "atmosphere": "eternal_twilight"
+  },
+  "city_description": {
+    "dialogues": [
+      {
+        "speaker": "PILOT",
+        "text": "안드로메다는 10만 년 전에 완성된 세계다. 고대의 지혜와 기술이 융합된... 영원히 변하지 않는 도시."
+      },
+      {
+        "speaker": "PILOT",
+        "text": "수천 년 된 석조 건물에 빛나는 네온 회로가 새겨져 있어. 고대와 미래가 뒤섞인 기묘한 풍경."
+      },
+      {
+        "speaker": "PILOT",
+        "text": "공중에 떠 있는 홀로그램 문자들... 10만 년 동안 같은 메시지를 반복하고 있어. 변하지 않는 영원의 상징."
+      },
+      {
+        "speaker": "PILOT",
+        "text": "하늘은 항상 저 색이야. 짙은 보라빛 황혼. 태양이 움직이지 않아. 밤도 낮도 없어."
+      }
+    ]
+  },
+  "two_worlds_comparison": {
+    "cutscene_type": "two_worlds",
+    "dialogues": [
+      {
+        "speaker": "PILOT",
+        "text": "안드로메다에서는 '아름다움'을 영원함으로 정의한다. 10만 년 동안 변하지 않은 완벽한 구조물. 그것이 미의 기준이었다."
+      },
+      {
+        "speaker": "PILOT",
+        "text": "하지만 지구의 아름다움은... 사라지기 때문에 아름답다. 벚꽃이 영원히 피어있다면, 누가 그것을 소중히 여기겠는가."
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "그게 감정이야. 잃을 수 있기 때문에 소중한 거지."
+      },
+      {
+        "speaker": "PILOT",
+        "text": "...처음으로 '느꼈다'. 사라지는 것을 보며. 이것이 내가 안드로메다에서 추방당한 이유다. 나는 '결함'이 생겼다. 변화를 받아들이는 결함이."
+      }
+    ]
+  },
+  "council_communication": {
+    "cutscene_type": "andromeda_world",
+    "dialogues": [
+      {
+        "speaker": "NARRATOR",
+        "text": "[통신 화면에 안드로메다 위원회 - 사이버펑크 고대 도시를 배경으로, 홀로그램으로 투영된 무표정한 형상들]"
+      },
+      {
+        "speaker": "SYSTEM",
+        "text": "[안드로메다 위원회 연결 - 암호화 통신]"
+      },
+      {
+        "speaker": "NARRATOR",
+        "text": "(기계적인 음성) '파일럿 7-42. 너의 전송 데이터를 분석했다.'"
+      },
+      {
+        "speaker": "NARRATOR",
+        "text": "[화면에 지구 사계절 이미지들이 스캔됨 - 안드로메다 고대 문자로 분석 중]"
+      },
+      {
+        "speaker": "NARRATOR",
+        "text": "'...예상치 못한 변수다. 계절이라는 순환 패턴. 10만 년 전, 우리가 제거한 것과 동일한 구조.'"
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "...제거했다고?"
+      },
+      {
+        "speaker": "NARRATOR",
+        "text": "'변화는 불완전함이다. 우리는 완벽을 위해 시간을 정복했다. 그런데 이 행성은... 불완전함 속에서 에너지를 생성한다.'"
+      },
+      {
+        "speaker": "PILOT",
+        "text": "그것이 '희망'입니다. 변화가 있기에 내일을 기대할 수 있습니다. 카오스를 물리친 것도 이 에너지입니다."
+      },
+      {
+        "speaker": "NARRATOR",
+        "text": "[위원회, 오랜 침묵 - 홀로그램이 잠시 흔들림]"
+      },
+      {
+        "speaker": "NARRATOR",
+        "text": "'...우리 문명이 잃어버린 것이 있다면, 그것이 무엇인지 이제야 계산되기 시작한다.'"
+      },
+      {
+        "speaker": "NARRATOR",
+        "text": "'파일럿 7-42. 너의 임무를 재정의한다. 지구를 관찰하라. 우리가 버린 것의 가치를... 증명할 수 있는지, 지켜보겠다.'"
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "...파일럿, 지금 뭐라고 한 거야?"
+      },
+      {
+        "speaker": "PILOT",
+        "text": "...안드로메다가 의문을 품기 시작했다. 10만 년 만에 처음으로. 네가 보여준 것 때문에."
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "그게... 좋은 거야?"
+      },
+      {
+        "speaker": "PILOT",
+        "text": "...모르겠다. 하지만 변화의 시작이다. 영원히 멈춰있던 문명이 움직이기 시작한 거니까."
+      }
+    ]
+  },
+  "seasons_emotion_learning": {
+    "cutscene_type": "season_memory",
+    "dialogues": [
+      {
+        "speaker": "NARRATOR",
+        "text": "[빠르게 전환되는 사계절 + 파일럿/아르테미스 장면]"
+      },
+      {
+        "speaker": "NARRATOR",
+        "text": "[봄 - 벚꽃 아래]"
+      },
+      {
+        "speaker": "PILOT",
+        "text": "(독백) 봄. 아르테미스가 '희망'을 가르쳐줬다."
+      },
+      {
+        "speaker": "NARRATOR",
+        "text": "[여름 - 햇살 아래 훈련]"
+      },
+      {
+        "speaker": "PILOT",
+        "text": "(독백) 여름. '열정'을 배웠다."
+      },
+      {
+        "speaker": "NARRATOR",
+        "text": "[가을 - 낙엽 지는 공원]"
+      },
+      {
+        "speaker": "PILOT",
+        "text": "(독백) 가을. '그리움'을 알았다."
+      },
+      {
+        "speaker": "NARRATOR",
+        "text": "[겨울 - 눈 내리는 밤]"
+      },
+      {
+        "speaker": "PILOT",
+        "text": "(독백) 겨울. '따뜻함'을 느꼈다."
+      },
+      {
+        "speaker": "NARRATOR",
+        "text": "[현재로 돌아옴]"
+      },
+      {
+        "speaker": "PILOT",
+        "text": "10년의 계절이 나를 바꿨다. 안드로메다인이 아닌, 너의 가족으로."
+      }
+    ]
+  }
+}

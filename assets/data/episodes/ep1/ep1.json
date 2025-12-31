@@ -1,0 +1,220 @@
+{
+  "id": "ep1",
+  "act": 1,
+  "title": "지구 귀환",
+  "title_en": "REMNANTS OF EARTH",
+  "description": "3년 만에 지구로 돌아온 파일럿과 아르테미스. 황폐해진 고향에서 첫 번째 전투가 시작된다.",
+
+  "defaults": {
+    "background": "bg_ruins.jpg",
+    "bgm": "bgm_combat.mp3"
+  },
+
+  "scenes": {
+    "briefing": {
+      "title": "MISSION BRIEFING",
+      "location": "COMMAND CENTER",
+      "background": "bg_command.jpg",
+      "bgm": "bgm_briefing.mp3",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "작전 브리핑을 시작합니다. 목표: 지구 궤도 정찰 및 생존자 신호 추적."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "3년 만에 돌아온 고향이야. 어떤 모습일지..."
+        }
+      ]
+    },
+
+    "opening": {
+      "title": "ACT 1: REMNANTS OF EARTH",
+      "location": "EARTH ORBIT - SECTOR 7",
+      "background": "bg_ruins.jpg",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "지구 궤도 진입 완료. 대기권 오염도 치명적 수준입니다."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "3년 만이야... 이게 우리가 떠났던 그 푸른 행성이라고?"
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "감상에 젖을 시간 없어. 생존자 신호에 집중해."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "안드로메다인들은 왜 우리를 구한 걸까? 멸망한 종족에게 뭘 기대하는 거지?",
+          "background": "bg_bunker.jpg"
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "글쎄. 하지만 이유가 뭐든 난 이 기회를 낭비할 생각 없어."
+        },
+        {
+          "speaker": "NARRATOR",
+          "text": "경고. 카이론 순찰대 접근. 전투 준비를 권고합니다.",
+          "background": "bg_command.jpg"
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "좋아, 시작하자. 지구는 아직 끝나지 않았어."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "...우리가 마지막이라니. 무거운 짐이군."
+        }
+      ]
+    },
+
+    "mid_01": {
+      "title": "",
+      "location": "EARTH ORBIT - COMBAT ZONE",
+      "background": "bg_ruins.jpg",
+      "dialogues": [
+        {
+          "speaker": "ARTEMIS",
+          "text": "첫 번째 파도를 물리쳤다. 하지만 끝이 아니야."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "추가 적 부대 감지! 더 많은 카이론이 오고 있어!"
+        },
+        {
+          "speaker": "NARRATOR",
+          "text": "경고. 대형 함선 접근 중. 정찰대 지휘관으로 추정됩니다."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "지휘관이라... 좋아, 한 번에 정리하자."
+        }
+      ]
+    },
+
+    "memory": {
+      "title": "MEMORY",
+      "location": "",
+      "background": "bg_cemetery.jpg",
+      "bgm": "bgm_memory.mp3",
+      "effect": "PolaroidMemoryEffect",
+      "effect_data": {
+        "polaroid_images": [
+          "memory_01.jpg",
+          "memory_02.jpg",
+          "memory_03.jpg",
+          "memory_04.jpg",
+          "memory_05.jpg",
+          "memory_06.jpg",
+          "memory_ufo.jpg",
+          "memory_survive.jpg"
+        ],
+        "special_effects": {
+          "memory_ufo.jpg": {"effect": "flicker_then_zoom"},
+          "memory_survive.jpg": {"effect": "fullscreen_fadeout"}
+        }
+      },
+      "dialogues": [
+        {
+          "speaker": "ARTEMIS",
+          "text": "...우리 가족. 집 앞 작은 정원에서 찍은 사진이야."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "그날, 하늘이 갈라졌어. 불기둥이 내려왔고..."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "모든 게 사라졌어. 사람들도, 도시도, 희망도."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "아르테미스..."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "괜찮아. 이제는 복수할 힘이 있으니까."
+        }
+      ]
+    },
+
+    "boss": {
+      "title": "BOSS BATTLE",
+      "location": "EARTH ORBIT",
+      "background": "bg_ruins.jpg",
+      "bgm": "bgm_boss.mp3",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "경고. 대형 적 반응. 섀도우 스카웃 지휘관입니다."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "드디어 진짜 상대가 나타났군."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "조심해! 일반 카이론과는 비교도 안 되는 화력이야!"
+        }
+      ]
+    },
+
+    "boss_victory": {
+      "title": "",
+      "location": "EARTH ORBIT",
+      "background": "bg_ruins.jpg",
+      "dialogues": [
+        {
+          "speaker": "PILOT",
+          "text": "해냈어! 지휘관을 격추했다!"
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "첫 번째 승리야. 하지만 이건 시작일 뿐이야."
+        }
+      ]
+    },
+
+    "ending": {
+      "title": "MISSION COMPLETE",
+      "location": "EARTH ORBIT",
+      "background": "bg_ruins.jpg",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "적 섬멸 확인. 지역 확보 완료."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "해냈어... 3년 만에 처음으로 승리다."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "아직 시작일 뿐이야. 하지만 좋은 출발이군."
+        },
+        {
+          "speaker": "NARRATOR",
+          "text": "생존자 신호 분석 완료. 다음 좌표로 이동 권장합니다."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "알았어. 기지로 복귀하자. 다음 작전을 준비해야 해."
+        }
+      ]
+    }
+  },
+
+  "segments": [
+    {"type": "DIALOGUE", "scene": "briefing"},
+    {"type": "DIALOGUE", "scene": "opening"},
+    {"type": "COMBAT", "rounds": 3, "enemies": ["scout", "fighter"]},
+    {"type": "DIALOGUE", "scene": "mid_01"},
+    {"type": "CUTSCENE", "scene": "memory"},
+    {"type": "COMBAT", "rounds": 2, "boss": "shadow_scout"},
+    {"type": "DIALOGUE", "scene": "boss"},
+    {"type": "DIALOGUE", "scene": "boss_victory"},
+    {"type": "DIALOGUE", "scene": "ending"}
+  ]
+}

@@ -287,6 +287,8 @@ class SkillSystem:
         **kwargs
     ) -> int:
         """처형 스킬 처리 (낮은 HP 적 즉사)"""
+        from objects import ExecuteEffect
+
         if player.execute_threshold <= 0:
             return 0
 
@@ -299,6 +301,8 @@ class SkillSystem:
 
             hp_ratio = enemy.hp / enemy.max_hp
             if hp_ratio <= threshold:
+                # 처형 시각 효과 추가
+                effects.append(ExecuteEffect(enemy.pos))
                 enemy.hp = 0
                 enemy.is_alive = False
                 kills += 1

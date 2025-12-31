@@ -21,11 +21,10 @@ from modes.base_mode import GameMode, ModeConfig
 from systems.combat_system import CombatSystem
 from systems.effect_system import EffectSystem
 from systems.ui_system import UISystem, UIConfig
-from objects import DamageFlash, LevelUpEffect
-from ui import HPBarShake
+# DamageFlash, LevelUpEffect, HPBarShake는 base_mode에서 제공
 
 # 갈라그 스타일 오브젝트
-from modes.siege_objects import FormationEnemy, WaveManager
+from entities.siege_entities import FormationEnemy, WaveManager
 
 # 갈라그 설정
 try:
@@ -132,10 +131,8 @@ class SiegeMode(GameMode):
         self.waiting_for_next_wave = False
         self.game_complete = False
 
-        # 시각적 효과
-        self.damage_flash = DamageFlash(self.screen_size)
-        self.level_up_effect = LevelUpEffect(self.screen_size)
-        self.hp_bar_shake = HPBarShake()
+        # 시각적 효과 (base_mode의 공통 메서드 사용)
+        self._init_visual_feedback_effects()
 
         # 메뉴 버튼
         self.menu_button_rects: Dict[str, pygame.Rect] = {}
@@ -195,17 +192,11 @@ class SiegeMode(GameMode):
         # 충돌 처리
         self._process_collisions()
 
-        # HP 감소 → 피격 효과
-        if self.player and hp_before > self.player.hp:
-            damage_taken = hp_before - self.player.hp
-            damage_ratio = damage_taken / self.player.max_hp
-            self.damage_flash.trigger(damage_ratio)
-            self.hp_bar_shake.trigger(damage_ratio)
+        # HP 감소 → 피격 효과 (base_mode 공통 메서드)
+        self._trigger_damage_feedback(hp_before)
 
-        # 시각 효과 업데이트
-        self.damage_flash.update()
-        self.hp_bar_shake.update()
-        self.level_up_effect.update(dt)
+        # 시각 효과 업데이트 (base_mode 공통 메서드)
+        self._update_visual_feedback(dt)
 
         # 웨이브 클리어 처리
         if wave_complete and not self.waiting_for_next_wave:
@@ -653,72 +644,8 @@ class SiegeMode(GameMode):
                     self.request_quit()
 
     def _complete_siege_mission_and_return(self):
-        """시즈 미션 완료 처리 후 BaseHub로 귀환"""
-        import json
-        from pathlib import Path
-
-        # 현재 미션 정보
-        current_mission = self.engine.shared_state.get('current_mission')
-        mission_data = self.engine.shared_state.get('mission_data')
-
-        if current_mission:
-            # 미션 완료 처리
-            completed_missions = self.engine.shared_state.get('completed_missions', [])
-            if current_mission not in completed_missions:
-                completed_missions.append(current_mission)
-                self.engine.shared_state['completed_missions'] = completed_missions
-
-            # 보상 지급
-            if mission_data and 'rewards' in mission_data:
-                rewards = mission_data['rewards']
-                if hasattr(rewards, 'credits') and rewards.credits > 0:
-                    current_credits = self.engine.shared_state.get('global_score', 0)
-                    self.engine.shared_state['global_score'] = current_credits + rewards.credits
-
-            # 진행 저장
-            self._save_siege_mission_progress()
-
-            print(f"INFO: Siege mission {current_mission} completed!")
-
-        # 미션 상태 초기화
-        self.engine.shared_state['current_mission'] = None
-        self.engine.shared_state['mission_data'] = None
-        self.engine.shared_state['is_side_mission'] = False
-        self.engine.shared_state['from_briefing'] = False
-
-        # BaseHub로 귀환
-        from modes.base_hub_mode import BaseHubMode
-        self.request_switch_mode(BaseHubMode)
-
-    def _save_siege_mission_progress(self):
-        """시즈 미션 진행 상황 저장"""
-        import json
-        from pathlib import Path
-
-        completed_missions = self.engine.shared_state.get('completed_missions', [])
-        credits = self.engine.shared_state.get('global_score', 0)
-
-        # 현재 저장 데이터 로드
-        save_path = Path("saves/campaign_progress.json")
-        try:
-            if save_path.exists():
-                with open(save_path, 'r', encoding='utf-8') as f:
-                    save_data = json.load(f)
-            else:
-                save_data = {}
-
-            # 업데이트
-            save_data['completed_missions'] = completed_missions
-            save_data['credits'] = credits
-
-            # 저장
-            save_path.parent.mkdir(parents=True, exist_ok=True)
-            with open(save_path, 'w', encoding='utf-8') as f:
-                json.dump(save_data, f, indent=2)
-
-            print("INFO: Siege mission progress saved")
-        except Exception as e:
-            print(f"WARNING: Failed to save siege mission progress: {e}")
+        """시즈 미션 완료 처리 후 BaseHub로 귀환 (base_mode 공통 메서드 사용)"""
+        super()._complete_mission_and_return(mission_type="siege")
 
     def _handle_quit_confirm_event(self, event: pygame.event.Event):
         """종료 확인 이벤트"""

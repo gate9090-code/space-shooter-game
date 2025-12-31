@@ -1,0 +1,52 @@
+{
+  "id": "ep2_echoes",
+  "title": "메아리",
+  "act": 2,
+  "description": "폐허가 된 벙커에서 발견한 기록. 과거의 목소리가 들려온다.",
+  "segments": [
+    {
+      "type": "BRIEFING",
+      "dialogue_key": "act2_opening",
+      "background": "bg_bunker.jpg",
+      "location": "UNDERGROUND BUNKER - SECTOR 12"
+    },
+    {
+      "type": "COMBAT",
+      "rounds": 3,
+      "enemies": ["fighter", "bomber"],
+      "background": "bg_bunker.jpg",
+      "spawn_rate": 1.1
+    },
+    {
+      "type": "REFLECTION",
+      "scene_key": "rain_smell",
+      "background": "bg_autumn_rain.jpg",
+      "optional": true,
+      "trigger_condition": "first_play",
+      "color_tone": "gray_blue"
+    },
+    {
+      "type": "DIALOGUE",
+      "dialogue_key": "ep2_discovery",
+      "background": "bg_bunker.jpg"
+    },
+    {
+      "type": "COMBAT",
+      "rounds": 2,
+      "enemies": ["elite_fighter", "bomber"],
+      "boss": "bunker_guardian",
+      "background": "bg_bunker.jpg",
+      "spawn_rate": 1.2
+    },
+    {
+      "type": "ENDING",
+      "dialogue_key": "ep2_ending",
+      "background": "bg_bunker.jpg"
+    }
+  ],
+  "rewards": {
+    "credits": 300,
+    "exp": 150
+  },
+  "unlock_next": "ep3_blackbox"
+}

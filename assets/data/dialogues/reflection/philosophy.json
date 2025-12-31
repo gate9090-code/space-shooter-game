@@ -1,0 +1,303 @@
+{
+  "eternity_vs_moment": {
+    "background": "bg_sunset_horizon.jpg",
+    "trigger_act": 4,
+    "dialogues": [
+      {
+        "speaker": "NARRATOR",
+        "text": "[지구 폐허 전망대 - 석양이 지평선을 물들인다]"
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "...저 노을, 곧 사라질 거야. 몇 분 후면 어둠이 내릴 거야."
+      },
+      {
+        "speaker": "PILOT",
+        "text": "안드로메다에서는 이 순간을 '결함'이라고 불렀어. 영원하지 못한 것의 한계."
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "하지만 저 순간은... 지금만 존재해. 정확히 저 색, 저 빛은 다시 오지 않아."
+      },
+      {
+        "speaker": "PILOT",
+        "text": "그것이 가치가 있다고 생각해? 영원하지 않은 것이?"
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "물론이지. 오히려 영원하지 않기 때문에 가치가 있어."
+      },
+      {
+        "speaker": "PILOT",
+        "text": "...이해가 안 돼. 논리적으로, 영원한 것이 더 가치있어야 해. 지속되니까."
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "그럼 물어볼게. 영원히 지지 않는 노을이 있다면, 너 매일 올려다볼 거야?"
+      },
+      {
+        "speaker": "PILOT",
+        "text": "...아니. 항상 거기 있으면 굳이 볼 필요가..."
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "바로 그거야. 영원한 것은 당연해지고, 당연한 것은 소중하지 않게 느껴져."
+      },
+      {
+        "speaker": "PILOT",
+        "text": "...그래서 안드로메다인들이 아무것도 소중히 여기지 않았던 건가? 모든 것이 영원했으니까?"
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "아마도. 순간이 있어야 '지금'이 특별해져. 끝이 있어야 시작이 의미있어지고."
+      },
+      {
+        "speaker": "PILOT",
+        "text": "...영원은 '가짐'이고, 순간은 '느낌'이라는 건가."
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "정확해. 그리고 우리가 진짜 살아있다고 느끼는 건... 느끼는 순간이잖아."
+      },
+      {
+        "speaker": "PILOT",
+        "text": "...지금 이 순간처럼. 너와 함께 노을을 보는 이 찰나가... 영원보다 더 값지게 느껴져."
+      }
+    ]
+  },
+  "chaos_eats_time": {
+    "background": "bg_chaos_void.jpg",
+    "trigger_act": 5,
+    "dialogues": [
+      {
+        "speaker": "NARRATOR",
+        "text": "[차원 게이트 앞 - 카오스의 에너지가 소용돌이친다]"
+      },
+      {
+        "speaker": "PILOT",
+        "text": "아르테미스, 카오스가 파괴하는 것이 무엇인지 알아?"
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "생명? 문명? 희망?"
+      },
+      {
+        "speaker": "PILOT",
+        "text": "더 근본적인 것이야. 카오스는 '시간'을 먹어."
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "시간을... 먹는다고?"
+      },
+      {
+        "speaker": "PILOT",
+        "text": "정확히는, 시간의 흐름을 정지시켜. 카오스가 지배하는 곳에서는 '다음'이라는 개념이 사라져."
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "다음이 없으면... 희망도 없겠네."
+      },
+      {
+        "speaker": "PILOT",
+        "text": "맞아. 카오스가 희망을 두려워하는 이유야. 희망은 '다음을 기대하는 감정'이니까."
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "그래서 안드로메다가 시간을 멈춘 것과... 카오스가 시간을 파괴하는 것은..."
+      },
+      {
+        "speaker": "PILOT",
+        "text": "결과적으로 같아. 둘 다 '변화'를 두려워한 거야. 변화가 불확실성을 가져오니까."
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "하지만 우리는 달라. 우리는 변화 속에서 희망을 찾았어."
+      },
+      {
+        "speaker": "PILOT",
+        "text": "그래서 네가 카오스의 천적인 거야. 시간을 사랑하는 존재. 변화를 받아들이는 영혼."
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "시간을 사랑한다... 그렇게 생각해본 적 없는데."
+      },
+      {
+        "speaker": "PILOT",
+        "text": "하지만 너는 10년을 버텼잖아. 시간이 흐른다는 것을 믿으면서. '언젠가'를 기대하면서."
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "...맞아. 시간이 나를 데려다줄 거라고 믿었어. 기다린 만큼, 반드시 만날 수 있다고."
+      },
+      {
+        "speaker": "PILOT",
+        "text": "그 믿음이 카오스를 물리치는 열쇠야. 시간을 믿는 자만이 희망을 품을 수 있으니까."
+      }
+    ]
+  },
+  "why_andromeda_stopped_time": {
+    "background": "bg_andromeda_council.jpg",
+    "trigger_act": 5,
+    "cutscene_type": "andromeda_world",
+    "dialogues": [
+      {
+        "speaker": "NARRATOR",
+        "text": "[안드로메다 위원회 기록 재생 - 10만 년 전의 논쟁]"
+      },
+      {
+        "speaker": "PILOT",
+        "text": "...보여줄게. 안드로메다가 시간을 멈추기로 결정한 순간을."
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "왜 그런 결정을 했어? 시간을 죽인다니..."
+      },
+      {
+        "speaker": "PILOT",
+        "text": "(홀로그램 재생) 당시 기록이야. 위원회의 논쟁."
+      },
+      {
+        "speaker": "NARRATOR",
+        "text": "[홀로그램: 안드로메다 고대 위원회]"
+      },
+      {
+        "speaker": "NARRATOR",
+        "text": "'시간이 흐르면 상실이 발생합니다. 상실은 고통입니다. 고통은 비효율입니다.'"
+      },
+      {
+        "speaker": "NARRATOR",
+        "text": "'시간을 정지시키면 영원히 현재에 머물 수 있습니다. 상실도, 고통도, 슬픔도 없는 완벽한 상태.'"
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "...고통이 싫어서 시간을 멈췄다고?"
+      },
+      {
+        "speaker": "PILOT",
+        "text": "맞아. 우리 조상들은 상실의 고통을 견딜 수 없었어. 사랑하는 것을 잃는 아픔이 너무 컸지."
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "하지만 그래서 사랑 자체를 잃어버린 거잖아! 고통을 피하려다 기쁨까지 버린 거야!"
+      },
+      {
+        "speaker": "PILOT",
+        "text": "...네 말이 맞아. 그게 우리 문명의 가장 큰 실수였어."
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "상실이 있어야 소중함을 알 수 있어. 고통이 있어야 기쁨이 빛나는 거야."
+      },
+      {
+        "speaker": "PILOT",
+        "text": "10년 동안 너를 보면서 배웠어. 네 부모님을 잃은 고통이 얼마나 컸는지..."
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "응. 정말 아팠어. 지금도 아파."
+      },
+      {
+        "speaker": "PILOT",
+        "text": "하지만 그 고통이 너의 희망을 만들었지. 다시 만나겠다는 그 불꽃을."
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "고통 없이는... 희망도 없겠네. 잃을 것이 없으면 지킬 것도 없으니까."
+      },
+      {
+        "speaker": "PILOT",
+        "text": "...시간이 흐른다는 건 '지금'이 계속 새로 태어난다는 뜻이구나. 매 순간이 유일하고, 그래서 소중하고."
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "파일럿... 너 방금 완전히 이해한 거야."
+      },
+      {
+        "speaker": "PILOT",
+        "text": "네 덕분이야. 10년의 사계절이 내게 가르쳐준 진리야."
+      }
+    ]
+  },
+  "does_time_exist": {
+    "background": "bg_dimension_gate.jpg",
+    "trigger_act": 5,
+    "dialogues": [
+      {
+        "speaker": "NARRATOR",
+        "text": "[차원 게이트 내부 - 시공간의 경계에서]"
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "파일럿... 여기선 시간이 이상하게 느껴져."
+      },
+      {
+        "speaker": "PILOT",
+        "text": "차원의 경계니까. 과거, 현재, 미래가 동시에 존재하는 곳."
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "그럼... 시간이란 뭐야? 정말 존재하는 거야?"
+      },
+      {
+        "speaker": "PILOT",
+        "text": "물리학적으로는 존재해. 엔트로피의 방향, 빛의 속도에 연관된 차원."
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "그건 과학적 정의잖아. 내가 묻는 건... 우리가 느끼는 시간 말이야."
+      },
+      {
+        "speaker": "PILOT",
+        "text": "...무슨 뜻이야?"
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "10년 동안 널 기다릴 때, 하루하루가 영겁 같았어. 하지만 지금 너와 함께 있으면 시간이 순식간에 지나가."
+      },
+      {
+        "speaker": "PILOT",
+        "text": "같은 시간인데 다르게 느껴진다는 거지?"
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "응. 그럼 진짜 시간은 뭐야? 시계가 재는 시간? 아니면 마음이 느끼는 시간?"
+      },
+      {
+        "speaker": "PILOT",
+        "text": "...안드로메다는 그 질문에 '시계'라고 답했어. 객관적으로 측정 가능한 것만 인정했지."
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "하지만 그래서 영혼이 사라진 거잖아. 마음의 시간을 인정하지 않으면..."
+      },
+      {
+        "speaker": "PILOT",
+        "text": "감정도 사라지지. 기다림의 지루함도, 함께함의 기쁨도 존재하지 않게 되니까."
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "그러니까... 시간은 사실 두 개야. 우주의 시간과 마음의 시간."
+      },
+      {
+        "speaker": "PILOT",
+        "text": "그리고 둘 중 더 '진짜'인 건... 마음의 시간인 것 같아."
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "왜?"
+      },
+      {
+        "speaker": "PILOT",
+        "text": "우주의 시간이 아무리 흘러도, 마음의 시간이 멈추면 살아있는 게 아니니까. 반대로, 단 하루라도 마음이 충만하면 영원처럼 느껴지잖아."
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "파일럿... 너 정말 지구인이 다 됐다."
+      },
+      {
+        "speaker": "PILOT",
+        "text": "(미소) 아니. 네 덕분에 '살아있는 존재'가 됐어. 시간을 느끼는 존재. 순간을 사랑하는 존재."
+      }
+    ]
+  }
+}

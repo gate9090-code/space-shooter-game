@@ -1,0 +1,90 @@
+{
+  "1": {
+    "background": "bg_cemetery.jpg",
+    "bgm": "bgm_memory.mp3",
+    "sfx_polaroid": "sfx_polaroid.mp3",
+    "polaroid_images": [
+      "memory_01.jpg",
+      "memory_02.jpg",
+      "memory_03.jpg",
+      "memory_04.jpg",
+      "memory_05.jpg",
+      "memory_06.jpg",
+      "memory_ufo.jpg",
+      "memory_survive.jpg"
+    ],
+    "special_effects": {
+      "memory_ufo.jpg": {
+        "effect": "flicker_then_zoom",
+        "flicker_speed": 0.3
+      },
+      "memory_survive.jpg": {
+        "effect": "fullscreen_fadeout"
+      }
+    },
+    "dialogue_per_photo": [
+      {
+        "speaker": "ARTEMIS",
+        "text": "...우리 가족. 집 앞 작은 정원에서 찍은 사진이야. 저 미소들... 그때는 '집'이라는 단어의 진정한 의미를 몰랐어."
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "그날, 하늘이 갈라졌어. 우주의 심연에서 그것들이 쏟아져 내렸지. 카오스라는 이름의 악몽이."
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "모두가 달렸어. 살기 위해. 비명과 폭발음... 세상이 무너지고 있었어. 우리 가족도 탈출선 발사 기지로 향했어."
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "대피소를 통과하던 순간... 천장이 무너졌어. 카오스의 폭격이었어. 먼지와 불꽃 사이로... 부모님이 반대편에 계셨어. 보였지만, 건널 수 없었어."
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "다른 생존자들이 부모님을 끌고 갔어. 탈출선 쪽으로. 시간이 없다고. 어머니가 몸부림치며 울부짖는 소리가... 점점 작아지는 뒷모습... 그게 마지막이었어."
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "탈출선이 불꽃을 뿜으며 떠올랐어. 하늘로 사라지는 빛... 혼자 남겨졌어. 열여덟 살. 폐허 속에서... '왜 하필 내가 이쪽에 있었을까'라는 자책이 10년간 나를 괴롭혔어."
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "그때 어둠 속에서 다른 빛이 내려왔어. 카오스의 붉은 빛이 아닌, 차분한 푸른 빛. 누군가 다가오고 있었어."
+      },
+      {
+        "speaker": "PILOT",
+        "text": "내가 널 발견했지. 폐허 속에서 무너져 있던 존재. 논리적으로, 구할 이유가 없었다. 임무와 무관했으니까. 그런데... 왜인지 지나칠 수 없었다. 그래서 데려왔다."
+      }
+    ],
+    "dialogue_after": [
+      {
+        "speaker": "ARTEMIS",
+        "text": "10년 전 일이야. 그날 이후 파일럿이 나를 가르쳐줬어. 싸우는 법. 살아남는 법. 그리고... 포기하지 않는 법."
+      },
+      {
+        "speaker": "PILOT",
+        "text": "(독백) 10년간의 관찰 기록. 이 존재의 의지력은 논리적 예측을 초월한다. 안드로메다에서는 관찰된 적 없는 패턴이다."
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "파일럿... 넌 이방인이었지만 날 구해줬어. 10년 동안 내 곁을 지켜줬어. 넌 이제 내가 선택한 가족이야."
+      },
+      {
+        "speaker": "PILOT",
+        "text": "(생각) '가족'. 또 그 단어다. 안드로메다어에는 존재하지 않는 개념. 하지만 이 존재가 그 단어를 말할 때마다... 내 연산이 불안정해진다."
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "그들은 살아있어. 달 어딘가에서 기다리고 있을 거야. 나처럼 매일 밤 별을 바라보며, 재회의 그날을 꿈꾸며."
+      },
+      {
+        "speaker": "PILOT",
+        "text": "확률적으로 생존 가능성은 낮다. 하지만... 확률이 무슨 의미가 있는가. 네가 포기하지 않는 한."
+      },
+      {
+        "speaker": "ARTEMIS",
+        "text": "맞아. 집은 좌표가 아니야. 집은 함께하는 사람들이야. 가자, 파일럿. 우리의 진짜 집을 향해."
+      }
+    ]
+  }
+}

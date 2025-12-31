@@ -1,0 +1,50 @@
+{
+  "id": "ep1_return",
+  "title": "지구 귀환",
+  "act": 1,
+  "description": "3년 만에 지구로 돌아온 생존자들. 카이론의 순찰대가 기다리고 있다.",
+  "segments": [
+    {
+      "type": "BRIEFING",
+      "dialogue_key": "act1_opening",
+      "background": "bg_ruins.jpg",
+      "location": "EARTH ORBIT - SECTOR 7"
+    },
+    {
+      "type": "CUTSCENE",
+      "effect": "FadeIn",
+      "background": "bg_ruins.jpg",
+      "duration": 2.0
+    },
+    {
+      "type": "COMBAT",
+      "rounds": 3,
+      "enemies": ["scout", "fighter"],
+      "background": "bg_ruins.jpg",
+      "spawn_rate": 1.0
+    },
+    {
+      "type": "DIALOGUE",
+      "dialogue_key": "ep1_mid_dialogue",
+      "background": "bg_ruins.jpg"
+    },
+    {
+      "type": "COMBAT",
+      "rounds": 2,
+      "enemies": ["fighter", "interceptor"],
+      "boss": "shadow_scout",
+      "background": "bg_ruins.jpg",
+      "spawn_rate": 1.2
+    },
+    {
+      "type": "ENDING",
+      "dialogue_key": "ep1_ending",
+      "background": "bg_ruins.jpg"
+    }
+  ],
+  "rewards": {
+    "credits": 200,
+    "exp": 100
+  },
+  "unlock_next": "ep2_echoes"
+}

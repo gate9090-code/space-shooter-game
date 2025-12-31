@@ -1,0 +1,156 @@
+{
+  "1": {
+    "appear": {
+      "speaker": "BOSS",
+      "text": "숙주 후보 감지... 융합 적합성 스캔 중..."
+    },
+    "phase2": {
+      "speaker": "BOSS",
+      "text": "저항하는군... 의지가 강할수록 융합 후 더 강해진다!"
+    },
+    "phase2_pilot": {
+      "speaker": "PILOT",
+      "text": "(분석) 적 에너지 패턴 변화 감지. 공격 주기가 빨라졌다."
+    },
+    "phase3": {
+      "speaker": "BOSS",
+      "text": "수확 대상 확정! 카오스에 바쳐라!"
+    },
+    "phase3_artemis": {
+      "speaker": "ARTEMIS",
+      "text": "내 의지는 네가 가져갈 수 없어!"
+    },
+    "near_death": {
+      "speaker": "PILOT",
+      "text": "적 에너지 잔량 12%. 연산 결과: 승리 확률 94.7%."
+    },
+    "defeat": {
+      "speaker": "BOSS",
+      "text": "스캔 데이터는... 이미 전송되었다... 본대가... 온다..."
+    }
+  },
+  "2": {
+    "appear": {
+      "speaker": "BOSS",
+      "text": "2,847명의 기억 데이터 추출 완료... 네 기억도 수확하겠다..."
+    },
+    "phase2": {
+      "speaker": "BOSS",
+      "text": "저항할수록 고통스럽다... 순순히 융합을 받아들여라..."
+    },
+    "phase2_pilot": {
+      "speaker": "PILOT",
+      "text": "(분석) 적이 정신 간섭파를 방출 중. 집중력 유지 권장."
+    },
+    "phase3": {
+      "speaker": "BOSS",
+      "text": "감정 데이터... 희망... 분석 불가 오류... 강제 추출!"
+    },
+    "phase3_artemis": {
+      "speaker": "ARTEMIS",
+      "text": "이 기억들은 내 것이야! 네가 이해할 수 없는 것들!"
+    },
+    "near_death": {
+      "speaker": "PILOT",
+      "text": "데이터 링크 손상률 87%. 완전 차단까지 예상 13초."
+    },
+    "defeat": {
+      "speaker": "BOSS",
+      "text": "희망... 이라는 데이터... 형식 오류... 분석... 실패..."
+    }
+  },
+  "3": {
+    "appear": {
+      "speaker": "BOSS",
+      "text": "사랑이라는 결함... 불꽃으로 정화해주마..."
+    },
+    "phase2": {
+      "speaker": "BOSS",
+      "text": "융합을 거부한 자들의 최후를 보여주겠다! 전부 태워버려!"
+    },
+    "phase2_pilot": {
+      "speaker": "PILOT",
+      "text": "(분석) 화염 온도 상승 중. 현재 1,200°C. 쉴드 내열 한계 근접."
+    },
+    "phase3": {
+      "speaker": "BOSS",
+      "text": "감정은 불순물! 카오스는 순수한 의지만 수확한다!"
+    },
+    "phase3_artemis": {
+      "speaker": "ARTEMIS",
+      "text": "사랑은 불순물이 아니야! 내 힘의 원천이야!"
+    },
+    "near_death": {
+      "speaker": "PILOT",
+      "text": "화염 출력 급감. 적 코어 온도 임계치 이하로 하락 중."
+    },
+    "defeat": {
+      "speaker": "BOSS",
+      "text": "이 불길이... 꺼지지 않아... 네 안의 불꽃에..."
+    }
+  },
+  "4": {
+    "appear": {
+      "speaker": "BOSS",
+      "text": "우리는... 융합에 실패한 자들... 247명의 목소리가... 들리는가..."
+    },
+    "phase2": {
+      "speaker": "BOSS",
+      "text": "카오스가 버린 껍데기들... 네 부모도 이렇게 될 것이다..."
+    },
+    "phase2_pilot": {
+      "speaker": "PILOT",
+      "text": "(분석) 복수의 의식 패턴 감지. 추정 인원: 247명. 이것은... 비극이다."
+    },
+    "phase3": {
+      "speaker": "BOSS",
+      "text": "희망은 고통을 연장할 뿐... 포기해라... 우리처럼..."
+    },
+    "phase3_artemis": {
+      "speaker": "ARTEMIS",
+      "text": "부모님은 달라! 난 반드시 구할 거야!"
+    },
+    "near_death": {
+      "speaker": "PILOT",
+      "text": "의식 결합 해체 중. 그들이... 해방되고 있다."
+    },
+    "defeat": {
+      "speaker": "BOSS",
+      "text": "고마워... 드디어... 쉴 수 있어... 기다리고 있을게... 저 너머에서..."
+    }
+  },
+  "5": {
+    "appear": {
+      "speaker": "BOSS",
+      "text": "10년을 기다렸다... 가장 강인한 정신... 완벽한 숙주..."
+    },
+    "appear_pilot": {
+      "speaker": "PILOT",
+      "text": "(분석) 에너지 수준: 측정 불가. 지금까지의 적과 차원이 다르다."
+    },
+    "phase2": {
+      "speaker": "BOSS",
+      "text": "안드로메다인이 인간과 함께? 흥미롭군... 그 결함이 네 패배의 원인이다..."
+    },
+    "phase2_pilot": {
+      "speaker": "PILOT",
+      "text": "결함이 아니다. 이것은 '선택'이다. 처음으로 내가 원해서 한 선택."
+    },
+    "phase3": {
+      "speaker": "BOSS",
+      "text": "카오스는 완전함이다! 감정 따위 버리고 융합해라!"
+    },
+    "phase3_artemis": {
+      "speaker": "ARTEMIS",
+      "text": "감정이 있기에 싸울 수 있어! 네가 이해 못 하는 힘이야!"
+    },
+    "near_death": {
+      "speaker": "PILOT",
+      "text": "적 코어 붕괴 임박. 아르테미스... '가족'을 위해 끝내자."
+    },
+    "defeat": {
+      "speaker": "BOSS",
+      "text": "불가능하다... 감정 없는 존재가... 감정으로 나를... 이것이 '희망'인가..."
+    }
+  }
+}

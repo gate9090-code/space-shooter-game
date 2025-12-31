@@ -1,0 +1,176 @@
+{
+  "id": "ep3",
+  "act": 3,
+  "title": "블랙박스",
+  "title_en": "BLACK BOX",
+  "description": "격추된 적 기체에서 데이터 코어를 회수한다. 카이론 본진의 위치가 드러날지도 모른다.",
+
+  "defaults": {
+    "background": "bg_bunker.jpg",
+    "bgm": "bgm_combat.mp3"
+  },
+
+  "scenes": {
+    "briefing": {
+      "title": "MISSION BRIEFING",
+      "location": "COMMAND CENTER",
+      "background": "bg_command.jpg",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "이전 전투에서 격추된 적 기체의 잔해 발견. 데이터 코어 반응 확인."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "적의 데이터... 본진 위치가 있을 수도 있어."
+        }
+      ]
+    },
+
+    "opening": {
+      "title": "ACT 3: BLACK BOX",
+      "location": "CRASH SITE - SECTOR 12",
+      "background": "bg_bunker.jpg",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "격추된 적 기체 잔해 발견. 데이터 코어 반응이 있습니다."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "저거 아까 우리가 떨어뜨린 놈이네."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "데이터 코어가 살아있다고? 뭐가 들었을까."
+        },
+        {
+          "speaker": "NARRATOR",
+          "text": "접근 시 자폭 장치 작동 가능성이 있습니다."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "그럼 원격으로 뽑아낼 수 있어?"
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "내가 직접 가야 해. 원격으론 암호 못 뚫어."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "혼자? 말도 안 돼."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "5분이면 돼. 그동안 하늘 좀 지켜줘."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "...3분. 그 이상은 안 돼."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "충분해. 저 안에 카이론 본진 위치가 있을 수도 있어."
+        }
+      ]
+    },
+
+    "mid_01": {
+      "title": "",
+      "location": "CRASH SITE",
+      "background": "bg_bunker.jpg",
+      "dialogues": [
+        {
+          "speaker": "ARTEMIS",
+          "text": "데이터 추출 중... 50% 완료..."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "서둘러! 적 증원 부대가 오고 있어!"
+        }
+      ]
+    },
+
+    "hologram": {
+      "title": "DAMAGED RECORDING",
+      "location": "DATA CORE",
+      "background": "bg_lab_fire.jpg",
+      "effect": "FilmReelEffect",
+      "effect_data": {
+        "hologram_images": [
+          "holo_lab_log_01.png",
+          "holo_experiment.png",
+          "holo_warning.png",
+          "holo_scientist.png",
+          "holo_chaos_data.png"
+        ]
+      },
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "손상된 홀로그램 기록 재생 중..."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "이건... 카이론의 통신 기록이야?"
+        },
+        {
+          "speaker": "PILOT",
+          "text": "좌표가 있어! 하지만 암호화되어 있어."
+        }
+      ]
+    },
+
+    "boss": {
+      "title": "BOSS BATTLE",
+      "location": "CRASH SITE",
+      "background": "bg_bunker.jpg",
+      "bgm": "bgm_boss.mp3",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "경고. 추적자급 카이론 출현."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "추적자... 데이터를 지키러 온 거야!"
+        }
+      ]
+    },
+
+    "ending": {
+      "title": "MISSION COMPLETE",
+      "location": "CRASH SITE",
+      "background": "bg_bunker.jpg",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "데이터 추출 완료. 암호 해독 필요."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "이 데이터... 기지에서 분석해야 해."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "본진 위치를 알아낼 수 있을까?"
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "분명히. 우리가 한 발 앞서가고 있어."
+        }
+      ]
+    }
+  },
+
+  "segments": [
+    {"type": "DIALOGUE", "scene": "briefing"},
+    {"type": "DIALOGUE", "scene": "opening"},
+    {"type": "COMBAT", "rounds": 3, "enemies": ["fighter", "interceptor"]},
+    {"type": "DIALOGUE", "scene": "mid_01"},
+    {"type": "CUTSCENE", "scene": "hologram"},
+    {"type": "COMBAT", "rounds": 2, "boss": "tracker"},
+    {"type": "DIALOGUE", "scene": "boss"},
+    {"type": "DIALOGUE", "scene": "ending"}
+  ]
+}

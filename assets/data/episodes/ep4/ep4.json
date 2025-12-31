@@ -1,0 +1,190 @@
+{
+  "id": "ep4",
+  "act": 4,
+  "title": "함정",
+  "title_en": "TRAP",
+  "description": "데이터 분석 중 적의 포위망에 갇힌다. 사방에서 몰려오는 적들 속에서 탈출구를 찾아야 한다.",
+
+  "defaults": {
+    "background": "bg_bunker.jpg",
+    "bgm": "bgm_combat.mp3"
+  },
+
+  "scenes": {
+    "briefing": {
+      "title": "MISSION BRIEFING",
+      "location": "COMMAND CENTER",
+      "background": "bg_command.jpg",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "블랙박스 데이터 분석 결과, 적 기지 추정 좌표 확보."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "드디어... 놈들의 본거지를 찾을 수 있어."
+        }
+      ]
+    },
+
+    "opening": {
+      "title": "ACT 4: TRAP",
+      "location": "SURROUNDED - SECTOR 12",
+      "background": "bg_bunker.jpg",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "경고. 다방향 적 반응. 포위 형태입니다."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "아르테미스, 나와! 지금 당장!"
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "70%... 조금만 더!"
+        },
+        {
+          "speaker": "PILOT",
+          "text": "위에서 8기, 왼쪽에서 5기, 뒤에서 더 온다!"
+        },
+        {
+          "speaker": "NARRATOR",
+          "text": "탈출 경로 분석 중입니다. 12시 방향 돌파 가능성 31%."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "됐어! 데이터 확보!"
+        },
+        {
+          "speaker": "PILOT",
+          "text": "이제 나와!"
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "잠깐, 이거... 카이론 본진이 아니야. 이건..."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "나중에 말해! 지금은 빠져나가는 게 먼저야!"
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "...알았어. 가자."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "12시 방향으로 뚫는다. 준비해."
+        }
+      ]
+    },
+
+    "mid_01": {
+      "title": "",
+      "location": "ESCAPE ROUTE",
+      "background": "bg_bunker.jpg",
+      "dialogues": [
+        {
+          "speaker": "ARTEMIS",
+          "text": "막고 있는 놈들을 처리해!"
+        },
+        {
+          "speaker": "PILOT",
+          "text": "포위망이 좁혀오고 있어! 서둘러!"
+        }
+      ]
+    },
+
+    "mirror": {
+      "title": "SHATTERED TRUTH",
+      "location": "MEMORY FRAGMENT",
+      "background": "bg_lab_fire.jpg",
+      "effect": "ShatteredMirrorEffect",
+      "effect_data": {
+        "fragment_images": [
+          "frag_truth_01.png",
+          "frag_truth_02.png",
+          "frag_truth_03.png",
+          "frag_truth_04.png",
+          "frag_betrayal.png",
+          "frag_real_enemy.png",
+          "frag_complete.png"
+        ]
+      },
+      "dialogues": [
+        {
+          "speaker": "ARTEMIS",
+          "text": "이 데이터... 카이론 본진이 아니야."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "뭐라고? 그럼 뭔데?"
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "게이트 연구 시설... 인간이 만든 거야. 우리가."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "말도 안 돼..."
+        }
+      ]
+    },
+
+    "boss": {
+      "title": "BOSS BATTLE",
+      "location": "BLOCKADE",
+      "background": "bg_bunker.jpg",
+      "bgm": "bgm_boss.mp3",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "퇴로 차단. 수호자급 카이론 확인."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "뚫어야 해. 다른 방법은 없어!"
+        }
+      ]
+    },
+
+    "ending": {
+      "title": "MISSION COMPLETE",
+      "location": "SAFE ZONE",
+      "background": "bg_bunker.jpg",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "포위망 이탈 성공. 추적 기체 소실."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "휴... 살았다."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "이 데이터... 진실을 밝혀야 해."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "인간이 게이트를 열었다고? 우리가 카이론을 불러들인 거야?"
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "아직 확실하지 않아. 더 조사해야 해."
+        }
+      ]
+    }
+  },
+
+  "segments": [
+    {"type": "DIALOGUE", "scene": "briefing"},
+    {"type": "DIALOGUE", "scene": "opening"},
+    {"type": "COMBAT", "rounds": 4, "enemies": ["fighter", "bomber", "interceptor"]},
+    {"type": "DIALOGUE", "scene": "mid_01"},
+    {"type": "CUTSCENE", "scene": "mirror"},
+    {"type": "COMBAT", "rounds": 2, "boss": "guardian"},
+    {"type": "DIALOGUE", "scene": "boss"},
+    {"type": "DIALOGUE", "scene": "ending"}
+  ]
+}

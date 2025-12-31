@@ -17,8 +17,9 @@ from objects import (
     Player, Enemy, Bullet, CoinGem, HealItem,
     ScreenShake, Particle, Shockwave, DynamicTextEffect,
     TimeSlowEffect, SpawnEffect, Turret, Drone, DeathEffectManager,
-    DamageNumberManager
+    DamageNumberManager, DamageFlash, LevelUpEffect
 )
+from ui import HPBarShake
 
 
 @dataclass
@@ -131,6 +132,83 @@ class GameMode(ABC):
         self.custom_cursor_enabled: bool = False
         self.cursor_animation_time: float = 0.0
 
+        # 시각적 피드백 효과 (하위 모드에서 초기화)
+        self.damage_flash = None
+        self.level_up_effect = None
+        self.hp_bar_shake = None
+        self.previous_hp: float = 0.0  # HP 변화 감지용
+
+    # ===== 시각적 피드백 초기화 (공통) =====
+
+    def _init_visual_feedback_effects(self):
+        """
+        시각적 피드백 효과 초기화 (wave, story, siege 모드 공통)
+
+        - DamageFlash: 피격 시 화면 빨간색 플래시
+        - LevelUpEffect: 레벨업 시 시각 효과
+        - HPBarShake: HP바 흔들림 효과
+        """
+        self.damage_flash = DamageFlash(self.screen_size)
+        self.level_up_effect = LevelUpEffect(self.screen_size)
+        self.hp_bar_shake = HPBarShake()
+        self.previous_hp = 0.0
+
+    def _trigger_damage_feedback(self, hp_before: float):
+        """
+        데미지 피드백 효과 트리거 (HP 감소 시 호출)
+
+        Args:
+            hp_before: 데미지 적용 전 HP
+        """
+        if not self.player or not self.damage_flash:
+            return
+
+        if hp_before > self.player.hp:
+            damage_taken = hp_before - self.player.hp
+            damage_ratio = damage_taken / self.player.max_hp
+            self.damage_flash.trigger(damage_ratio)
+            if self.hp_bar_shake:
+                self.hp_bar_shake.trigger(damage_ratio)
+
+    def _update_visual_feedback(self, dt: float):
+        """시각적 피드백 효과 업데이트"""
+        if self.damage_flash:
+            self.damage_flash.update()
+        if self.hp_bar_shake:
+            self.hp_bar_shake.update()
+        if self.level_up_effect:
+            self.level_up_effect.update(dt)
+
+    # ===== 커스텀 커서 (기지 모드용) =====
+
+    def _load_base_cursor(self) -> pygame.Surface:
+        """기지용 커스텀 커서 로드"""
+        cursor_path = config.ASSET_DIR / "images" / "items" / "mouse_action.png"
+        try:
+            if cursor_path.exists():
+                cursor_img = pygame.image.load(str(cursor_path)).convert_alpha()
+                cursor_size = 64  # 2배 크기
+                cursor_img = pygame.transform.smoothscale(cursor_img, (cursor_size, cursor_size))
+                return cursor_img
+        except Exception as e:
+            print(f"WARNING: Failed to load base cursor: {e}")
+        return None
+
+    def _render_base_cursor(self, screen: pygame.Surface, cursor_img: pygame.Surface):
+        """기지용 커스텀 커서 렌더링"""
+        if cursor_img:
+            mouse_pos = pygame.mouse.get_pos()
+            cursor_rect = cursor_img.get_rect(center=mouse_pos)
+            screen.blit(cursor_img, cursor_rect)
+
+    def _enable_custom_cursor(self):
+        """커스텀 커서 활성화 (기본 마우스 숨김)"""
+        pygame.mouse.set_visible(False)
+
+    def _disable_custom_cursor(self):
+        """커스텀 커서 비활성화 (기본 마우스 복원)"""
+        pygame.mouse.set_visible(True)
+
     # ===== 추상 메서드 (반드시 구현) =====
 
     @abstractmethod
@@ -179,12 +257,41 @@ class GameMode(ABC):
         self.sound_manager.stop_bgm()
 
         # 객체 정리
+        self._clear_all_game_objects()
+
+    def _clear_all_game_objects(self):
+        """
+        모든 게임 객체 초기화 (재시작, 모드 종료 시 사용)
+
+        하위 모드에서 추가 객체가 있으면 super()._clear_all_game_objects() 호출 후
+        자체 객체도 정리하면 됨.
+        """
         self.enemies.clear()
         self.bullets.clear()
         self.gems.clear()
         self.effects.clear()
         self.turrets.clear()
         self.drones.clear()
+        self.damage_numbers.clear()
+
+        # 매니저 초기화
+        if hasattr(self, 'damage_number_manager') and self.damage_number_manager:
+            self.damage_number_manager.damage_numbers.clear()
+            self.damage_number_manager.accumulated_damage.clear()
+
+        if hasattr(self, 'death_effect_manager') and self.death_effect_manager:
+            self.death_effect_manager.fragments.clear()
+            self.death_effect_manager.particles.clear()
+            self.death_effect_manager.dissolve_effects.clear()
+            self.death_effect_manager.fade_effects.clear()
+            self.death_effect_manager.implode_effects.clear()
+            self.death_effect_manager.vortex_effects.clear()
+            self.death_effect_manager.pixelate_effects.clear()
+
+        # 타겟팅 초기화
+        self.targeted_enemy = None
+
+        print(f"INFO: All game objects cleared")
 
     def on_pause(self):
         """다른 모드가 위에 올라올 때 호출"""
@@ -623,6 +730,82 @@ class GameMode(ABC):
                 return True
 
         return False
+
+    # ===== 미션 완료 처리 (공통) =====
+
+    def _complete_mission_and_return(self, mission_type: str = "side"):
+        """
+        미션 완료 처리 후 BaseHub로 귀환 (wave_mode, siege_mode, story_mode 공통)
+
+        Args:
+            mission_type: 미션 타입 ("side", "siege", "story" 등)
+        """
+        import json
+        from pathlib import Path
+
+        # 현재 미션 정보
+        current_mission = self.engine.shared_state.get('current_mission')
+        mission_data = self.engine.shared_state.get('mission_data')
+
+        if current_mission:
+            # 미션 완료 처리
+            completed_missions = self.engine.shared_state.get('completed_missions', [])
+            if current_mission not in completed_missions:
+                completed_missions.append(current_mission)
+                self.engine.shared_state['completed_missions'] = completed_missions
+
+            # 보상 지급
+            if mission_data and 'rewards' in mission_data:
+                rewards = mission_data['rewards']
+                if hasattr(rewards, 'credits') and rewards.credits > 0:
+                    current_credits = self.engine.shared_state.get('global_score', 0)
+                    self.engine.shared_state['global_score'] = current_credits + rewards.credits
+
+            # 진행 저장
+            self._save_mission_progress()
+
+            print(f"INFO: {mission_type.capitalize()} mission {current_mission} completed!")
+
+        # 미션 상태 초기화
+        self.engine.shared_state['current_mission'] = None
+        self.engine.shared_state['mission_data'] = None
+        self.engine.shared_state['is_side_mission'] = False
+        self.engine.shared_state['from_briefing'] = False
+
+        # BaseHub로 귀환
+        from modes.base_hub_mode import BaseHubMode
+        self.request_switch_mode(BaseHubMode)
+
+    def _save_mission_progress(self):
+        """미션 진행 상황 저장 (공통)"""
+        import json
+        from pathlib import Path
+
+        completed_missions = self.engine.shared_state.get('completed_missions', [])
+        credits = self.engine.shared_state.get('global_score', 0)
+
+        # 현재 저장 데이터 로드
+        save_path = Path("saves/campaign_progress.json")
+        try:
+            if save_path.exists():
+                with open(save_path, 'r', encoding='utf-8') as f:
+                    save_data = json.load(f)
+            else:
+                save_data = {}
+
+            # 업데이트
+            save_data['completed_missions'] = completed_missions
+            save_data['credits'] = credits
+
+            # 저장
+            save_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(save_path, 'w', encoding='utf-8') as f:
+                json.dump(save_data, f, indent=2)
+
+            print(f"INFO: Mission progress saved")
+
+        except Exception as e:
+            print(f"WARNING: Failed to save mission progress: {e}")
 
     # ===== 유틸리티 메서드 =====
 

@@ -185,31 +185,27 @@ class WorkshopMode(GameMode):
         self.back_rect = None
         self.back_hover = False
 
+        # 커스텀 커서
+        self.custom_cursor = self._load_base_cursor()
+
         print("INFO: WorkshopMode initialized (Unified UI)")
 
     def _create_background(self) -> pygame.Surface:
-        """배경 생성"""
+        """배경 생성 - facility_bg 이미지 사용"""
+        # facility_bg 이미지 로드 시도
+        bg_path = config.ASSET_DIR / "images" / "facilities" / "facility_bg.png"
+        try:
+            if bg_path.exists():
+                bg = pygame.image.load(str(bg_path)).convert()
+                return pygame.transform.smoothscale(bg, self.screen_size)
+        except Exception as e:
+            print(f"WARNING: Failed to load facility_bg for workshop: {e}")
+
+        # 폴백: 기본 그라데이션 배경
         bg = self.ui_manager.create_gradient_background(
             base_color=config.BG_LEVELS["SCREEN"],
             variation=18
         )
-
-        # 기어 패턴 (정비소 테마)
-        gear_color = (32, 30, 40)
-        for i in range(8):
-            cx = (i * 180) + 90
-            cy = self.screen_size[1] - 80
-            self._draw_gear(bg, (cx, cy), 55, gear_color)
-
-        # 상단 조명 효과
-        light_surf = pygame.Surface(self.screen_size, pygame.SRCALPHA)
-        for i in range(70):
-            alpha = int(22 * (1 - i / 70))
-            pygame.draw.ellipse(light_surf, (255, 190, 90, alpha),
-                              (self.screen_size[0] // 2 - 280 - i * 2, -140 - i,
-                               560 + i * 4, 220 + i * 2))
-        bg.blit(light_surf, (0, 0))
-
         return bg
 
     def _draw_gear(self, surface: pygame.Surface, center: Tuple[int, int],
@@ -316,6 +312,9 @@ class WorkshopMode(GameMode):
 
         # 키보드 힌트
         self.ui_manager.render_keyboard_hints(screen, "1-7 Categories  |  Scroll Mouse  |  ESC Back")
+
+        # 커스텀 커서
+        self._render_base_cursor(screen, self.custom_cursor)
 
     def _render_upgrades(self, screen: pygame.Surface):
         """업그레이드 목록 렌더링"""
@@ -432,9 +431,10 @@ class WorkshopMode(GameMode):
             name_text = render_text_with_emoji(upgrade["name"], self.fonts["medium"], name_color, "MEDIUM")
             screen.blit(name_text, (draw_rect.x + left_margin, draw_rect.y + 8))
 
-            # 설명 (이름 아래)
+            # 설명 (Light 폰트 - 가독성 향상)
             desc_color = config.TEXT_LEVELS["TERTIARY"] if (can_buy or is_maxed) else config.LOCKED_COLORS["TEXT"]
-            desc_text = self.fonts["small"].render(upgrade["desc"], True, desc_color)
+            desc_font = self.fonts.get("light_small", self.fonts["small"])
+            desc_text = desc_font.render(upgrade["desc"], True, desc_color)
             screen.blit(desc_text, (draw_rect.x + left_margin, draw_rect.y + 32))
 
             # 레벨 진행 바 또는 상태 (하단 좌측)
@@ -507,9 +507,10 @@ class WorkshopMode(GameMode):
                 cost_text = self.fonts["medium"].render(f"{cost:,}", True, cost_color)
                 screen.blit(cost_text, (cost_center_x - 18, cost_y - 2))
 
-                # 레벨당 효과 (비용 아래)
+                # 레벨당 효과 (비용 아래 - Light 폰트)
                 if "per_level" in upgrade:
-                    effect_text = self.fonts["small"].render(upgrade["per_level"], True, header_color)
+                    effect_font = self.fonts.get("light_small", self.fonts["small"])
+                    effect_text = effect_font.render(upgrade["per_level"], True, header_color)
                     effect_x = cost_center_x - effect_text.get_width() // 2
                     screen.blit(effect_text, (effect_x, cost_y + 24))
 
@@ -612,11 +613,14 @@ class WorkshopMode(GameMode):
 
     def on_enter(self):
         super().on_enter()
+        if self.custom_cursor:
+            self._enable_custom_cursor()
 
     def on_exit(self):
         self.engine.shared_state['global_score'] = self.credits
         self.engine.shared_state['player_upgrades'] = self.player_upgrades
         self.engine.save_shared_state()
+        self._disable_custom_cursor()
         super().on_exit()
 
 

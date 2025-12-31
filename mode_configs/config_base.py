@@ -118,12 +118,4 @@ UNLOCK_REQUIREMENTS = {
     GAME_MODE_SIEGE: 25,    # Story Mode 완료 (5세트 × 5웨이브)
 }
 
-# =========================================================
-# 개발 치트 설정
-# =========================================================
-CHEAT_ENABLED = True  # False로 설정하면 치트 비활성화
-CHEAT_UNLOCK_ALL_MODES = True  # 모든 모드 즉시 언락
-CHEAT_GOD_MODE = False
-CHEAT_INSTANT_WIN = False
-
 print("INFO: config_base.py loaded")

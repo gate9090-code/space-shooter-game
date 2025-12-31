@@ -1,0 +1,67 @@
+============================================================
+REFLECTION SCENE ASSET REQUIREMENTS
+철학적 성찰 씬을 위한 에셋 요구사항
+============================================================
+
+[backgrounds/] - 지구의 계절 배경 이미지 (1920x1080 권장)
+------------------------------------------------------------
+bg_spring_cherry.jpg    - 벚꽃 핀 봄 풍경 (color_names 씬용)
+bg_summer_sky.jpg       - 뭉게구름 여름 하늘 (cloud_shapes 씬용)
+bg_autumn_rain.jpg      - 비 오는 가을 거리 (rain_smell 씬용)
+bg_winter_night.jpg     - 겨울 밤하늘 별 (why_stars_beautiful 씬용)
+bg_fallen_flowers.jpg   - 떨어지는 꽃잎 (why_flowers_fall 씬용)
+bg_sunset_horizon.jpg   - 석양 지평선 (eternity_vs_moment 씬용)
+bg_chaos_void.jpg       - 카오스 소용돌이 (chaos_eats_time 씬용)
+
+
+[andromeda/] - 안드로메다 풍경 이미지
+------------------------------------------------------------
+bg_andromeda_city.jpg   - 네온 도시 풍경 (보라/네온 색상)
+bg_andromeda_sky.jpg    - 정지된 보라 하늘 (구름 없음, 정적)
+bg_andromeda_council.jpg - 안드로메다 위원회 (why_andromeda_stopped_time 씬용)
+
+
+[particles/] - 파티클 스프라이트 (투명 PNG)
+------------------------------------------------------------
+cherry_petal_01.png     - 벚꽃잎 (32x32, 4~8개 변형)
+cherry_petal_02.png
+cherry_petal_03.png
+raindrop.png            - 빗방울 (8x24, 세로 길쭉)
+snowflake_01.png        - 눈송이 (16x16, 3~5개 변형)
+star_twinkle.png        - 별 반짝임 (16x16, 3프레임 애니메이션)
+cosmic_dust.png         - 우주 먼지 (8x8, 보라/파란 계열)
+flower_petal.png        - 일반 꽃잎 (16x16)
+
+
+[portraits/] - 캐릭터 표정 변형 (기존 폴더에 추가)
+------------------------------------------------------------
+portrait_artemis_sad.png       - 아르테미스 슬픔
+portrait_artemis_determined.png - 아르테미스 결의
+portrait_pilot_thinking.png    - 파일럿 사색
+portrait_pilot_smile.png       - 파일럿 미소
+portrait_android_alert.png     - 나레이터 경고
+
+
+============================================================
+COLOR TONE REFERENCE
+============================================================
+sepia   - (255, 240, 200) - 추억/향수 (봄, 꽃잎)
+blue    - (100, 150, 200) - 명상/성찰 (겨울, 별)
+purple  - (150, 100, 200) - 신비/우주 (안드로메다)
+gold    - (255, 220, 100) - 깨달음 (석양)
+gray_blue - (150, 160, 180) - 비 오는 날 (가을)
+
+
+============================================================
+FALLBACK BEHAVIOR
+============================================================
+에셋이 없을 경우 시스템은 자동으로:
+1. 그라데이션 배경 생성 (씬 키에 따른 색상)
+2. 기본 파티클 형태 사용 (원, 선 등)
+3. 기존 캐릭터 포트레이트 사용
+
+우선순위 에셋 (Phase 1):
+- bg_spring_cherry.jpg
+- bg_winter_night.jpg
+- cherry_petal_01.png
+- star_twinkle.png

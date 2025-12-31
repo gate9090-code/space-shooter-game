@@ -17,21 +17,20 @@ from systems.spawn_system import SpawnSystem, SpawnConfig
 from systems.ui_system import UISystem, UIConfig
 from objects import (
     Player, Enemy, Bullet, ParallaxLayer, Meteor,
-    BackgroundTransition, Drone, Turret, DamageFlash, LevelUpEffect,
-    CombatMotionEffect
+    BackgroundTransition, Drone, Turret, CombatMotionEffect
 )
 from asset_manager import AssetManager
 from utils import (
     reset_game_data, start_wave, advance_to_next_wave, check_wave_clear,
     update_game_objects, handle_spawning, spawn_gem, generate_tactical_options,
     handle_tactical_upgrade, update_random_event, get_active_event_modifiers,
-    get_next_level_threshold,
+    get_next_level_threshold, auto_place_turrets, trigger_ship_ability,
 )
 from ui import (
     draw_hud, draw_pause_and_over_screens, draw_shop_screen,
     draw_tactical_menu, draw_wave_prepare_screen, draw_wave_clear_screen,
     draw_boss_health_bar, draw_victory_screen, draw_skill_indicators,
-    draw_random_event_ui, draw_settings_menu, HPBarShake,
+    draw_random_event_ui, draw_settings_menu,
 )
 from systems.save_system import (
     get_save_system, extract_player_save_data, apply_player_save_data
@@ -147,11 +146,8 @@ class WaveMode(GameMode):
         # 메뉴 버튼 클릭 영역 (마우스 클릭 지원)
         self.menu_button_rects: Dict[str, pygame.Rect] = {}
 
-        # 시각적 피드백 효과
-        self.damage_flash = DamageFlash(self.screen_size)
-        self.level_up_effect = LevelUpEffect(self.screen_size)
-        self.hp_bar_shake = HPBarShake()
-        self.previous_hp = 0.0  # HP 변화 감지용
+        # 시각적 피드백 효과 (base_mode의 공통 메서드 사용)
+        self._init_visual_feedback_effects()
 
         # 전투 모션 효과 (고속 비행 연출)
         self.combat_motion_effect = CombatMotionEffect(self.screen_size)
@@ -322,17 +318,11 @@ class WaveMode(GameMode):
             death_effect_manager=self.death_effect_manager
         )
 
-        # HP 감소 감지 → 피격 효과 트리거
-        if self.player and hp_before > self.player.hp:
-            damage_taken = hp_before - self.player.hp
-            damage_ratio = damage_taken / self.player.max_hp
-            self.damage_flash.trigger(damage_ratio)
-            self.hp_bar_shake.trigger(damage_ratio)
+        # HP 감소 감지 → 피격 효과 트리거 (base_mode 공통 메서드)
+        self._trigger_damage_feedback(hp_before)
 
-        # 시각적 피드백 효과 업데이트
-        self.damage_flash.update()
-        self.hp_bar_shake.update()
-        self.level_up_effect.update(dt)
+        # 시각적 피드백 효과 업데이트 (base_mode 공통 메서드)
+        self._update_visual_feedback(dt)
 
         # 전투 모션 효과 (플레이어 이동 추적)
         if self.player:
@@ -365,6 +355,7 @@ class WaveMode(GameMode):
             if self.game_data.get("uncollected_score", 0) >= level_threshold:
                 self.game_data["game_state"] = config.GAME_STATE_LEVEL_UP
                 self.game_data["tactical_options"] = generate_tactical_options(self.player, self.game_data)
+                self.game_data["skill_view_readonly"] = False  # 선택 가능하게 설정
                 self.sound_manager.play_sfx("level_up")
                 return  # 레벨업 메뉴로 전환, 나머지 업데이트 스킵
             # === 일반 페이즈 ===
@@ -537,35 +528,12 @@ class WaveMode(GameMode):
             print("INFO: [AUTO] Ultimate activated!")
 
     def _trigger_auto_ability(self):
-        """오토파일럿 특수 능력 자동 발동"""
-        if not self.player:
-            return
-
-        ability_type = getattr(self.player, 'ship_ability_type', None)
-        if self.player.use_ship_ability(self.enemies, self.effects):
-            # 능력별 시각 이펙트 + 사운드
-            if ability_type == "bomb_drop":
-                self.effect_system.create_bomb_explosion(
-                    self.effects, self.player.pos.copy(),
-                    getattr(self.player, 'bomb_radius', 200)
-                )
-                self.sound_manager.play_sfx("ability_bomb")
-            elif ability_type == "shield":
-                self.effect_system.create_shield_effect(
-                    self.effects, self.player.pos.copy()
-                )
-                self.sound_manager.play_sfx("ability_shield")
-            elif ability_type == "cloaking":
-                self.effect_system.create_cloak_effect(
-                    self.effects, self.player.pos.copy()
-                )
-                self.sound_manager.play_sfx("ability_cloak")
-            elif ability_type == "evasion_boost":
-                self.effect_system.create_evasion_effect(
-                    self.effects, self.player.pos.copy()
-                )
-                self.sound_manager.play_sfx("ability_evasion")
-            print(f"INFO: [AUTO] Ship ability '{ability_type}' activated!")
+        """오토파일럿 특수 능력 자동 발동 (utils.trigger_ship_ability 사용)"""
+        trigger_ship_ability(
+            self.player, self.enemies, self.effects,
+            effect_system=self.effect_system,
+            sound_manager=self.sound_manager
+        )
 
     def render(self, screen: pygame.Surface):
         """웨이브 모드 렌더링"""
@@ -765,38 +733,12 @@ class WaveMode(GameMode):
                 self.game_data["tactical_options"] = generate_tactical_options(self.player, self.game_data)
 
             elif event.key == pygame.K_e:
-                # Ship special ability (E key)
-                if self.player and hasattr(self.player, 'use_ship_ability'):
-                    # 능력 타입 미리 확인
-                    ability_type = getattr(self.player, 'ship_ability_type', None)
-
-                    if self.player.use_ship_ability(self.enemies, self.effects):
-                        # 능력별 시각 이펙트 + 사운드 생성
-                        if ability_type == "bomb_drop":
-                            self.effect_system.create_bomb_explosion(
-                                self.effects, self.player.pos.copy(),
-                                getattr(self.player, 'bomb_radius', 200)
-                            )
-                            self.sound_manager.play_sfx("ability_bomb")
-                        elif ability_type == "shield":
-                            self.effect_system.create_shield_effect(
-                                self.effects, self.player.pos.copy()
-                            )
-                            self.sound_manager.play_sfx("ability_shield")
-                        elif ability_type == "cloaking":
-                            self.effect_system.create_cloak_effect(
-                                self.effects, self.player.pos.copy()
-                            )
-                            self.sound_manager.play_sfx("ability_cloak")
-                        elif ability_type == "evasion_boost":
-                            self.effect_system.create_evasion_effect(
-                                self.effects, self.player.pos.copy()
-                            )
-                            self.sound_manager.play_sfx("ability_evasion")
-
-                        ability_info = self.player.get_ship_ability_info()
-                        if ability_info:
-                            print(f"INFO: Ship ability '{ability_info['name']}' activated!")
+                # Ship special ability (E key) - utils.trigger_ship_ability 사용
+                trigger_ship_ability(
+                    self.player, self.enemies, self.effects,
+                    effect_system=self.effect_system,
+                    sound_manager=self.sound_manager
+                )
 
     def _handle_wave_prepare_event(self, event: pygame.event.Event):
         """웨이브 준비 이벤트"""
@@ -948,6 +890,13 @@ class WaveMode(GameMode):
                     self.sound_manager.play_sfx("button_click")
                     return
 
+            # Return to Base 버튼 클릭
+            if "return_base" in self.menu_button_rects:
+                if self.menu_button_rects["return_base"].collidepoint(mouse_pos):
+                    self.sound_manager.play_sfx("button_click")
+                    self._return_to_base()
+                    return
+
             # Quit 버튼 클릭
             if "quit" in self.menu_button_rects:
                 if self.menu_button_rects["quit"].collidepoint(mouse_pos):
@@ -958,6 +907,9 @@ class WaveMode(GameMode):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_r:
                 self._restart_game()
+            elif event.key == pygame.K_b:
+                # B키: 기지 복귀
+                self._return_to_base()
             elif event.key == pygame.K_ESCAPE:
                 self.request_quit()
 
@@ -975,18 +927,22 @@ class WaveMode(GameMode):
                     self._return_to_base()
             elif event.key == pygame.K_r:
                 self._restart_game()
-            elif event.key == pygame.K_b and not is_side_mission:
+            elif event.key == pygame.K_n and not is_side_mission:
+                # N키: Boss Rush 시작
                 self._start_boss_rush()
+            elif event.key == pygame.K_b:
+                # B키: Base Hub로 귀환
+                if is_side_mission:
+                    self._complete_side_mission_and_return()
+                else:
+                    self._mark_episode_complete()
+                    self._return_to_base()
             elif event.key == pygame.K_q or event.key == pygame.K_ESCAPE:
                 if is_side_mission:
                     self._complete_side_mission_and_return()
                 else:
                     self._mark_episode_complete()
                     self._return_to_base()
-            elif event.key == pygame.K_h:
-                # 캠페인 모드: Base Hub로 귀환
-                self._mark_episode_complete()
-                self._return_to_base()
 
     def _handle_paused_event(self, event: pygame.event.Event):
         """일시정지 이벤트 - P키는 handle_common_events에서 처리됨, 마우스 클릭 지원"""
@@ -1054,41 +1010,9 @@ class WaveMode(GameMode):
                 print("INFO: All turrets placed. Returning to game.")
 
     def _auto_place_turrets(self):
-        """터렛을 쿨다운 UI 상단에 자동 배치"""
-        pending = self.game_data.get("pending_turrets", 0)
-        if pending <= 0:
-            return
-
-        # 쿨다운 UI 위치 (화면 하단 중앙)
-        base_x = self.screen_size[0] // 2
-        base_y = self.screen_size[1] - 60 - 100  # 쿨다운 UI 상단 (60 = UI 위치, 100 = 터렛 공간)
-
-        # 새 터렛 추가
-        for _ in range(pending):
-            self.turrets.append(Turret(pos=(0, 0)))  # 임시 위치
-
-        # 전체 터렛 개수에 따라 위치 재계산 (좌우 균형)
-        total_count = len(self.turrets)
-        turret_spacing = 100  # 터렛 간 간격
-
-        for i, turret in enumerate(self.turrets):
-            if total_count == 1:
-                # 1개: 중앙
-                pos_x = base_x
-            elif total_count == 2:
-                # 2개: 좌우 균형
-                pos_x = base_x - turret_spacing // 2 + i * turret_spacing
-            else:
-                # 3개 이상: 중앙 기준 좌우 균등 분포
-                half_width = (total_count - 1) * turret_spacing / 2
-                pos_x = base_x - half_width + i * turret_spacing
-
-            turret.pos.x = pos_x
-            turret.pos.y = base_y
-
-        self.game_data["pending_turrets"] = 0
-        self.sound_manager.play_sfx("turret_place")
-        print(f"INFO: {pending} turret(s) auto-placed. Total: {total_count}")
+        """터렛을 쿨다운 UI 상단에 자동 배치 (utils.auto_place_turrets 사용)"""
+        auto_place_turrets(self.turrets, self.game_data, self.screen_size,
+                          Turret, self.sound_manager)
 
     def _transition_background(self, new_wave: int):
         """배경 전환"""
@@ -1171,7 +1095,9 @@ class WaveMode(GameMode):
         current_episode = self.engine.shared_state.get('current_episode', 1)
 
         # completed_episodes 딕셔너리 가져오기
-        completed = self.engine.shared_state.get('completed_episodes', {})
+        completed = self.engine.shared_state.get('completed_episodes')
+        if completed is None or not isinstance(completed, dict):
+            completed = {}
 
         # ACT ID를 문자열로 변환 (JSON 호환)
         act_key = str(current_act)
@@ -1195,72 +1121,8 @@ class WaveMode(GameMode):
         print("INFO: Returning to Base Hub")
 
     def _complete_side_mission_and_return(self):
-        """사이드 미션 완료 처리 후 BaseHub로 귀환"""
-        import json
-        from pathlib import Path
-
-        # 현재 미션 정보
-        current_mission = self.engine.shared_state.get('current_mission')
-        mission_data = self.engine.shared_state.get('mission_data')
-
-        if current_mission:
-            # 미션 완료 처리
-            completed_missions = self.engine.shared_state.get('completed_missions', [])
-            if current_mission not in completed_missions:
-                completed_missions.append(current_mission)
-                self.engine.shared_state['completed_missions'] = completed_missions
-
-            # 보상 지급
-            if mission_data and 'rewards' in mission_data:
-                rewards = mission_data['rewards']
-                if hasattr(rewards, 'credits') and rewards.credits > 0:
-                    current_credits = self.engine.shared_state.get('global_score', 0)
-                    self.engine.shared_state['global_score'] = current_credits + rewards.credits
-
-            # 캠페인 진행 저장
-            self._save_side_mission_progress()
-
-            print(f"INFO: Side mission {current_mission} completed!")
-
-        # 미션 상태 초기화
-        self.engine.shared_state['current_mission'] = None
-        self.engine.shared_state['mission_data'] = None
-        self.engine.shared_state['is_side_mission'] = False
-        self.engine.shared_state['from_briefing'] = False
-
-        # BaseHub로 귀환
-        from modes.base_hub_mode import BaseHubMode
-        self.request_switch_mode(BaseHubMode)
-
-    def _save_side_mission_progress(self):
-        """사이드 미션 진행 상황 저장"""
-        import json
-        from pathlib import Path
-
-        completed_missions = self.engine.shared_state.get('completed_missions', [])
-        credits = self.engine.shared_state.get('global_score', 0)
-
-        # 현재 저장 데이터 로드
-        save_path = Path("saves/campaign_progress.json")
-        try:
-            if save_path.exists():
-                with open(save_path, 'r', encoding='utf-8') as f:
-                    save_data = json.load(f)
-            else:
-                save_data = {}
-
-            # 업데이트
-            save_data['completed_missions'] = completed_missions
-            save_data['credits'] = credits
-
-            # 저장
-            save_path.parent.mkdir(parents=True, exist_ok=True)
-            with open(save_path, 'w', encoding='utf-8') as f:
-                json.dump(save_data, f, indent=2)
-
-            print("INFO: Side mission progress saved")
-        except Exception as e:
-            print(f"WARNING: Failed to save side mission progress: {e}")
+        """사이드 미션 완료 처리 후 BaseHub로 귀환 (base_mode 공통 메서드 사용)"""
+        super()._complete_mission_and_return(mission_type="side")
 
     def on_exit(self):
         """모드 종료"""

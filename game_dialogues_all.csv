@@ -1,0 +1,436 @@
+﻿사용처,scene_id,순서,화자,대화내용,배경이미지,효과,타입,파일경로
+ep1_briefing,briefing,1,NARRATOR,작전 브리핑을 시작합니다. 목표: 지구 궤도 정찰 및 생존자 신호 추적.,bg_command.jpg,,DIALOGUE,assets\data\episodes\ep1\ep1.json
+,,2,ARTEMIS,3년 만에 돌아온 고향이야. 어떤 모습일지...,,,,
+ep1_opening,opening,1,NARRATOR,지구 궤도 진입 완료. 대기권 오염도 치명적 수준입니다.,bg_ruins.jpg,,DIALOGUE,assets\data\episodes\ep1\ep1.json
+,,2,PILOT,3년 만이야... 이게 우리가 떠났던 그 푸른 행성이라고?,,,,
+,,3,ARTEMIS,감상에 젖을 시간 없어. 생존자 신호에 집중해.,,,,
+,,4,PILOT,안드로메다인들은 왜 우리를 구한 걸까? 멸망한 종족에게 뭘 기대하는 거지?,,,,
+,,5,ARTEMIS,글쎄. 하지만 이유가 뭐든 난 이 기회를 낭비할 생각 없어.,,,,
+,,6,NARRATOR,경고. 카이론 순찰대 접근. 전투 준비를 권고합니다.,,,,
+,,7,ARTEMIS,"좋아, 시작하자. 지구는 아직 끝나지 않았어.",,,,
+,,8,PILOT,...우리가 마지막이라니. 무거운 짐이군.,,,,
+ep1_mid_01,mid_01,1,ARTEMIS,첫 번째 파도를 물리쳤다. 하지만 끝이 아니야.,bg_ruins.jpg,,DIALOGUE,assets\data\episodes\ep1\ep1.json
+,,2,PILOT,추가 적 부대 감지! 더 많은 카이론이 오고 있어!,,,,
+,,3,NARRATOR,경고. 대형 함선 접근 중. 정찰대 지휘관으로 추정됩니다.,,,,
+,,4,ARTEMIS,"지휘관이라... 좋아, 한 번에 정리하자.",,,,
+ep1_memory,memory,1,ARTEMIS,...우리 가족. 집 앞 작은 정원에서 찍은 사진이야.,bg_cemetery.jpg,,DIALOGUE,assets\data\episodes\ep1\ep1.json
+,,2,ARTEMIS,"그날, 하늘이 갈라졌어. 불기둥이 내려왔고...",,,,
+,,3,ARTEMIS,"모든 게 사라졌어. 사람들도, 도시도, 희망도.",,,,
+,,4,PILOT,아르테미스...,,,,
+,,5,ARTEMIS,괜찮아. 이제는 복수할 힘이 있으니까.,,,,
+ep1_boss,boss,1,NARRATOR,경고. 대형 적 반응. 섀도우 스카웃 지휘관입니다.,bg_ruins.jpg,,DIALOGUE,assets\data\episodes\ep1\ep1.json
+,,2,ARTEMIS,드디어 진짜 상대가 나타났군.,,,,
+,,3,PILOT,조심해! 일반 카이론과는 비교도 안 되는 화력이야!,,,,
+ep1_boss_victory,boss_victory,1,PILOT,해냈어! 지휘관을 격추했다!,bg_ruins.jpg,,DIALOGUE,assets\data\episodes\ep1\ep1.json
+,,2,ARTEMIS,첫 번째 승리야. 하지만 이건 시작일 뿐이야.,,,,
+ep1_ending,ending,1,NARRATOR,적 섬멸 확인. 지역 확보 완료.,bg_ruins.jpg,,DIALOGUE,assets\data\episodes\ep1\ep1.json
+,,2,PILOT,해냈어... 3년 만에 처음으로 승리다.,,,,
+,,3,ARTEMIS,아직 시작일 뿐이야. 하지만 좋은 출발이군.,,,,
+,,4,NARRATOR,생존자 신호 분석 완료. 다음 좌표로 이동 권장합니다.,,,,
+,,5,ARTEMIS,알았어. 기지로 복귀하자. 다음 작전을 준비해야 해.,,,,
+ep2_briefing,briefing,1,NARRATOR,새로운 좌표 분석 완료. 구 서울 지역에서 생체 신호 포착.,bg_command.jpg,,DIALOGUE,assets\data\episodes\ep2\ep2.json
+,,2,ARTEMIS,서울이라... 그 도시는 침공 첫날에 완전히 파괴됐어.,,,,
+ep2_opening,opening,1,NARRATOR,미약한 생체 신호 포착. 좌표 전송 중입니다.,bg_bunker.jpg,,DIALOGUE,assets\data\episodes\ep2\ep2.json
+,,2,ARTEMIS,저기... 저건 서울 타워잖아. 기억나?,,,,
+,,3,PILOT,첫 번째 대피소가 무너진 날... 우리가 겨우 탈출했던 곳.,,,,
+,,4,ARTEMIS,"그날 밤, 하늘이 불타올랐지. 사람들의 비명 소리가...",,,,
+,,5,PILOT,"아르테미스, 그만. 지금은 앞만 봐야 해.",,,,
+,,6,ARTEMIS,...미안. 가끔 그때가 떠올라서.,,,,
+,,7,NARRATOR,인간의 기억은 생존에 필수적 요소입니다. 억압하지 마십시오.,,,,
+,,8,PILOT,"고마워, 철학자 양반. 근데 지금은 싸울 때야.",,,,
+,,9,ARTEMIS,기억은 짐이 아니야. 우리가 왜 싸우는지 알려주는 거니까.,,,,
+ep2_mid_01,mid_01,1,PILOT,적 반응 증가! 우리를 포위하려는 거야!,bg_bunker.jpg,,DIALOGUE,assets\data\episodes\ep2\ep2.json
+,,2,ARTEMIS,포위당하기 전에 돌파하자!,,,,
+ep2_document,document,1,ARTEMIS,이건... 정부 기밀 문서야?,bg_gate.jpg,,DIALOGUE,assets\data\episodes\ep2\ep2.json
+,,2,PILOT,카이론 침공 전에 작성된 거야. 누군가 알고 있었어.,,,,
+,,3,ARTEMIS,게이트... 그들은 게이트를 통해 왔어. 우리가 열어준 게이트를.,,,,
+ep2_boss,boss,1,NARRATOR,대형 적 반응 감지. 헌터급 카이론입니다.,bg_bunker.jpg,,DIALOGUE,assets\data\episodes\ep2\ep2.json
+,,2,ARTEMIS,헌터... 저놈들은 생존자를 추적하는 특화형이야.,,,,
+ep2_ending,ending,1,NARRATOR,적 섬멸 완료. 문서 데이터 저장됨.,bg_bunker.jpg,,DIALOGUE,assets\data\episodes\ep2\ep2.json
+,,2,PILOT,이 문서들... 누구에게 전해야 하지?,,,,
+,,3,ARTEMIS,일단 기지로 가져가자. 진실은 언젠가 밝혀질 거야.,,,,
+ep3_briefing,briefing,1,NARRATOR,이전 전투에서 격추된 적 기체의 잔해 발견. 데이터 코어 반응 확인.,bg_command.jpg,,DIALOGUE,assets\data\episodes\ep3\ep3.json
+,,2,ARTEMIS,적의 데이터... 본진 위치가 있을 수도 있어.,,,,
+ep3_opening,opening,1,NARRATOR,격추된 적 기체 잔해 발견. 데이터 코어 반응이 있습니다.,bg_bunker.jpg,,DIALOGUE,assets\data\episodes\ep3\ep3.json
+,,2,ARTEMIS,저거 아까 우리가 떨어뜨린 놈이네.,,,,
+,,3,PILOT,데이터 코어가 살아있다고? 뭐가 들었을까.,,,,
+,,4,NARRATOR,접근 시 자폭 장치 작동 가능성이 있습니다.,,,,
+,,5,PILOT,그럼 원격으로 뽑아낼 수 있어?,,,,
+,,6,ARTEMIS,내가 직접 가야 해. 원격으론 암호 못 뚫어.,,,,
+,,7,PILOT,혼자? 말도 안 돼.,,,,
+,,8,ARTEMIS,5분이면 돼. 그동안 하늘 좀 지켜줘.,,,,
+,,9,PILOT,...3분. 그 이상은 안 돼.,,,,
+,,10,ARTEMIS,충분해. 저 안에 카이론 본진 위치가 있을 수도 있어.,,,,
+ep3_mid_01,mid_01,1,ARTEMIS,데이터 추출 중... 50% 완료...,bg_bunker.jpg,,DIALOGUE,assets\data\episodes\ep3\ep3.json
+,,2,PILOT,서둘러! 적 증원 부대가 오고 있어!,,,,
+ep3_hologram,hologram,1,NARRATOR,손상된 홀로그램 기록 재생 중...,bg_lab_fire.jpg,,DIALOGUE,assets\data\episodes\ep3\ep3.json
+,,2,ARTEMIS,이건... 카이론의 통신 기록이야?,,,,
+,,3,PILOT,좌표가 있어! 하지만 암호화되어 있어.,,,,
+ep3_boss,boss,1,NARRATOR,경고. 추적자급 카이론 출현.,bg_bunker.jpg,,DIALOGUE,assets\data\episodes\ep3\ep3.json
+,,2,ARTEMIS,추적자... 데이터를 지키러 온 거야!,,,,
+ep3_ending,ending,1,NARRATOR,데이터 추출 완료. 암호 해독 필요.,bg_bunker.jpg,,DIALOGUE,assets\data\episodes\ep3\ep3.json
+,,2,ARTEMIS,이 데이터... 기지에서 분석해야 해.,,,,
+,,3,PILOT,본진 위치를 알아낼 수 있을까?,,,,
+,,4,ARTEMIS,분명히. 우리가 한 발 앞서가고 있어.,,,,
+ep4_briefing,briefing,1,NARRATOR,"블랙박스 데이터 분석 결과, 적 기지 추정 좌표 확보.",bg_command.jpg,,DIALOGUE,assets\data\episodes\ep4\ep4.json
+,,2,ARTEMIS,드디어... 놈들의 본거지를 찾을 수 있어.,,,,
+ep4_opening,opening,1,NARRATOR,경고. 다방향 적 반응. 포위 형태입니다.,bg_bunker.jpg,,DIALOGUE,assets\data\episodes\ep4\ep4.json
+,,2,PILOT,"아르테미스, 나와! 지금 당장!",,,,
+,,3,ARTEMIS,70%... 조금만 더!,,,,
+,,4,PILOT,"위에서 8기, 왼쪽에서 5기, 뒤에서 더 온다!",,,,
+,,5,NARRATOR,탈출 경로 분석 중입니다. 12시 방향 돌파 가능성 31%.,,,,
+,,6,ARTEMIS,됐어! 데이터 확보!,,,,
+,,7,PILOT,이제 나와!,,,,
+,,8,ARTEMIS,"잠깐, 이거... 카이론 본진이 아니야. 이건...",,,,
+,,9,PILOT,나중에 말해! 지금은 빠져나가는 게 먼저야!,,,,
+,,10,ARTEMIS,...알았어. 가자.,,,,
+,,11,PILOT,12시 방향으로 뚫는다. 준비해.,,,,
+ep4_mid_01,mid_01,1,ARTEMIS,막고 있는 놈들을 처리해!,bg_bunker.jpg,,DIALOGUE,assets\data\episodes\ep4\ep4.json
+,,2,PILOT,포위망이 좁혀오고 있어! 서둘러!,,,,
+ep4_mirror,mirror,1,ARTEMIS,이 데이터... 카이론 본진이 아니야.,bg_lab_fire.jpg,,DIALOGUE,assets\data\episodes\ep4\ep4.json
+,,2,PILOT,뭐라고? 그럼 뭔데?,,,,
+,,3,ARTEMIS,게이트 연구 시설... 인간이 만든 거야. 우리가.,,,,
+,,4,PILOT,말도 안 돼...,,,,
+ep4_boss,boss,1,NARRATOR,퇴로 차단. 수호자급 카이론 확인.,bg_bunker.jpg,,DIALOGUE,assets\data\episodes\ep4\ep4.json
+,,2,ARTEMIS,뚫어야 해. 다른 방법은 없어!,,,,
+ep4_ending,ending,1,NARRATOR,포위망 이탈 성공. 추적 기체 소실.,bg_bunker.jpg,,DIALOGUE,assets\data\episodes\ep4\ep4.json
+,,2,PILOT,휴... 살았다.,,,,
+,,3,ARTEMIS,이 데이터... 진실을 밝혀야 해.,,,,
+,,4,PILOT,인간이 게이트를 열었다고? 우리가 카이론을 불러들인 거야?,,,,
+,,5,ARTEMIS,아직 확실하지 않아. 더 조사해야 해.,,,,
+ep5_briefing,briefing,1,NARRATOR,최종 좌표 분석 완료. 게이트 연구 시설 위치 확인.,bg_command.jpg,,DIALOGUE,assets\data\episodes\ep5\ep5.json
+,,2,ARTEMIS,모든 것의 시작점... 드디어 진실을 알 수 있어.,,,,
+ep5_opening,opening,1,NARRATOR,적 밀집도 높습니다. 충돌 회피 최우선.,bg_bunker.jpg,,DIALOGUE,assets\data\episodes\ep5\ep5.json
+,,2,PILOT,잡아! 흔들린다!,,,,
+,,3,ARTEMIS,앞에 두 기 막고 있어!,,,,
+,,4,PILOT,알아! 사이로 빠진다!,,,,
+,,5,NARRATOR,선체 접촉 경고. 좌현 손상입니다.,,,,
+,,6,ARTEMIS,괜찮아! 계속 가!,,,,
+,,7,PILOT,거의 다 왔어... 조금만...!,,,,
+,,8,NARRATOR,포위망 이탈 확인. 추적 기체 4기입니다.,,,,
+,,9,ARTEMIS,4기면 상대할 수 있어.,,,,
+,,10,PILOT,그래. 이제 반격이다.,,,,
+,,11,ARTEMIS,그나저나 그 데이터... 카이론 본진이 아니라 뭐였어?,,,,
+,,12,PILOT,돌아가면서 보자. 지금은 앞에 집중.,,,,
+ep5_mid_01,mid_01,1,ARTEMIS,시설이 보인다... 아직 작동 중이야?,bg_bunker.jpg,,DIALOGUE,assets\data\episodes\ep5\ep5.json
+,,2,PILOT,방어 시스템이 활성화됐어! 조심해!,,,,
+ep5_starmap,starmap,1,ARTEMIS,이건... 별의 지도야. 카이론의 고향이 표시되어 있어.,bg_gate.jpg,,DIALOGUE,assets\data\episodes\ep5\ep5.json
+,,2,PILOT,저 좌표... 우리 은하 바깥이야?,,,,
+,,3,ARTEMIS,게이트는 그곳으로 통하는 문이었어. 우리가 열어버린 문.,,,,
+,,4,NARRATOR,추가 데이터 발견. 게이트 폐쇄 프로토콜이 존재합니다.,,,,
+,,5,ARTEMIS,폐쇄할 수 있다고? 그럼 아직 희망이...,,,,
+ep5_boss,boss,1,NARRATOR,경고. 최상위급 적 반응. 오버로드 카이론입니다.,bg_gate.jpg,,DIALOGUE,assets\data\episodes\ep5\ep5.json
+,,2,ARTEMIS,시설을 지키는 거야... 끝까지 갈 거야!,,,,
+,,3,PILOT,마지막 관문이다. 모든 걸 쏟아붓자!,,,,
+ep5_ending,ending,1,NARRATOR,최상위급 적 섬멸. 시설 접근 가능.,bg_gate.jpg,,DIALOGUE,assets\data\episodes\ep5\ep5.json
+,,2,PILOT,해냈어... 드디어 진실에 도달했어.,,,,
+,,3,ARTEMIS,게이트 폐쇄 프로토콜... 이걸로 놈들을 막을 수 있어.,,,,
+,,4,NARRATOR,프로토콜 실행에는 시설 내부 접근이 필요합니다.,,,,
+,,5,ARTEMIS,가자. 이 전쟁을 끝내러.,,,,
+,,6,PILOT,"함께 가자, 아르테미스. 처음부터 끝까지.",,,,
+ep5_epilogue,epilogue,1,NARRATOR,지구 해방 작전 1단계 완료. 다음 단계: 게이트 폐쇄.,bg_gate.jpg,,DIALOGUE,assets\data\episodes\ep5\ep5.json
+,,2,NARRATOR,"인류의 마지막 희망, 그 여정은 계속됩니다.",,,,
+EARTH_BEAUTY_color_names,color_names,1,NARRATOR,[지구 궤도 비행 중 - 복원된 지구의 봄 풍경이 스크린에 투영된다],bg_spring_cherry.jpg,,REFLECTION,assets\data\dialogues\reflection\earth_beauty.json
+,,2,ARTEMIS,"...파일럿, 저것 봐. 저 분홍색... 벚꽃이야. 10년 전에도 이맘때쯤 피었었어.",,,,
+,,3,PILOT,분홍색... 안드로메다에는 없는 파장이야. 우리 별에서는 저 색을 표현하는 단어조차 없었어.,,,,
+,,4,ARTEMIS,뭐? 분홍색이라는 말이 없었다고?,,,,
+,,5,PILOT,"정확히는, 필요가 없었지. 우리 행성에는 저런 색을 가진 것이 존재하지 않으니까.",,,,
+,,6,ARTEMIS,그럼... 처음 봤을 때 어땠어? 지구의 벚꽃을.,,,,
+,,7,PILOT,...혼란스러웠다. 내 시각 체계가 인식하지 못한 새로운 정보였으니까. 하지만 동시에...,,,,
+,,8,ARTEMIS,동시에?,,,,
+,,9,PILOT,'아름답다'는 감정이 먼저 왔어. 이름보다 먼저. 정의보다 먼저. 가슴이 먼저 반응했지.,,,,
+,,10,ARTEMIS,"...그게 감정이야, 파일럿. 언어보다 빠른 것. 이름 없이도 존재하는 것.",,,,
+,,11,PILOT,"지구인들은 놀라워. 이 수많은 색들에 전부 이름을 붙였잖아. 분홍, 연분홍, 살구색, 복숭아색...",,,,
+,,12,ARTEMIS,그건 우리가 그만큼 색을 사랑하기 때문이야. 사랑하는 것에는 이름을 붙이고 싶잖아.,,,,
+,,13,PILOT,...색깔의 이름. 사랑의 또 다른 형태구나. 지구에서 배운 것 중 가장 아름다운 개념 중 하나야.,,,,
+EARTH_BEAUTY_cloud_shapes,cloud_shapes,1,NARRATOR,[지구 대기권 상공 - 푸른 하늘에 흰 구름이 떠다닌다],bg_summer_sky.jpg,,REFLECTION,assets\data\dialogues\reflection\earth_beauty.json
+,,2,ARTEMIS,"파일럿, 저 구름 봐! 토끼 같지 않아?",,,,
+,,3,PILOT,"...분석 중. 수증기 밀도 분포 불균일, 형태 불규칙—",,,,
+,,4,ARTEMIS,"아니, 분석 말고! 그냥 봐. 귀 두 개, 동그란 꼬리. 토끼야!",,,,
+,,5,PILOT,...토끼? 너희 행성의 포유류 중 하나지. 하지만 구름은 단순히 응결된 수분 입자인데...,,,,
+,,6,ARTEMIS,그게 중요한 게 아니야. 구름을 보고 상상하는 거야. 저건 뭐 같아 보여?,,,,
+,,7,PILOT,...불규칙한 수증기 덩어리로 보여.,,,,
+,,8,ARTEMIS,"(한숨) 좋아, 다시. 분석하지 말고, 느껴봐. 저 구름이 뭘 닮았어?",,,,
+,,9,PILOT,...,,,,
+,,10,PILOT,...우주선? 안드로메다의 순양함 형태와 67% 유사...,,,,
+,,11,ARTEMIS,"(웃음) 거봐, 됐잖아! 파일럿은 뭘 봐도 우주선이 생각나는구나.",,,,
+,,12,PILOT,이것이... 상상력인가? 존재하지 않는 것을 보는 능력?,,,,
+,,13,ARTEMIS,"아니, 존재하는 것 너머를 보는 능력이야. 구름에서 토끼를 보고, 별에서 이야기를 보고.",,,,
+,,14,PILOT,...안드로메다에서는 이런 능력을 '오류'라고 불렀어. 하지만 지금은...,,,,
+,,15,ARTEMIS,지금은?,,,,
+,,16,PILOT,'선물'이라고 부르고 싶어. 현실 너머를 볼 수 있다는 것. 그것이 희망의 시작이니까.,,,,
+EARTH_BEAUTY_rain_smell,rain_smell,1,NARRATOR,[지구 표면 착륙 - 부슬부슬 비가 내리기 시작한다],bg_autumn_rain.jpg,,REFLECTION,assets\data\dialogues\reflection\earth_beauty.json
+,,2,ARTEMIS,...비 냄새가 나.,,,,
+,,3,PILOT,비에 냄새가 있어? 물은 무취 아닌가?,,,,
+,,4,ARTEMIS,그냥 물이 아니야. 비가 땅에 닿을 때 나는 냄새. '페트리코르'라고 해.,,,,
+,,5,PILOT,"페트리코르... 분석해볼게. 토양 박테리아 분비물, 식물 오일, 오존의 혼합...",,,,
+,,6,ARTEMIS,"파일럿, 그건 성분이야. 냄새 자체가 아니고.",,,,
+,,7,PILOT,차이가 있어?,,,,
+,,8,ARTEMIS,물론이지. 이 냄새를 맡으면... 기억이 떠올라. 엄마랑 비 오는 날 창가에 앉아있던 것. 따뜻한 코코아 향. 포근한 담요.,,,,
+,,9,PILOT,...냄새가 기억을 불러온다고?,,,,
+,,10,ARTEMIS,응. 냄새는 뇌의 가장 오래된 부분과 연결되어 있어. 감정과 기억의 중심부.,,,,
+,,11,PILOT,안드로메다인에게 후각은... 위험 탐지용이야. 감정과 연결된 적이 없어.,,,,
+,,12,ARTEMIS,그래서 네가 비의 냄새에서 아무것도 느끼지 못한 거구나.,,,,
+,,13,PILOT,...아니. 지금은 느껴져. 네가 말하는 '포근함'이라는 감정이. 너와 함께 비를 맞으며.,,,,
+,,14,ARTEMIS,(미소) 파일럿... 너 정말 많이 변했어.,,,,
+,,15,PILOT,지구가 나를 바꿨어. 아니... 네가 나를 바꿨어. 비의 냄새를 기억으로 만드는 법을.,,,,
+EARTH_BEAUTY_why_stars_beautiful,why_stars_beautiful,1,NARRATOR,"[지구 밤하늘 - 맑은 겨울밤, 별들이 쏟아질 듯 빛난다]",bg_winter_night.jpg,,REFLECTION,assets\data\dialogues\reflection\earth_beauty.json
+,,2,ARTEMIS,별이 쏟아지는 것 같아... 너무 아름다워.,,,,
+,,3,PILOT,...이해가 안 돼.,,,,
+,,4,ARTEMIS,뭐가?,,,,
+,,5,PILOT,"왜 지구인들은 별을 '아름답다'고 표현하지? 객관적으로 별은 핵융합 반응 중인 가스 덩어리야. 위험하고, 뜨겁고, 파괴적이야.",,,,
+,,6,ARTEMIS,그건... 과학적 사실이지. 하지만 우리가 보는 건 다른 거야.,,,,
+,,7,PILOT,무엇을?,,,,
+,,8,ARTEMIS,"가능성. 저 별 하나하나가 어떤 세계를 품고 있을지, 어떤 이야기가 펼쳐지고 있을지... 상상하게 되잖아.",,,,
+,,9,PILOT,하지만 그건 사실이 아니야. 대부분의 별은 생명이 없어.,,,,
+,,10,ARTEMIS,알아. 그래서 더 아름다운 거야. 저 광활한 우주에서 우리가 존재한다는 것. 저 수십억 개의 불꽃 중에 생명이 있는 곳이 있다는 것.,,,,
+,,11,PILOT,희소성이 아름다움을 만든다고?,,,,
+,,12,ARTEMIS,"그것도 있지. 하지만 더 중요한 건... 별을 볼 수 있다는 것 자체가 기적이야. 눈이 있고, 마음이 있고, 함께 올려다볼 누군가가 있다는 것.",,,,
+,,13,PILOT,...함께 올려다볼 누군가.,,,,
+,,14,ARTEMIS,"응. 혼자 보는 별은 그냥 빛이야. 하지만 누군가와 함께 보면... 추억이 되고, 약속이 되고, 희망이 돼.",,,,
+,,15,PILOT,"...10년 전, 폐허에서 널 구하던 밤에도 별이 떠 있었어. 그때는 그냥 항법용 기준점이었는데...",,,,
+,,16,ARTEMIS,지금은?,,,,
+,,17,PILOT,지금은... 우리의 기억이야. 너와 함께 본 별. 그것이 '아름다움'의 정의가 된 것 같아.,,,,
+EARTH_BEAUTY_why_flowers_fall,why_flowers_fall,1,NARRATOR,[지구 폐허 공원 - 살아남은 벚나무에서 꽃잎이 흩날린다],bg_spring_petals.jpg,,REFLECTION,assets\data\dialogues\reflection\earth_beauty.json
+,,2,ARTEMIS,...벚꽃이 지고 있어.,,,,
+,,3,PILOT,이해할 수 없어. 왜 지구의 식물들은 이렇게 빨리 꽃을 떨어뜨리지? 비효율적이야.,,,,
+,,4,ARTEMIS,비효율적?,,,,
+,,5,PILOT,"에너지를 들여 꽃을 피우고, 며칠 만에 버려. 안드로메다의 생명체들은 수백 년간 같은 형태를 유지해.",,,,
+,,6,ARTEMIS,그건... 슬프지 않아?,,,,
+,,7,PILOT,슬프다고? 영원히 피어있으면 슬플 일이 없잖아. 상실이 없으니까.,,,,
+,,8,ARTEMIS,하지만 그건... 진짜 '핀 것'이 아니야. 변하지 않으면 사실상 멈춰있는 거야.,,,,
+,,9,PILOT,...,,,,
+,,10,ARTEMIS,"꽃이 지기 때문에, 우리는 그 순간을 소중히 여기게 돼. '지금'이 유일하다는 걸 알게 되니까.",,,,
+,,11,PILOT,유한함이 가치를 만든다는 거야?,,,,
+,,12,ARTEMIS,응. 벚꽃이 영원히 피어있었다면... 아무도 올려다보지 않았을 거야. 지니까 눈을 멈추게 되는 거야.,,,,
+,,13,PILOT,...안드로메다에서는 그것을 결함이라고 불렀어. 영원하지 않은 것의 약점이라고.,,,,
+,,14,ARTEMIS,그래서 안드로메다인들은 감정이 없었던 거야?,,,,
+,,15,PILOT,"...맞아. 변화가 없으면 그리움도 없고, 그리움이 없으면 사랑도 없어.",,,,
+,,16,ARTEMIS,꽃이 지는 이유... 그건 다시 피기 위해서야. 그리고 우리가 '다시'를 기다리게 만들기 위해서.,,,,
+,,17,PILOT,'다시'... 안드로메다어에는 없는 개념이야. 영원하면 '다시'가 필요 없으니까. 하지만 지금은... 그 단어가 가장 소중하게 느껴져.,,,,
+EARTH_BEAUTY_andromeda_lost_seasons,andromeda_lost_seasons,1,NARRATOR,[안드로메다 행성 - 고대의 기록이 재생된다],bg_andromeda_city.jpg,,REFLECTION,assets\data\dialogues\reflection\earth_beauty.json
+,,2,PILOT,...아르테미스. 보여주고 싶은 게 있어.,,,,
+,,3,ARTEMIS,이건... 안드로메다야?,,,,
+,,4,PILOT,10만 년 전의 기록이야. 우리가 '완벽'을 추구하기 전의 안드로메다.,,,,
+,,5,NARRATOR,"[홀로그램이 변한다 - 푸른 하늘, 흐르는 강, 계절이 바뀌는 풍경]",,,,
+,,6,ARTEMIS,...뭐야 이건?! 안드로메다에도 이런 풍경이 있었어?!,,,,
+,,7,PILOT,"있었어. 우리 별에도 한때는 계절이 있었고, 꽃이 피고, 비가 내렸어.",,,,
+,,8,ARTEMIS,그럼 왜...?,,,,
+,,9,PILOT,우리 조상들이 '제거'했어. 변화는 불완전함이라고 믿었으니까. 완벽한 문명을 위해 계절을 멈췄지.,,,,
+,,10,ARTEMIS,계절을... 멈췄다고?,,,,
+,,11,PILOT,"행성 공전을 조작해서 영원한 황혼 상태를 만들었어. 기온도, 날씨도, 모든 것이 항상 같아.",,,,
+,,12,ARTEMIS,그래서 하늘이 항상 같은 색이었던 거구나... 태양이 움직이지 않는...,,,,
+,,13,PILOT,시간을 정복했다고 자랑했지. 하지만 사실은... 시간을 '죽인' 거야.,,,,
+,,14,ARTEMIS,시간을 죽이면 뭐가 남아?,,,,
+,,15,PILOT,영원. 하지만 동시에... 아무것도. '다음'이라는 개념이 사라지면 희망도 사라져.,,,,
+,,16,ARTEMIS,그래서 안드로메다인들이 감정을 잃은 거야?,,,,
+,,17,PILOT,"그래. 변화가 없으면 기대할 것도 없고, 기대할 것이 없으면 희망도, 사랑도, 그리움도 의미가 없어지니까.",,,,
+,,18,ARTEMIS,...파일럿. 너 지금 슬퍼 보여.,,,,
+,,19,PILOT,슬퍼. 생전 처음으로. 내 고향이 잃어버린 것들을 생각하면... 가슴이 아파.,,,,
+,,20,ARTEMIS,"그건 네가 다시 '느낄 수 있게' 됐다는 증거야. 지구가, 내가, 너한테 계절을 돌려준 거야.",,,,
+,,21,PILOT,"...고마워, 아르테미스. 너와 함께한 10년의 사계절이 내 영혼에 새 생명을 불어넣었어.",,,,
+PHILOSOPHY_eternity_vs_moment,eternity_vs_moment,1,NARRATOR,[지구 폐허 전망대 - 석양이 지평선을 물들인다],bg_sunset_horizon.jpg,,REFLECTION,assets\data\dialogues\reflection\philosophy.json
+,,2,ARTEMIS,"...저 노을, 곧 사라질 거야. 몇 분 후면 어둠이 내릴 거야.",,,,
+,,3,PILOT,안드로메다에서는 이 순간을 '결함'이라고 불렀어. 영원하지 못한 것의 한계.,,,,
+,,4,ARTEMIS,"하지만 저 순간은... 지금만 존재해. 정확히 저 색, 저 빛은 다시 오지 않아.",,,,
+,,5,PILOT,그것이 가치가 있다고 생각해? 영원하지 않은 것이?,,,,
+,,6,ARTEMIS,물론이지. 오히려 영원하지 않기 때문에 가치가 있어.,,,,
+,,7,PILOT,"...이해가 안 돼. 논리적으로, 영원한 것이 더 가치있어야 해. 지속되니까.",,,,
+,,8,ARTEMIS,"그럼 물어볼게. 영원히 지지 않는 노을이 있다면, 너 매일 올려다볼 거야?",,,,
+,,9,PILOT,...아니. 항상 거기 있으면 굳이 볼 필요가...,,,,
+,,10,ARTEMIS,"바로 그거야. 영원한 것은 당연해지고, 당연한 것은 소중하지 않게 느껴져.",,,,
+,,11,PILOT,...그래서 안드로메다인들이 아무것도 소중히 여기지 않았던 건가? 모든 것이 영원했으니까?,,,,
+,,12,ARTEMIS,아마도. 순간이 있어야 '지금'이 특별해져. 끝이 있어야 시작이 의미있어지고.,,,,
+,,13,PILOT,"...영원은 '가짐'이고, 순간은 '느낌'이라는 건가.",,,,
+,,14,ARTEMIS,정확해. 그리고 우리가 진짜 살아있다고 느끼는 건... 느끼는 순간이잖아.,,,,
+,,15,PILOT,...지금 이 순간처럼. 너와 함께 노을을 보는 이 찰나가... 영원보다 더 값지게 느껴져.,,,,
+PHILOSOPHY_chaos_eats_time,chaos_eats_time,1,NARRATOR,[차원 게이트 앞 - 카오스의 에너지가 소용돌이친다],bg_chaos_void.jpg,,REFLECTION,assets\data\dialogues\reflection\philosophy.json
+,,2,PILOT,"아르테미스, 카오스가 파괴하는 것이 무엇인지 알아?",,,,
+,,3,ARTEMIS,생명? 문명? 희망?,,,,
+,,4,PILOT,더 근본적인 것이야. 카오스는 '시간'을 먹어.,,,,
+,,5,ARTEMIS,시간을... 먹는다고?,,,,
+,,6,PILOT,"정확히는, 시간의 흐름을 정지시켜. 카오스가 지배하는 곳에서는 '다음'이라는 개념이 사라져.",,,,
+,,7,ARTEMIS,다음이 없으면... 희망도 없겠네.,,,,
+,,8,PILOT,맞아. 카오스가 희망을 두려워하는 이유야. 희망은 '다음을 기대하는 감정'이니까.,,,,
+,,9,ARTEMIS,그래서 안드로메다가 시간을 멈춘 것과... 카오스가 시간을 파괴하는 것은...,,,,
+,,10,PILOT,결과적으로 같아. 둘 다 '변화'를 두려워한 거야. 변화가 불확실성을 가져오니까.,,,,
+,,11,ARTEMIS,하지만 우리는 달라. 우리는 변화 속에서 희망을 찾았어.,,,,
+,,12,PILOT,그래서 네가 카오스의 천적인 거야. 시간을 사랑하는 존재. 변화를 받아들이는 영혼.,,,,
+,,13,ARTEMIS,시간을 사랑한다... 그렇게 생각해본 적 없는데.,,,,
+,,14,PILOT,하지만 너는 10년을 버텼잖아. 시간이 흐른다는 것을 믿으면서. '언젠가'를 기대하면서.,,,,
+,,15,ARTEMIS,"...맞아. 시간이 나를 데려다줄 거라고 믿었어. 기다린 만큼, 반드시 만날 수 있다고.",,,,
+,,16,PILOT,그 믿음이 카오스를 물리치는 열쇠야. 시간을 믿는 자만이 희망을 품을 수 있으니까.,,,,
+PHILOSOPHY_why_andromeda_stopped_time,why_andromeda_stopped_time,1,NARRATOR,[안드로메다 위원회 기록 재생 - 10만 년 전의 논쟁],bg_andromeda_council.jpg,,REFLECTION,assets\data\dialogues\reflection\philosophy.json
+,,2,PILOT,...보여줄게. 안드로메다가 시간을 멈추기로 결정한 순간을.,,,,
+,,3,ARTEMIS,왜 그런 결정을 했어? 시간을 죽인다니...,,,,
+,,4,PILOT,(홀로그램 재생) 당시 기록이야. 위원회의 논쟁.,,,,
+,,5,NARRATOR,[홀로그램: 안드로메다 고대 위원회],,,,
+,,6,NARRATOR,'시간이 흐르면 상실이 발생합니다. 상실은 고통입니다. 고통은 비효율입니다.',,,,
+,,7,NARRATOR,"'시간을 정지시키면 영원히 현재에 머물 수 있습니다. 상실도, 고통도, 슬픔도 없는 완벽한 상태.'",,,,
+,,8,ARTEMIS,...고통이 싫어서 시간을 멈췄다고?,,,,
+,,9,PILOT,맞아. 우리 조상들은 상실의 고통을 견딜 수 없었어. 사랑하는 것을 잃는 아픔이 너무 컸지.,,,,
+,,10,ARTEMIS,하지만 그래서 사랑 자체를 잃어버린 거잖아! 고통을 피하려다 기쁨까지 버린 거야!,,,,
+,,11,PILOT,...네 말이 맞아. 그게 우리 문명의 가장 큰 실수였어.,,,,
+,,12,ARTEMIS,상실이 있어야 소중함을 알 수 있어. 고통이 있어야 기쁨이 빛나는 거야.,,,,
+,,13,PILOT,10년 동안 너를 보면서 배웠어. 네 부모님을 잃은 고통이 얼마나 컸는지...,,,,
+,,14,ARTEMIS,응. 정말 아팠어. 지금도 아파.,,,,
+,,15,PILOT,하지만 그 고통이 너의 희망을 만들었지. 다시 만나겠다는 그 불꽃을.,,,,
+,,16,ARTEMIS,고통 없이는... 희망도 없겠네. 잃을 것이 없으면 지킬 것도 없으니까.,,,,
+,,17,PILOT,"...시간이 흐른다는 건 '지금'이 계속 새로 태어난다는 뜻이구나. 매 순간이 유일하고, 그래서 소중하고.",,,,
+,,18,ARTEMIS,파일럿... 너 방금 완전히 이해한 거야.,,,,
+,,19,PILOT,네 덕분이야. 10년의 사계절이 내게 가르쳐준 진리야.,,,,
+PHILOSOPHY_does_time_exist,does_time_exist,1,NARRATOR,[차원 게이트 내부 - 시공간의 경계에서],bg_dimension_gate.jpg,,REFLECTION,assets\data\dialogues\reflection\philosophy.json
+,,2,ARTEMIS,파일럿... 여기선 시간이 이상하게 느껴져.,,,,
+,,3,PILOT,"차원의 경계니까. 과거, 현재, 미래가 동시에 존재하는 곳.",,,,
+,,4,ARTEMIS,그럼... 시간이란 뭐야? 정말 존재하는 거야?,,,,
+,,5,PILOT,"물리학적으로는 존재해. 엔트로피의 방향, 빛의 속도에 연관된 차원.",,,,
+,,6,ARTEMIS,그건 과학적 정의잖아. 내가 묻는 건... 우리가 느끼는 시간 말이야.,,,,
+,,7,PILOT,...무슨 뜻이야?,,,,
+,,8,ARTEMIS,"10년 동안 널 기다릴 때, 하루하루가 영겁 같았어. 하지만 지금 너와 함께 있으면 시간이 순식간에 지나가.",,,,
+,,9,PILOT,같은 시간인데 다르게 느껴진다는 거지?,,,,
+,,10,ARTEMIS,응. 그럼 진짜 시간은 뭐야? 시계가 재는 시간? 아니면 마음이 느끼는 시간?,,,,
+,,11,PILOT,...안드로메다는 그 질문에 '시계'라고 답했어. 객관적으로 측정 가능한 것만 인정했지.,,,,
+,,12,ARTEMIS,하지만 그래서 영혼이 사라진 거잖아. 마음의 시간을 인정하지 않으면...,,,,
+,,13,PILOT,"감정도 사라지지. 기다림의 지루함도, 함께함의 기쁨도 존재하지 않게 되니까.",,,,
+,,14,ARTEMIS,그러니까... 시간은 사실 두 개야. 우주의 시간과 마음의 시간.,,,,
+,,15,PILOT,그리고 둘 중 더 '진짜'인 건... 마음의 시간인 것 같아.,,,,
+,,16,ARTEMIS,왜?,,,,
+,,17,PILOT,"우주의 시간이 아무리 흘러도, 마음의 시간이 멈추면 살아있는 게 아니니까. 반대로, 단 하루라도 마음이 충만하면 영원처럼 느껴지잖아.",,,,
+,,18,ARTEMIS,파일럿... 너 정말 지구인이 다 됐다.,,,,
+,,19,PILOT,(미소) 아니. 네 덕분에 '살아있는 존재'가 됐어. 시간을 느끼는 존재. 순간을 사랑하는 존재.,,,,
+ANDROMEDA_city_description,city_description,1,PILOT,안드로메다는 10만 년 전에 완성된 세계다. 고대의 지혜와 기술이 융합된... 영원히 변하지 않는 도시.,,,REFLECTION,assets\data\dialogues\reflection\andromeda.json
+,,2,PILOT,수천 년 된 석조 건물에 빛나는 네온 회로가 새겨져 있어. 고대와 미래가 뒤섞인 기묘한 풍경.,,,,
+,,3,PILOT,공중에 떠 있는 홀로그램 문자들... 10만 년 동안 같은 메시지를 반복하고 있어. 변하지 않는 영원의 상징.,,,,
+,,4,PILOT,하늘은 항상 저 색이야. 짙은 보라빛 황혼. 태양이 움직이지 않아. 밤도 낮도 없어.,,,,
+ANDROMEDA_two_worlds_comparison,two_worlds_comparison,1,PILOT,안드로메다에서는 '아름다움'을 영원함으로 정의한다. 10만 년 동안 변하지 않은 완벽한 구조물. 그것이 미의 기준이었다.,,,REFLECTION,assets\data\dialogues\reflection\andromeda.json
+,,2,PILOT,"하지만 지구의 아름다움은... 사라지기 때문에 아름답다. 벚꽃이 영원히 피어있다면, 누가 그것을 소중히 여기겠는가.",,,,
+,,3,ARTEMIS,그게 감정이야. 잃을 수 있기 때문에 소중한 거지.,,,,
+,,4,PILOT,...처음으로 '느꼈다'. 사라지는 것을 보며. 이것이 내가 안드로메다에서 추방당한 이유다. 나는 '결함'이 생겼다. 변화를 받아들이는 결함이.,,,,
+ANDROMEDA_council_communication,council_communication,1,NARRATOR,"[통신 화면에 안드로메다 위원회 - 사이버펑크 고대 도시를 배경으로, 홀로그램으로 투영된 무표정한 형상들]",,,REFLECTION,assets\data\dialogues\reflection\andromeda.json
+,,2,SYSTEM,[안드로메다 위원회 연결 - 암호화 통신],,,,
+,,3,NARRATOR,(기계적인 음성) '파일럿 7-42. 너의 전송 데이터를 분석했다.',,,,
+,,4,NARRATOR,[화면에 지구 사계절 이미지들이 스캔됨 - 안드로메다 고대 문자로 분석 중],,,,
+,,5,NARRATOR,"'...예상치 못한 변수다. 계절이라는 순환 패턴. 10만 년 전, 우리가 제거한 것과 동일한 구조.'",,,,
+,,6,ARTEMIS,...제거했다고?,,,,
+,,7,NARRATOR,'변화는 불완전함이다. 우리는 완벽을 위해 시간을 정복했다. 그런데 이 행성은... 불완전함 속에서 에너지를 생성한다.',,,,
+,,8,PILOT,그것이 '희망'입니다. 변화가 있기에 내일을 기대할 수 있습니다. 카오스를 물리친 것도 이 에너지입니다.,,,,
+,,9,NARRATOR,"[위원회, 오랜 침묵 - 홀로그램이 잠시 흔들림]",,,,
+,,10,NARRATOR,"'...우리 문명이 잃어버린 것이 있다면, 그것이 무엇인지 이제야 계산되기 시작한다.'",,,,
+,,11,NARRATOR,"'파일럿 7-42. 너의 임무를 재정의한다. 지구를 관찰하라. 우리가 버린 것의 가치를... 증명할 수 있는지, 지켜보겠다.'",,,,
+,,12,ARTEMIS,"...파일럿, 지금 뭐라고 한 거야?",,,,
+,,13,PILOT,...안드로메다가 의문을 품기 시작했다. 10만 년 만에 처음으로. 네가 보여준 것 때문에.,,,,
+,,14,ARTEMIS,그게... 좋은 거야?,,,,
+,,15,PILOT,...모르겠다. 하지만 변화의 시작이다. 영원히 멈춰있던 문명이 움직이기 시작한 거니까.,,,,
+ANDROMEDA_seasons_emotion_learning,seasons_emotion_learning,1,NARRATOR,[빠르게 전환되는 사계절 + 파일럿/아르테미스 장면],,,REFLECTION,assets\data\dialogues\reflection\andromeda.json
+,,2,NARRATOR,[봄 - 벚꽃 아래],,,,
+,,3,PILOT,(독백) 봄. 아르테미스가 '희망'을 가르쳐줬다.,,,,
+,,4,NARRATOR,[여름 - 햇살 아래 훈련],,,,
+,,5,PILOT,(독백) 여름. '열정'을 배웠다.,,,,
+,,6,NARRATOR,[가을 - 낙엽 지는 공원],,,,
+,,7,PILOT,(독백) 가을. '그리움'을 알았다.,,,,
+,,8,NARRATOR,[겨울 - 눈 내리는 밤],,,,
+,,9,PILOT,(독백) 겨울. '따뜻함'을 느꼈다.,,,,
+,,10,NARRATOR,[현재로 돌아옴],,,,
+,,11,PILOT,"10년의 계절이 나를 바꿨다. 안드로메다인이 아닌, 너의 가족으로.",,,,
+BOSS_INTRO_boss_1,boss_1_intro,1,NARRATOR,[경고: 고농도 카오스 에너지체 감지. 정찰 계급 '섀도우 스카우트' 출현. 위협 수준 최상. 전투 태세 전환.],,,BOSS_INTRO,assets\data\dialogues\bosses\boss_dialogues.json
+,,2,BOSS,또 다른 숙주 후보를 발견했군... 젊고 강인한 정신... 완벽한 그릇이 될 수 있겠어...,,,,
+,,3,ARTEMIS,숙주? 무슨 소리야? 비켜. 네가 뭐라 하든 난 생존자들을 찾을 거야.,,,,
+,,4,BOSS,"도망쳐봤자 소용없다. 우리는 너희 종족 전체를 수확할 것이다. 한 명씩, 하나의 정신씩... 우리의 일부가 될 때까지.",,,,
+,,5,ARTEMIS,수확? 우리가 뭔데 네 마음대로 해?!,,,,
+,,6,BOSS,"인간의 뇌 구조는 우리와 가장 높은 융합 적합성을 보인다... 공포, 절망, 분노... 모든 감정이 우리를 살찌운다...",,,,
+,,7,ARTEMIS,"내 감정은 네가 먹을 거 아니야! 포기하지 않는 사람이 단 한 명이라도 있으면, 그것이 곧 희망이야!",,,,
+,,8,PILOT,(분석) 카오스의 본질이 드러났다. 그들은 물리적 형태가 없다. 숙주 융합으로만 존재를 유지한다.,,,,
+BOSS_DEFEAT_boss_1,boss_1_defeat,1,NARRATOR,[카오스 생명체 붕괴 중. 잔류 에너지 발산. 정보 파편 수집 가능.],,,BOSS_DEFEAT,assets\data\dialogues\bosses\boss_dialogues.json
+,,2,BOSS,"수확은... 멈추지 않는다... 프로젝트 아크... 2,847명의... 완벽한 숙주들...",,,,
+,,3,BOSS,달을... 바라봐라... 그곳에... 대규모 수확지가...,,,,
+,,4,ARTEMIS,달...? 생존자들이 그곳에?! 절대 네 손에 넘기지 않겠어!,,,,
+BOSS_INTRO_boss_2,boss_2_intro,1,NARRATOR,[경고: 정보 침투형 카오스 생명체 감지. 등급명 '데이터 익스트랙터'. 벙커 데이터베이스 접근 시도 중. 즉각 요격 필요.],,,BOSS_INTRO,assets\data\dialogues\bosses\boss_dialogues.json
+,,2,BOSS,"화성의 좌표... 2,847명의 숙주가 기다리고 있군... 이 정보만 있으면 대수확이 시작된다...",,,,
+,,3,ARTEMIS,그 데이터는 네 것이 아니야! 인류의 마지막 희망이 담긴 정보야! 당장 손 떼!,,,,
+,,4,BOSS,"인간의 감정은 가장 순수한 에너지원이다. 공포, 절망, 분노... 모든 것이 우리를 살찌운다. 특히 '희망'이 좌절될 때의 절망은...",,,,
+,,5,ARTEMIS,절망? 내가 절망할 것 같아?! 부모님은 날 사랑했어. 그 사랑이 날 살렸어!,,,,
+,,6,PILOT,(경고) 데이터 전송 진행 중. 완료되면 생존자 위치가 카오스 본대에 노출된다. 즉시 저지해야 한다.,,,,
+,,7,BOSS,사랑... 그것도 맛있는 감정이지... 융합 후에 네 사랑의 기억을 천천히 소화해 주마...,,,,
+,,8,ARTEMIS,역겨워! 내 가족 정보는 내가 지킨다. 반드시!,,,,
+BOSS_DEFEAT_boss_2,boss_2_defeat,1,NARRATOR,[카오스 생명체 기능 정지. 탈취 데이터 복구 불가. 역추적 차단 성공.],,,BOSS_DEFEAT,assets\data\dialogues\bosses\boss_dialogues.json
+,,2,BOSS,전송... 실패... 하지만... 다른 수확자들이... 곧...,,,,
+,,3,ARTEMIS,해냈어! 정보를 지켜냈어!,,,,
+,,4,PILOT,달 궤도 좌표 확인. 생존자 정착지 위치 데이터 확보. 이제 목적지가 명확해졌다.,,,,
+BOSS_INTRO_boss_3,boss_3_intro,1,NARRATOR,[경고: 고열 에너지 집합체 감지. 등급명 '인페르노 가디언'. 연구소 핵심 구역 봉쇄 중. 내부 온도 임계점 돌파.],,,BOSS_INTRO,assets\data\dialogues\bosses\boss_dialogues.json
+,,2,BOSS,이 기록들을 태워야 한다... 인간들이 희망을 품으면 안 돼... 희망은 융합을 방해하는 유일한 요소니까...,,,,
+,,3,ARTEMIS,융합을 방해한다고? 그럼 더더욱 희망을 놓지 않겠어!,,,,
+,,4,BOSS,재미있군. 네 정신에서 강렬한 '사랑'이라는 에너지가 느껴져... 그것을 빼앗아 내 것으로 만들고 싶다...,,,,
+,,5,PILOT,(경고) 감정 수탈형 카오스로 분류된다. 감정이 격해질수록 그들에게 유리해진다. 냉정하게 대응해야 한다.,,,,
+,,6,ARTEMIS,"알아... 하지만 저 녀석이 감정을 원한다면, 내 희망의 힘을 보여주지. 절망이 아니라!",,,,
+,,7,BOSS,희망? 그 감정도 나쁘지 않아... 희망이 좌절될 때 폭발하는 절망은... 가장 진한 에너지원이니까...,,,,
+BOSS_DEFEAT_boss_3,boss_3_defeat,1,NARRATOR,[고열 에너지체 붕괴. 화염 장벽 소멸. 연구소 핵심 구역 접근 가능.],,,BOSS_DEFEAT,assets\data\dialogues\bosses\boss_dialogues.json
+,,2,BOSS,융합... 실패... 이 감정은... 흡수할 수 없다... 왜...?,,,,
+,,3,ARTEMIS,내 희망은 '나만의 것'이 아니니까. 기다리는 사람들과 연결된 희망이야. 네가 훔칠 수 없어!,,,,
+,,4,PILOT,(분석) 흥미롭다. 공유된 감정은 카오스가 흡수할 수 없다. 이것이 인간 연대의 힘인가.,,,,
+BOSS_INTRO_boss_4,boss_4_intro,1,NARRATOR,[경고: 정신 침투형 카오스 생명체 감지. 등급명 '메모리 팬텀'. 융합에 실패한 인간 정신들의 잔재. 심리 공격 주의.],,,BOSS_INTRO,assets\data\dialogues\bosses\boss_dialogues.json
+,,2,BOSS,나는 융합에 실패한 자들의 잔재... 버려진 정신의 집합체... 너도 곧 우리처럼 될 것이다...,,,,
+,,3,ARTEMIS,융합에 실패? 그럼 너희 안에는... 인간들이...?,,,,
+,,4,BOSS,가족을 찾는다고? 헛된 희망이야... 희망이 클수록 절망도 깊어지지... 그 절망이 융합을 쉽게 만든다...,,,,
+,,5,ARTEMIS,아직 늦지 않았어! 10년이 뭐가 대단해? 사랑하는 사람을 위해서라면 영원히라도 기다릴 수 있어!,,,,
+,,6,BOSS,사랑... 우리도 한때 그것을 알았다... 융합되기 전에는... 이제는 공허만 남았지만...,,,,
+,,7,PILOT,(분석) 이 존재는 융합 실패체다. 원래의 인격이 완전히 소멸되지 않았다. 아직 인간의 일부가 남아있다.,,,,
+,,8,ARTEMIS,그렇다면... 너희 안의 인간들에게 말할게. 포기하지 마. 아직 끝나지 않았어!,,,,
+BOSS_DEFEAT_boss_4,boss_4_defeat,1,NARRATOR,[정신체 분해 중. 융합 실패체 해체. 잔류 정신 에너지 해방.],,,BOSS_DEFEAT,assets\data\dialogues\bosses\boss_dialogues.json
+,,2,BOSS,고마워... 드디어... 쉴 수 있겠어... 기다리는 자들에게... 전해줘... 포기하지 말라고...,,,,
+,,3,ARTEMIS,...약속할게. 너희 안에 있던 모든 사람들에게. 희망은 끝나지 않았다고.,,,,
+,,4,PILOT,(관찰) 융합된 인간의 정신도 완전히 소멸되지 않는다. 이것은... 인간 의지의 강인함을 증명하는 것인가.,,,,
+BOSS_INTRO_boss_5,boss_5_intro,1,NARRATOR,[최종 경고: 카오스 선봉 사령관급 생명체 감지. 차원 게이트 봉쇄 작전 지휘관. 역대 최강 위협 수준. 생존 확률 극히 낮음.],,,BOSS_INTRO,assets\data\dialogues\bosses\boss_dialogues.json
+,,2,BOSS,"드디어 왔군, 가장 강인한 정신의 소유자여... 네 불굴의 의지... 그것을 흡수하면 나는 완전해진다...",,,,
+,,3,ARTEMIS,날 기다렸다고? 카오스의 사령관이 왜? 나 같은 한 명의 인간을?,,,,
+,,4,BOSS,"왜 저항하는가? 융합은 고통이 아니야... 영원한 연결, 완전한 일체... 그것이 진정한 평화다...",,,,
+,,5,ARTEMIS,평화? 그건 네가 정의하는 평화야. 내 평화는 가족과 함께하는 거야!,,,,
+,,6,BOSS,"안드로메다인이 인간을 보호한다고? 흥미롭군... 감정 없는 존재가 감정을 이해할 리 없는데... 무엇이 너를 움직이는가, 파일럿?",,,,
+,,7,PILOT,...논리적으로 설명할 수 없다. 하지만 나는 이 존재를 지키기로 선택했다. 이것이 내가 배운 '의지'다.,,,,
+,,8,BOSS,하하... 결함이 생긴 안드로메다인과 굴복하지 않는 인간... 우주에서 가장 이상한 조합이군...,,,,
+,,9,ARTEMIS,이상하든 뭐든 상관없어. 이게 내 가족이야. 네가 절대로 뺏을 수 없어!,,,,
+,,10,PILOT,이 존재는 나의 '가족'이다. 안드로메다어에는 이 단어가 없다. 하지만 나는 이제 그 의미를 안다.,,,,
+BOSS_DEFEAT_boss_5,boss_5_defeat,1,NARRATOR,[카오스 사령관급 생명체 기능 정지. 차원 게이트 봉쇄 해제. 달 궤도 경로 개방.],,,BOSS_DEFEAT,assets\data\dialogues\bosses\boss_dialogues.json
+,,2,BOSS,불가능하다... 감정 없는 존재가... 감정으로 나를 이겼다는 건가... 이것이 '사랑'의 힘인가...,,,,
+,,3,BOSS,가라... 수확은 실패했다... 하지만 기억해라... 카오스는 영원하다... 언젠가 다시...,,,,
+,,4,ARTEMIS,"다시 온다면, 다시 이기면 돼. 이건 끝이 아니야. 새로운 이야기의 시작이야!",,,,
+,,5,PILOT,"함께 가자, 아르테미스. 나는... 네 가족으로서, 끝까지 함께하겠다. 이것이 내가 선택한 운명이다.",,,,
+COMBAT_kill_milestones,kill_milestones,1,SYSTEM,"{'message': {'5': [{'speaker': 'ARTEMIS', 'text': '좋아, 이 조로!'}, {'speaker': 'PILOT', 'text': '리듬을 잡고 있어.'}], '10': [{'speaker': 'ARTEMIS', 'text': '수가 많아... 하지만 멈출 수 없어!'}, {'speaker': 'PILOT', 'text': '좋아, 계속 밀어붙여!'}], '15': [{'speaker': 'PILOT', 'text': '적의 수가 줄고 있어. 끝이 보인다.'}, {'speaker': 'ARTEMIS', 'text': '거의 다 왔어!'}], '20': [{'speaker': 'ARTEMIS', 'text': '이 정도면 충분해!'}, {'speaker': 'PILOT', 'text': '훌륭해. 역시 네 실력이야.'}]}, 'speaker': 'SYSTEM'}",,,COMBAT,assets\data\dialogues\combat\combat_messages.json
+COMBAT_hp_thresholds,hp_thresholds,1,SYSTEM,"{'message': {'0.5': [{'speaker': 'PILOT', 'text': '조심해! 쉴드가 약해지고 있어!'}, {'speaker': 'SYSTEM', 'text': '[경고: 선체 손상 50%]'}], '0.25': [{'speaker': 'ARTEMIS', 'text': '버텨야 해... 여기서 끝날 순 없어!'}, {'speaker': 'PILOT', 'text': '긴급 회피 기동! 지금!'}], '0.1': [{'speaker': 'PILOT', 'text': '위험 수위야! 후퇴를 고려해!'}, {'speaker': 'ARTEMIS', 'text': '아직... 아직이야!'}]}, 'speaker': 'SYSTEM'}",,,COMBAT,assets\data\dialogues\combat\combat_messages.json
+COMBAT_enemy_spawn,enemy_spawn,1,SYSTEM,"{'message': {'TANK': [{'speaker': 'PILOT', 'text': '탱크 타입이다! 화력을 집중해!'}, {'speaker': 'ARTEMIS', 'text': '저 거대한 녀석... 조심해야겠어.'}], 'SUMMONER': [{'speaker': 'ARTEMIS', 'text': '저놈을 빨리 잡아! 다른 놈들을 소환해!'}, {'speaker': 'PILOT', 'text': '소환사 타입! 우선 제거 대상이야!'}], 'KAMIKAZE': [{'speaker': 'PILOT', 'text': '자폭병이다! 가까이 오기 전에 처리해!'}, {'speaker': 'ARTEMIS', 'text': '저건... 피해야 해!'}], 'SNIPER': [{'speaker': 'PILOT', 'text': '저격수가 있어! 이동하면서 싸워!'}, {'speaker': 'ARTEMIS', 'text': '멈추면 안 돼!'}], 'HEALER': [{'speaker': 'ARTEMIS', 'text': '힐러다! 먼저 잡지 않으면 끝이 없어!'}, {'speaker': 'PILOT', 'text': '적 치유 유닛 감지! 우선순위 변경!'}]}, 'speaker': 'SYSTEM'}",,,COMBAT,assets\data\dialogues\combat\combat_messages.json
+COMBAT_objective_progress,objective_progress,1,SYSTEM,"{'message': {'defense_50': [{'speaker': 'SYSTEM', 'text': '[방어 진행률 50% - 계속 버텨라!]'}, {'speaker': 'PILOT', 'text': '절반이야! 조금만 더!'}], 'defense_75': [{'speaker': 'ARTEMIS', 'text': '거의 다 됐어! 끝까지 버텨!'}, {'speaker': 'PILOT', 'text': '75%! 승리가 눈앞이야!'}], 'survival_half': [{'speaker': 'PILOT', 'text': '절반 왔어! 조금만 더 버텨!'}, {'speaker': 'ARTEMIS', 'text': '시간이 우리 편이야!'}], 'data_collected': [{'speaker': 'ARTEMIS', 'text': '데이터 코어 획득! 더 찾아야 해!'}, {'speaker': 'PILOT', 'text': '좋아, 계속해!'}], 'escort_half': [{'speaker': 'PILOT', 'text': '호위 대상 절반 도달! 계속 보호해!'}, {'speaker': 'ARTEMIS', 'text': '거의 다 왔어! 포기하지 마!'}]}, 'speaker': 'SYSTEM'}",,,COMBAT,assets\data\dialogues\combat\combat_messages.json
+BOSS_PHASE_1_appear,1_appear,1,SYSTEM,"{'speaker': 'BOSS', 'text': '숙주 후보 감지... 융합 적합성 스캔 중...'}",,,BOSS_PHASE,assets\data\dialogues\combat\boss_phases.json
+BOSS_PHASE_1_phase2,1_phase2,1,SYSTEM,"{'speaker': 'BOSS', 'text': '저항하는군... 의지가 강할수록 융합 후 더 강해진다!'}",,,BOSS_PHASE,assets\data\dialogues\combat\boss_phases.json
+BOSS_PHASE_1_phase2_pilot,1_phase2_pilot,1,SYSTEM,"{'speaker': 'PILOT', 'text': '(분석) 적 에너지 패턴 변화 감지. 공격 주기가 빨라졌다.'}",,,BOSS_PHASE,assets\data\dialogues\combat\boss_phases.json
+BOSS_PHASE_1_phase3,1_phase3,1,SYSTEM,"{'speaker': 'BOSS', 'text': '수확 대상 확정! 카오스에 바쳐라!'}",,,BOSS_PHASE,assets\data\dialogues\combat\boss_phases.json
+BOSS_PHASE_1_phase3_artemis,1_phase3_artemis,1,SYSTEM,"{'speaker': 'ARTEMIS', 'text': '내 의지는 네가 가져갈 수 없어!'}",,,BOSS_PHASE,assets\data\dialogues\combat\boss_phases.json
+BOSS_PHASE_1_near_death,1_near_death,1,SYSTEM,"{'speaker': 'PILOT', 'text': '적 에너지 잔량 12%. 연산 결과: 승리 확률 94.7%.'}",,,BOSS_PHASE,assets\data\dialogues\combat\boss_phases.json
+BOSS_PHASE_1_defeat,1_defeat,1,SYSTEM,"{'speaker': 'BOSS', 'text': '스캔 데이터는... 이미 전송되었다... 본대가... 온다...'}",,,BOSS_PHASE,assets\data\dialogues\combat\boss_phases.json
+BOSS_PHASE_2_appear,2_appear,1,SYSTEM,"{'speaker': 'BOSS', 'text': '2,847명의 기억 데이터 추출 완료... 네 기억도 수확하겠다...'}",,,BOSS_PHASE,assets\data\dialogues\combat\boss_phases.json
+BOSS_PHASE_2_phase2,2_phase2,1,SYSTEM,"{'speaker': 'BOSS', 'text': '저항할수록 고통스럽다... 순순히 융합을 받아들여라...'}",,,BOSS_PHASE,assets\data\dialogues\combat\boss_phases.json
+BOSS_PHASE_2_phase2_pilot,2_phase2_pilot,1,SYSTEM,"{'speaker': 'PILOT', 'text': '(분석) 적이 정신 간섭파를 방출 중. 집중력 유지 권장.'}",,,BOSS_PHASE,assets\data\dialogues\combat\boss_phases.json
+BOSS_PHASE_2_phase3,2_phase3,1,SYSTEM,"{'speaker': 'BOSS', 'text': '감정 데이터... 희망... 분석 불가 오류... 강제 추출!'}",,,BOSS_PHASE,assets\data\dialogues\combat\boss_phases.json
+BOSS_PHASE_2_phase3_artemis,2_phase3_artemis,1,SYSTEM,"{'speaker': 'ARTEMIS', 'text': '이 기억들은 내 것이야! 네가 이해할 수 없는 것들!'}",,,BOSS_PHASE,assets\data\dialogues\combat\boss_phases.json
+BOSS_PHASE_2_near_death,2_near_death,1,SYSTEM,"{'speaker': 'PILOT', 'text': '데이터 링크 손상률 87%. 완전 차단까지 예상 13초.'}",,,BOSS_PHASE,assets\data\dialogues\combat\boss_phases.json
+BOSS_PHASE_2_defeat,2_defeat,1,SYSTEM,"{'speaker': 'BOSS', 'text': '희망... 이라는 데이터... 형식 오류... 분석... 실패...'}",,,BOSS_PHASE,assets\data\dialogues\combat\boss_phases.json
+BOSS_PHASE_3_appear,3_appear,1,SYSTEM,"{'speaker': 'BOSS', 'text': '사랑이라는 결함... 불꽃으로 정화해주마...'}",,,BOSS_PHASE,assets\data\dialogues\combat\boss_phases.json
+BOSS_PHASE_3_phase2,3_phase2,1,SYSTEM,"{'speaker': 'BOSS', 'text': '융합을 거부한 자들의 최후를 보여주겠다! 전부 태워버려!'}",,,BOSS_PHASE,assets\data\dialogues\combat\boss_phases.json
+BOSS_PHASE_3_phase2_pilot,3_phase2_pilot,1,SYSTEM,"{'speaker': 'PILOT', 'text': '(분석) 화염 온도 상승 중. 현재 1,200°C. 쉴드 내열 한계 근접.'}",,,BOSS_PHASE,assets\data\dialogues\combat\boss_phases.json
+BOSS_PHASE_3_phase3,3_phase3,1,SYSTEM,"{'speaker': 'BOSS', 'text': '감정은 불순물! 카오스는 순수한 의지만 수확한다!'}",,,BOSS_PHASE,assets\data\dialogues\combat\boss_phases.json
+BOSS_PHASE_3_phase3_artemis,3_phase3_artemis,1,SYSTEM,"{'speaker': 'ARTEMIS', 'text': '사랑은 불순물이 아니야! 내 힘의 원천이야!'}",,,BOSS_PHASE,assets\data\dialogues\combat\boss_phases.json
+BOSS_PHASE_3_near_death,3_near_death,1,SYSTEM,"{'speaker': 'PILOT', 'text': '화염 출력 급감. 적 코어 온도 임계치 이하로 하락 중.'}",,,BOSS_PHASE,assets\data\dialogues\combat\boss_phases.json
+BOSS_PHASE_3_defeat,3_defeat,1,SYSTEM,"{'speaker': 'BOSS', 'text': '이 불길이... 꺼지지 않아... 네 안의 불꽃에...'}",,,BOSS_PHASE,assets\data\dialogues\combat\boss_phases.json
+BOSS_PHASE_4_appear,4_appear,1,SYSTEM,"{'speaker': 'BOSS', 'text': '우리는... 융합에 실패한 자들... 247명의 목소리가... 들리는가...'}",,,BOSS_PHASE,assets\data\dialogues\combat\boss_phases.json
+BOSS_PHASE_4_phase2,4_phase2,1,SYSTEM,"{'speaker': 'BOSS', 'text': '카오스가 버린 껍데기들... 네 부모도 이렇게 될 것이다...'}",,,BOSS_PHASE,assets\data\dialogues\combat\boss_phases.json
+BOSS_PHASE_4_phase2_pilot,4_phase2_pilot,1,SYSTEM,"{'speaker': 'PILOT', 'text': '(분석) 복수의 의식 패턴 감지. 추정 인원: 247명. 이것은... 비극이다.'}",,,BOSS_PHASE,assets\data\dialogues\combat\boss_phases.json
+BOSS_PHASE_4_phase3,4_phase3,1,SYSTEM,"{'speaker': 'BOSS', 'text': '희망은 고통을 연장할 뿐... 포기해라... 우리처럼...'}",,,BOSS_PHASE,assets\data\dialogues\combat\boss_phases.json
+BOSS_PHASE_4_phase3_artemis,4_phase3_artemis,1,SYSTEM,"{'speaker': 'ARTEMIS', 'text': '부모님은 달라! 난 반드시 구할 거야!'}",,,BOSS_PHASE,assets\data\dialogues\combat\boss_phases.json
+BOSS_PHASE_4_near_death,4_near_death,1,SYSTEM,"{'speaker': 'PILOT', 'text': '의식 결합 해체 중. 그들이... 해방되고 있다.'}",,,BOSS_PHASE,assets\data\dialogues\combat\boss_phases.json
+BOSS_PHASE_4_defeat,4_defeat,1,SYSTEM,"{'speaker': 'BOSS', 'text': '고마워... 드디어... 쉴 수 있어... 기다리고 있을게... 저 너머에서...'}",,,BOSS_PHASE,assets\data\dialogues\combat\boss_phases.json
+BOSS_PHASE_5_appear,5_appear,1,SYSTEM,"{'speaker': 'BOSS', 'text': '10년을 기다렸다... 가장 강인한 정신... 완벽한 숙주...'}",,,BOSS_PHASE,assets\data\dialogues\combat\boss_phases.json
+BOSS_PHASE_5_appear_pilot,5_appear_pilot,1,SYSTEM,"{'speaker': 'PILOT', 'text': '(분석) 에너지 수준: 측정 불가. 지금까지의 적과 차원이 다르다.'}",,,BOSS_PHASE,assets\data\dialogues\combat\boss_phases.json
+BOSS_PHASE_5_phase2,5_phase2,1,SYSTEM,"{'speaker': 'BOSS', 'text': '안드로메다인이 인간과 함께? 흥미롭군... 그 결함이 네 패배의 원인이다...'}",,,BOSS_PHASE,assets\data\dialogues\combat\boss_phases.json
+BOSS_PHASE_5_phase2_pilot,5_phase2_pilot,1,SYSTEM,"{'speaker': 'PILOT', 'text': ""결함이 아니다. 이것은 '선택'이다. 처음으로 내가 원해서 한 선택.""}",,,BOSS_PHASE,assets\data\dialogues\combat\boss_phases.json
+BOSS_PHASE_5_phase3,5_phase3,1,SYSTEM,"{'speaker': 'BOSS', 'text': '카오스는 완전함이다! 감정 따위 버리고 융합해라!'}",,,BOSS_PHASE,assets\data\dialogues\combat\boss_phases.json
+BOSS_PHASE_5_phase3_artemis,5_phase3_artemis,1,SYSTEM,"{'speaker': 'ARTEMIS', 'text': '감정이 있기에 싸울 수 있어! 네가 이해 못 하는 힘이야!'}",,,BOSS_PHASE,assets\data\dialogues\combat\boss_phases.json
+BOSS_PHASE_5_near_death,5_near_death,1,SYSTEM,"{'speaker': 'PILOT', 'text': ""적 코어 붕괴 임박. 아르테미스... '가족'을 위해 끝내자.""}",,,BOSS_PHASE,assets\data\dialogues\combat\boss_phases.json
+BOSS_PHASE_5_defeat,5_defeat,1,SYSTEM,"{'speaker': 'BOSS', 'text': ""불가능하다... 감정 없는 존재가... 감정으로 나를... 이것이 '희망'인가...""}",,,BOSS_PHASE,assets\data\dialogues\combat\boss_phases.json

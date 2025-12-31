@@ -148,29 +148,27 @@ class ShopMode(GameMode):
         self.back_rect = None
         self.back_hover = False
 
+        # 커스텀 커서
+        self.custom_cursor = self._load_base_cursor()
+
         print("INFO: ShopMode initialized (Unified UI)")
 
     def _create_background(self) -> pygame.Surface:
-        """배경 생성"""
+        """배경 생성 - facility_bg 이미지 사용"""
+        # facility_bg 이미지 로드 시도
+        bg_path = config.ASSET_DIR / "images" / "facilities" / "facility_bg.png"
+        try:
+            if bg_path.exists():
+                bg = pygame.image.load(str(bg_path)).convert()
+                return pygame.transform.smoothscale(bg, self.screen_size)
+        except Exception as e:
+            print(f"WARNING: Failed to load facility_bg for shop: {e}")
+
+        # 폴백: 기본 그라데이션 배경
         bg = self.ui_manager.create_gradient_background(
             base_color=(15, 22, 28),
             variation=15
         )
-
-        # 상점 선반 패턴
-        shelf_color = (28, 38, 45)
-        for i in range(5):
-            y = 150 + i * 150
-            pygame.draw.rect(bg, shelf_color, (50, y, self.screen_size[0] - 100, 8))
-
-        # 코인 장식
-        coin_color = (48, 42, 30)
-        for i in range(6):
-            cx = 100 + i * 250
-            cy = self.screen_size[1] - 60
-            pygame.draw.circle(bg, coin_color, (cx, cy), 25)
-            pygame.draw.circle(bg, (58, 52, 35), (cx, cy), 20)
-
         return bg
 
     def update(self, dt: float, current_time: float):
@@ -234,6 +232,9 @@ class ShopMode(GameMode):
 
         # 키보드 힌트
         self.ui_manager.render_keyboard_hints(screen, "1-5 Categories  |  Scroll Mouse  |  ESC Back")
+
+        # 커스텀 커서
+        self._render_base_cursor(screen, self.custom_cursor)
 
     def _render_items(self, screen: pygame.Surface):
         """아이템 목록 렌더링"""
@@ -319,9 +320,10 @@ class ShopMode(GameMode):
             name_text = render_text_with_emoji(item["name"], self.fonts["medium"], name_color, "MEDIUM")
             screen.blit(name_text, (draw_rect.x + 12, draw_rect.y + 10))
 
-            # 설명
+            # 설명 (Light 폰트 - 가독성 향상)
             desc_color = config.TEXT_LEVELS["TERTIARY"] if (can_buy or is_maxed) else config.LOCKED_COLORS["TEXT"]
-            desc_text = self.fonts["small"].render(item["desc"], True, desc_color)
+            desc_font = self.fonts.get("light_small", self.fonts["small"])
+            desc_text = desc_font.render(item["desc"], True, desc_color)
             screen.blit(desc_text, (draw_rect.x + 12, draw_rect.y + 38))
 
             # 보유량 표시
@@ -448,11 +450,14 @@ class ShopMode(GameMode):
 
     def on_enter(self):
         super().on_enter()
+        if self.custom_cursor:
+            self._enable_custom_cursor()
 
     def on_exit(self):
         self.engine.shared_state['global_score'] = self.credits
         self.engine.shared_state['player_inventory'] = self.inventory
         self.engine.save_shared_state()
+        self._disable_custom_cursor()
         super().on_exit()
 
 

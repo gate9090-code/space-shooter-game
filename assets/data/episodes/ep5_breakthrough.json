@@ -1,0 +1,65 @@
+{
+  "id": "ep5_breakthrough",
+  "title": "돌파",
+  "act": 5,
+  "description": "포위망을 뚫고 탈출한다. 진실을 세상에 알려야 한다.",
+  "segments": [
+    {
+      "type": "BRIEFING",
+      "dialogue_key": "act5_opening",
+      "background": "bg_bunker.jpg",
+      "location": "ESCAPE ROUTE - ENEMY TERRITORY"
+    },
+    {
+      "type": "CUTSCENE",
+      "effect": "Shake",
+      "background": "bg_bunker.jpg",
+      "duration": 1.0
+    },
+    {
+      "type": "COMBAT",
+      "rounds": 3,
+      "enemies": ["elite_interceptor", "heavy_bomber"],
+      "background": "bg_bunker.jpg",
+      "spawn_rate": 1.5
+    },
+    {
+      "type": "DIALOGUE",
+      "dialogue_key": "ep5_pursuit",
+      "background": "bg_bunker.jpg"
+    },
+    {
+      "type": "COMBAT",
+      "rounds": 4,
+      "enemies": ["elite_fighter", "elite_interceptor"],
+      "background": "bg_space.jpg",
+      "spawn_rate": 1.6
+    },
+    {
+      "type": "REFLECTION",
+      "scene_key": "star_gazing",
+      "background": "bg_winter_night.jpg",
+      "optional": true,
+      "trigger_condition": "first_play",
+      "color_tone": "purple"
+    },
+    {
+      "type": "COMBAT",
+      "rounds": 3,
+      "enemies": ["elite_interceptor"],
+      "boss": "final_guardian",
+      "background": "bg_space.jpg",
+      "spawn_rate": 1.4
+    },
+    {
+      "type": "ENDING",
+      "dialogue_key": "ep5_ending",
+      "background": "bg_space.jpg"
+    }
+  ],
+  "rewards": {
+    "credits": 1000,
+    "exp": 500
+  },
+  "unlock_next": null
+}

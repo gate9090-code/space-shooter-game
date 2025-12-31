@@ -1,0 +1,48 @@
+{
+  "scene_id": "act3_opening",
+  "title": "ACT 3: BLACK BOX",
+  "location": "CRASH SITE - SECTOR 12",
+  "background": "bg_bunker.jpg",
+  "dialogues": [
+    {
+      "speaker": "NARRATOR",
+      "text": "격추된 적 기체 잔해 발견. 데이터 코어 반응이 있습니다."
+    },
+    {
+      "speaker": "ARTEMIS",
+      "text": "저거 아까 우리가 떨어뜨린 놈이네."
+    },
+    {
+      "speaker": "PILOT",
+      "text": "데이터 코어가 살아있다고? 뭐가 들었을까."
+    },
+    {
+      "speaker": "NARRATOR",
+      "text": "접근 시 자폭 장치 작동 가능성이 있습니다."
+    },
+    {
+      "speaker": "PILOT",
+      "text": "그럼 원격으로 뽑아낼 수 있어?"
+    },
+    {
+      "speaker": "ARTEMIS",
+      "text": "내가 직접 가야 해. 원격으론 암호 못 뚫어."
+    },
+    {
+      "speaker": "PILOT",
+      "text": "혼자? 말도 안 돼."
+    },
+    {
+      "speaker": "ARTEMIS",
+      "text": "5분이면 돼. 그동안 하늘 좀 지켜줘."
+    },
+    {
+      "speaker": "PILOT",
+      "text": "...3분. 그 이상은 안 돼."
+    },
+    {
+      "speaker": "ARTEMIS",
+      "text": "충분해. 저 안에 카이론 본진 위치가 있을 수도 있어."
+    }
+  ]
+}

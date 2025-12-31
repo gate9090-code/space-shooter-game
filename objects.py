@@ -8,6 +8,20 @@ import config
 from asset_manager import AssetManager
 import random
 
+# Core entities imported from entities.core
+from entities.core import Weapon, Player, Enemy, Boss, Bullet
+
+# Screen effects imported from effects.screen_effects
+from effects.screen_effects import (
+    Particle, ScreenFlash, ScreenShake,
+    DamageFlash, LevelUpEffect,
+    DynamicTextEffect, ReviveTextEffect,
+    NebulaParticle, SmokeParticle, BurstParticle,
+    DissolveEffect, FadeEffect, ImplodeEffect, TimeSlowEffect
+)
+# Core entities imported from entities.core
+from entities.core import Weapon, Player, Enemy, Boss, Bullet
+
 
 # =========================================================
 # 공통 베이스 클래스: 컷씬 효과용
