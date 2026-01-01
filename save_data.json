@@ -1,5 +1,5 @@
 {
-    "score": 73959,
+    "score": 82894,
     "player_upgrades": {
         "COOLDOWN": 4,
         "MAX_HP": 10,
@@ -27,7 +27,7 @@
         "PIERCING": 1,
         "HOMING": 1
     },
-    "current_ship": "TITAN",
+    "current_ship": "STEALTH",
     "player_inventory": {
         "REPAIR_KIT_50": 1,
         "MEGA_BOMB": 2,

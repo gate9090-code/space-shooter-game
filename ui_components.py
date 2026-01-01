@@ -15,7 +15,7 @@ from typing import Dict, List, Tuple, Optional, Any
 from dataclasses import dataclass
 
 import config
-from ui import render_text_with_emoji
+from ui_render import render_text_with_emoji
 
 
 # =============================================================================

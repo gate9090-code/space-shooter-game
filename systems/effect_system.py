@@ -8,9 +8,12 @@ EffectSystem - 시각 효과 시스템
 import pygame
 from typing import List, Tuple
 import config
-from objects import (
-    Particle, Shockwave, DynamicTextEffect, SpawnEffect,
-    TimeSlowEffect, AnimatedEffect
+# Effect classes from effects modules and objects
+from effects.combat_effects import AnimatedEffect
+from effects.game_animations import SpawnEffect
+from effects.screen_effects import (
+    Particle, Shockwave, DynamicTextEffect,
+    TimeSlowEffect
 )
 
 

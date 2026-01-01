@@ -210,7 +210,7 @@ class HangarMode(GameMode):
     def _load_ship_images(self):
         """함선 이미지 로드"""
         ships_dir = config.ASSET_DIR / "images" / "ships"
-        for ship_id, ship_data in SHIP_TYPES.items():
+        for ship_id, ship_data in config.SHIP_TYPES.items():
             image_name = ship_data.get("image", f"{ship_id.lower()}_front.png")
             image_path = ships_dir / image_name
             try:

@@ -6,8 +6,13 @@ from typing import Dict, Tuple, List, Iterable
 from pathlib import Path
 import math
 import config
-# HitImpact 대신 AnimatedEffect로 수정하고, objects의 모든 클래스를 임포트하는 것이 안전합니다.
-from objects import Player, Enemy, Bullet, CoinGem, HealItem, AnimatedEffect, Weapon, DamageNumber, DamageNumberManager, Boss
+# Entity imports from new modules
+from entities.player import Player
+from entities.enemies import Enemy, Boss
+from entities.weapons import Weapon, Bullet
+from entities.collectibles import CoinGem, HealItem
+# Effect imports from effects modules
+from effects.combat_effects import AnimatedEffect, DamageNumber, DamageNumberManager
 
 # =========================================================
 # 0. 게임 데이터 관리 함수
@@ -769,7 +774,7 @@ def update_game_objects(
 
                 # 속성 스킬: Chain Lightning (번개 체인)
                 if player.has_lightning:
-                    from objects import LightningEffect
+                    from effects.screen_effects import LightningEffect
                     chain_range = config.ATTRIBUTE_SKILL_SETTINGS["LIGHTNING"]["chain_range"]
                     chain_damage = bullet.damage * config.ATTRIBUTE_SKILL_SETTINGS["LIGHTNING"]["damage_ratio"]
                     chain_count = player.lightning_chain_count
@@ -838,7 +843,7 @@ def update_game_objects(
 
                     # 속성 스킬: Explosive Bullets (적 사망 시 폭발)
                     if player.has_explosive:
-                        from objects import Shockwave
+                        from effects.screen_effects import Shockwave
                         explosion_radius = config.ATTRIBUTE_SKILL_SETTINGS["EXPLOSIVE"]["radius"]
                         explosion_damage = bullet.damage * config.ATTRIBUTE_SKILL_SETTINGS["EXPLOSIVE"]["damage_ratio"]
 
@@ -867,7 +872,7 @@ def update_game_objects(
 
                     # 속성 스킬: Static Field (정전기장 생성)
                     if player.has_static_field:
-                        from objects import StaticField
+                        from effects.game_animations import StaticField
                         static_field = StaticField(
                             pos=(enemy.pos.x, enemy.pos.y),
                             radius=config.ATTRIBUTE_SKILL_SETTINGS["STATIC_FIELD"]["radius"],
@@ -934,7 +939,7 @@ def update_game_objects(
 
             for i in range(wave_count):
                 # 각 파동마다 약간의 지연을 가진 충격파 생성
-                from objects import Shockwave
+                from effects.screen_effects import Shockwave
                 shockwave = Shockwave(
                     center=(impact_pos.x, impact_pos.y),
                     max_radius=settings["max_radius"],
@@ -1153,7 +1158,7 @@ def draw_objects(
         bullet.draw(screen)
 
     # 5. AnimatedEffect 그리기 (가장 위) - 나머지 효과는 draw_visual_effects에서 처리
-    from objects import AnimatedEffect
+    from effects.combat_effects import AnimatedEffect
     for effect in effects:
         if isinstance(effect, AnimatedEffect):
             effect.draw(screen)
@@ -1392,7 +1397,7 @@ def handle_tactical_upgrade(
 
         elif action_method_name == "add_drone":
             import math
-            from objects import Drone
+            from entities.support_units import Drone
 
             player.drone_count += int(value)
 
@@ -1514,7 +1519,7 @@ def reset_game(screen_size: Tuple[int, int], player_upgrades: Dict[str, int]):
 
 def create_explosion_particles(pos: Tuple[float, float], particles: List) -> None:
     """적 처치 시 폭발 파티클 생성"""
-    from objects import Particle
+    from effects.screen_effects import Particle
 
     settings = config.PARTICLE_SETTINGS["EXPLOSION"]
     count = settings["count"]
@@ -1540,7 +1545,7 @@ def create_explosion_particles(pos: Tuple[float, float], particles: List) -> Non
 
 def create_hit_particles(pos: Tuple[float, float], particles: List) -> None:
     """일반 피격 시 파티클 생성"""
-    from objects import Particle
+    from effects.screen_effects import Particle
 
     settings = config.PARTICLE_SETTINGS["HIT"]
     count = settings["count"]
@@ -1564,7 +1569,7 @@ def create_hit_particles(pos: Tuple[float, float], particles: List) -> None:
 
 def create_boss_hit_particles(pos: Tuple[float, float], particles: List) -> None:
     """보스 피격 시 강화된 파티클 생성"""
-    from objects import Particle
+    from effects.screen_effects import Particle
 
     settings = config.PARTICLE_SETTINGS["BOSS_HIT"]
     count = settings["count"]
@@ -1588,7 +1593,7 @@ def create_boss_hit_particles(pos: Tuple[float, float], particles: List) -> None
 
 def create_shockwave(pos: Tuple[float, float], shockwave_type: str, effects: List) -> None:
     """충격파 효과 생성 (BOSS_SPAWN, BOSS_DEATH, BOSS_ATTACK)"""
-    from objects import Shockwave
+    from effects.screen_effects import Shockwave
 
     if shockwave_type not in config.SHOCKWAVE_SETTINGS:
         return
@@ -1606,7 +1611,7 @@ def create_shockwave(pos: Tuple[float, float], shockwave_type: str, effects: Lis
 
 def create_spawn_effect(pos: Tuple[float, float], effects: List) -> None:
     """적 스폰 포털 효과 생성"""
-    from objects import SpawnEffect
+    from effects.game_animations import SpawnEffect
 
     spawn_effect = SpawnEffect(
         pos=pos,
@@ -1618,7 +1623,7 @@ def create_spawn_effect(pos: Tuple[float, float], effects: List) -> None:
 
 def create_dynamic_text(text: str, pos: Tuple[float, float], text_type: str, effects: List) -> None:
     """동적 텍스트 효과 생성 (BOSS_SPAWN, CRITICAL)"""
-    from objects import DynamicTextEffect
+    from effects.screen_effects import DynamicTextEffect
 
     if text_type not in config.DYNAMIC_TEXT_SETTINGS:
         return
@@ -1649,7 +1654,7 @@ def trigger_screen_shake(shake_type: str, screen_shake: 'ScreenShake') -> None:
 
 def create_time_slow_effect(effects: List) -> None:
     """타임 슬로우 효과 생성 (보스 처치 시)"""
-    from objects import TimeSlowEffect
+    from effects.screen_effects import TimeSlowEffect
 
     settings = config.TIME_SLOW_SETTINGS["BOSS_DEATH"]
     time_slow = TimeSlowEffect(
@@ -1661,7 +1666,11 @@ def create_time_slow_effect(effects: List) -> None:
 
 def update_visual_effects(effects: List, dt: float, screen_size: Tuple[int, int] = None, enemies: List = None) -> None:
     """모든 시각 효과 업데이트 (파티클, 충격파, 텍스트 등)"""
-    from objects import Particle, Shockwave, DynamicTextEffect, SpawnEffect, TimeSlowEffect, StaticField, ScreenFlash, WaveTransitionEffect, PlayerVictoryAnimation, ReviveTextEffect, LightningEffect
+    from effects import (
+        WaveTransitionEffect, PlayerVictoryAnimation, WaveClearFireworksEffect,
+        StaticField, SpawnEffect
+    )
+    from effects.screen_effects import Particle, Shockwave, DynamicTextEffect, TimeSlowEffect, ScreenFlash, ReviveTextEffect, LightningEffect
 
     for effect in effects[:]:
         if isinstance(effect, (Particle, Shockwave, SpawnEffect)):
@@ -1699,6 +1708,10 @@ def update_visual_effects(effects: List, dt: float, screen_size: Tuple[int, int]
             if not effect.is_alive:
                 effects.remove(effect)
         elif isinstance(effect, ReviveTextEffect):
+            effect.update(dt)
+            if not effect.is_alive:
+                effects.remove(effect)
+        elif isinstance(effect, WaveClearFireworksEffect):
             effect.update(dt)
             if not effect.is_alive:
                 effects.remove(effect)
@@ -1756,7 +1769,7 @@ def auto_place_turrets(turrets: List, game_data: Dict, screen_size: Tuple[int, i
         turrets: 터렛 리스트 (수정됨)
         game_data: 게임 데이터 딕셔너리
         screen_size: 화면 크기
-        turret_class: Turret 클래스 (from objects import Turret)
+        turret_class: Turret 클래스 (from entities.support_units import Turret)
         sound_manager: 사운드 매니저 (옵션)
 
     Returns:
@@ -1854,13 +1867,17 @@ def trigger_ship_ability(player, enemies: List, effects: List,
 
 def draw_visual_effects(screen: pygame.Surface, effects: List, screen_offset: pygame.math.Vector2 = None) -> None:
     """모든 시각 효과 그리기"""
-    from objects import Particle, Shockwave, DynamicTextEffect, SpawnEffect, TimeSlowEffect, StaticField, ScreenFlash, WaveTransitionEffect, ReviveTextEffect, LightningEffect
+    from effects import (
+        WaveTransitionEffect, WaveClearFireworksEffect,
+        StaticField, SpawnEffect
+    )
+    from effects.screen_effects import Particle, Shockwave, DynamicTextEffect, TimeSlowEffect, ScreenFlash, ReviveTextEffect, LightningEffect
 
     if screen_offset is None:
         screen_offset = pygame.math.Vector2(0, 0)
 
     for effect in effects:
-        if isinstance(effect, (Particle, Shockwave, SpawnEffect, AnimatedEffect, StaticField, ScreenFlash, WaveTransitionEffect, ReviveTextEffect, LightningEffect)):
+        if isinstance(effect, (Particle, Shockwave, SpawnEffect, AnimatedEffect, StaticField, ScreenFlash, WaveTransitionEffect, ReviveTextEffect, LightningEffect, WaveClearFireworksEffect)):
             effect.draw(screen)
         elif isinstance(effect, DynamicTextEffect):
             effect.draw(screen, screen_offset)

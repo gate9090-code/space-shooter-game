@@ -386,8 +386,13 @@ class EpisodeMode(GameMode):
         """BaseHub로 귀환 (애니메이션 포함)"""
         # 복귀 애니메이션 시작
         if not hasattr(self, 'return_animation'):
-            from objects import ReturnToBaseAnimation
+            from effects.game_animations import ReturnToBaseAnimation
             from asset_manager import AssetManager
+
+            # 배경 로드 (애니메이션 중 검은 화면 방지)
+            if not self.current_background:
+                self._load_background("space_1")
+                print("INFO: Loaded background for return animation")
 
             # 플레이어 이미지 가져오기
             player_image = None
@@ -400,12 +405,23 @@ class EpisodeMode(GameMode):
                 try:
                     import pygame
                     import config
-                    loaded_image = pygame.image.load(str(config.PLAYER_SHIP_IMAGE_PATH)).convert_alpha()
+
+                    # 현재 선택된 우주선 가져오기
+                    current_ship = self.engine.shared_state.get('current_ship', config.DEFAULT_SHIP)
+
+                    # 우주선 데이터에서 이미지 파일명 가져오기
+                    ship_data = config.SHIP_TYPES.get(current_ship, config.SHIP_TYPES[config.DEFAULT_SHIP])
+                    ship_image_filename = ship_data.get('image', 'player_ship.png')
+
+                    # 우주선 이미지 경로 구성
+                    ship_image_path = config.IMAGE_DIR / "ships" / ship_image_filename
+
+                    loaded_image = pygame.image.load(str(ship_image_path)).convert_alpha()
                     # 이미지 크기 축소 (원본의 45% - 워프 포탈 확대에 맞춰 조정)
                     original_size = loaded_image.get_size()
                     new_size = (int(original_size[0] * 0.45), int(original_size[1] * 0.45))
                     player_image = pygame.transform.scale(loaded_image, new_size)
-                    print(f"INFO: Loaded player image from {config.PLAYER_SHIP_IMAGE_PATH} (scaled to {new_size})")
+                    print(f"INFO: Loaded player image for return animation: {current_ship} ({ship_image_filename}, scaled to {new_size})")
                 except Exception as e:
                     print(f"ERROR: Failed to load player image: {e}")
                     player_image = None
@@ -483,13 +499,16 @@ class EpisodeMode(GameMode):
                 except:
                     continue
 
-            # 폴백: 검은 배경
+            # 폴백: 우주 배경 (별이 있는 어두운 배경)
+            print(f"INFO: Using fallback background for {bg_name}")
             self.current_background = pygame.Surface(self.screen_size)
-            self.current_background.fill((10, 10, 20))
+            self.current_background.fill((15, 15, 30))  # 약간 더 밝은 우주색
 
         except Exception as e:
             print(f"WARNING: Failed to load background: {bg_name} - {e}")
-            self.current_background = None
+            # 폴백: 기본 배경 생성 (검은 화면 방지)
+            self.current_background = pygame.Surface(self.screen_size)
+            self.current_background.fill((15, 15, 30))  # 약간 더 밝은 우주색
 
     # =========================================================
     # Segment 핸들러

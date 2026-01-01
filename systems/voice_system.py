@@ -774,15 +774,15 @@ CHARACTER_VOICE_PRESETS = {
     "ARTEMIS": {
         "adapter": "edge",
         "voice": "ko-KR-SunHiNeural",
-        "rate": "+5%",
-        "pitch": "+2Hz",
+        "rate": "+25%",  # 나레이터 기본(+15%) + 10% 더 빠르게
+        "pitch": "+5Hz",  # 음 톤 높임 (기존 +2Hz → +5Hz)
     },
     # 파일럿: 차분하고 기계적인 남성 음성
     "PILOT": {
         "adapter": "edge",
         "voice": "ko-KR-InJoonNeural",
-        "rate": "-5%",
-        "pitch": "-3Hz",
+        "rate": "+20%",  # 나레이터 기본(+15%) + 5% 더 빠르게
+        "pitch": "+0Hz",  # 음 톤 높임 (기존 -3Hz → +0Hz, 보통 톤)
     },
     # 안드로이드 나레이터: 기계적 로봇 음성 (Edge TTS 사용, 빠른 속도, 치지직 효과)
     "NARRATOR": {

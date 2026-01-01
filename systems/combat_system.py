@@ -8,7 +8,11 @@ CombatSystem - 전투 로직 시스템
 import pygame
 from typing import List, Optional, Tuple
 import config
-from objects import Player, Enemy, Bullet, CoinGem, HealItem
+# Entity imports from new modules
+from entities.player import Player
+from entities.enemies import Enemy
+from entities.weapons import Bullet
+from entities.collectibles import CoinGem, HealItem
 
 
 class CombatSystem:
@@ -57,13 +61,13 @@ class CombatSystem:
         Returns:
             처치한 적 수
         """
-        from utils import (
+        from game_logic import (
             create_hit_particles,
             create_explosion_particles,
             create_boss_hit_particles,
             trigger_screen_shake,
         )
-        from objects import DamageNumber
+        from effects.combat_effects import DamageNumber
 
         kills = 0
 

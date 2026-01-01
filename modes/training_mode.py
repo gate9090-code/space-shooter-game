@@ -19,13 +19,18 @@ from typing import List, Dict, Optional, Tuple
 import config
 from mode_configs import config_training
 from modes.base_mode import GameMode, ModeConfig
-from objects import Player, Enemy, Bullet, CoinGem, Drone, Turret
+# Entity imports from new modules
+from entities.player import Player
+from entities.enemies import Enemy
+from entities.weapons import Bullet
+from entities.collectibles import CoinGem
+from entities.support_units import Drone, Turret
 from systems.combat_system import CombatSystem
 from systems.skill_system import SkillSystem
 from systems.effect_system import EffectSystem
 from systems.spawn_system import SpawnSystem, SpawnConfig
 from systems.ui_system import UISystem, UIConfig
-from utils import reset_game_data, update_game_objects
+from game_logic import reset_game_data, update_game_objects
 
 
 class TrainingSpawnManager:
@@ -457,8 +462,8 @@ class TrainingMode(GameMode):
 
     def _apply_explosive_effect(self, hit_pos, hit_enemy):
         """폭발 스킬 효과 적용"""
-        from objects import Shockwave
-        from utils import create_explosion_particles
+        from effects.screen_effects import Shockwave
+        from game_logic import create_explosion_particles
 
         radius = self.player.explosive_radius
         damage = config.ATTRIBUTE_SKILL_SETTINGS.get("EXPLOSIVE", {}).get("damage_ratio", 0.5) * 50
@@ -484,7 +489,7 @@ class TrainingMode(GameMode):
 
     def _apply_lightning_effect(self, hit_pos):
         """번개 체인 스킬 효과 적용"""
-        from objects import LightningEffect
+        from effects.screen_effects import LightningEffect
 
         chain_count = self.player.lightning_chain_count
         chain_range = config.ATTRIBUTE_SKILL_SETTINGS.get("LIGHTNING", {}).get("chain_range", 250)
@@ -555,12 +560,12 @@ class TrainingMode(GameMode):
             enemy.hp = 0
             enemy.is_alive = False
             # 처형 이펙트 (보라색 파티클)
-            from utils import create_hit_particles
+            from game_logic import create_hit_particles
             create_hit_particles(enemy.pos, self.effects)
 
     def _apply_starfall_effect(self):
         """별똥별 스킬 효과 적용 (적 처치 시)"""
-        from objects import StarfallEffect
+        from effects.screen_effects import StarfallEffect
 
         # 쿨다운 체크
         if hasattr(self.player, 'starfall_timer') and self.player.starfall_timer > 0:

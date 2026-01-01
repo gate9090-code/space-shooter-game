@@ -13,13 +13,21 @@ if TYPE_CHECKING:
     from engine.game_engine import GameEngine
 
 import config
-from objects import (
-    Player, Enemy, Bullet, CoinGem, HealItem,
+# Entity imports from new modules
+from entities.player import Player
+from entities.enemies import Enemy
+from entities.weapons import Bullet
+from entities.collectibles import CoinGem, HealItem
+from entities.support_units import Turret, Drone
+# Effect classes from effects modules and objects
+from effects.combat_effects import DamageNumberManager
+from effects.death_effects import DeathEffectManager
+from effects.game_animations import SpawnEffect
+from effects.screen_effects import (
     ScreenShake, Particle, Shockwave, DynamicTextEffect,
-    TimeSlowEffect, SpawnEffect, Turret, Drone, DeathEffectManager,
-    DamageNumberManager, DamageFlash, LevelUpEffect
+    TimeSlowEffect, DamageFlash, LevelUpEffect
 )
-from ui import HPBarShake
+from ui_render import HPBarShake
 
 
 @dataclass
@@ -340,7 +348,7 @@ class GameMode(ABC):
             dt: 델타 타임
             current_time: 현재 시간
         """
-        from utils import update_visual_effects
+        from game_logic import update_visual_effects
 
         # 타임 스케일 체크
         self.time_scale = 1.0
@@ -652,7 +660,7 @@ class GameMode(ABC):
         Args:
             screen: pygame 화면 Surface
         """
-        from utils import draw_visual_effects
+        from game_logic import draw_visual_effects
 
         # 젬 그리기
         for gem in self.gems:
@@ -828,6 +836,7 @@ class GameMode(ABC):
         # 함선 타입 (shared_state에서 가져오거나 기본값 사용)
         if ship_type is None:
             ship_type = self.engine.shared_state.get("current_ship", config.DEFAULT_SHIP)
+            print(f"DEBUG: spawn_player - current_ship from shared_state: {ship_type}")
 
         self.player = Player(
             pos=pygame.math.Vector2(pos),

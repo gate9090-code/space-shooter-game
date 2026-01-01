@@ -500,6 +500,9 @@ MENU_ICON_DIR = IMAGE_DIR / "ui"
 # 웨이브 전환 이미지
 WAVE_HERO_IMAGE_PATH = IMAGE_DIR / "ui" / "wave_hero.jpg"
 
+# 웨이브 클리어 축하 이미지
+WAVE_CLEAR_FIREWORKS_PATH = IMAGE_DIR / "effects" / "wave_clear_fireworks.png"
+
 # =========================================================
 # 3.5. 🔊 사운드 및 음악 설정
 # =========================================================

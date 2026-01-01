@@ -11,7 +11,9 @@ import math
 from typing import List, Tuple, Optional, Dict
 from dataclasses import dataclass
 import config
-from objects import Enemy, CoinGem, HealItem
+# Entity imports from new modules
+from entities.enemies import Enemy
+from entities.collectibles import CoinGem, HealItem
 
 
 @dataclass
@@ -125,7 +127,7 @@ class SpawnSystem:
 
                 # 스폰 효과
                 if effects:
-                    from utils import create_spawn_effect
+                    from game_logic import create_spawn_effect
                     create_spawn_effect(effects, spawn_pos)
 
         self.last_enemy_spawn_time = current_time
@@ -174,7 +176,7 @@ class SpawnSystem:
 
             # 보스 스폰 효과
             if effects:
-                from utils import create_spawn_effect
+                from game_logic import create_spawn_effect
                 create_spawn_effect(effects, spawn_pos)
 
             # 보스 BGM
@@ -395,7 +397,7 @@ class SpawnSystem:
 
             # 스폰 효과
             if effects:
-                from utils import create_spawn_effect
+                from game_logic import create_spawn_effect
                 create_spawn_effect(spawn_pos, effects)
 
         self.last_enemy_spawn_time = current_time

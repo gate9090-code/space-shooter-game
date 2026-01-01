@@ -854,6 +854,314 @@ class LevelUpEffect:
             screen.blit(text_surf, text_rect)
 
 
+# ============================================================
+# Shockwave Effect
+# ============================================================
+
+class Shockwave:
+    """충격파 효과 - 중심에서 확장되는 원형 링 (지연 시간 지원)"""
+
+    def __init__(
+        self,
+        center: Tuple[float, float],
+        max_radius: float,
+        duration: float = 0.4,
+        color: Tuple[int, int, int] = (255, 150, 50),
+        width: int = 3,
+        delay: float = 0.0,
+    ):
+        self.center = pygame.math.Vector2(center) if not isinstance(center, pygame.math.Vector2) else center
+        self.max_radius = max_radius
+        self.duration = duration
+        self.color = color
+        self.width = width
+        self.delay = delay  # 시작 지연 시간
+        self.age = -delay  # 지연 시간만큼 음수로 시작
+        self.is_alive = True
+
+    def update(self, dt: float):
+        """충격파 업데이트"""
+        self.age += dt
+        if self.age >= self.duration:
+            self.is_alive = False
+
+    def draw(self, screen: pygame.Surface):
+        """충격파 그리기"""
+        if not self.is_alive or self.age < 0:
+            # 아직 지연 시간이 남았으면 그리지 않음
+            return
+
+        # 진행도 계산
+        progress = self.age / self.duration
+        current_radius = int(self.max_radius * progress)
+
+        # 알파값 계산 (시간에 따라 페이드 아웃)
+        alpha = int(255 * (1 - progress))
+        alpha = max(0, min(255, alpha))
+
+        # 반투명 서피스 생성
+        size = current_radius * 2 + 10
+        surf = pygame.Surface((size, size), pygame.SRCALPHA)
+        color_with_alpha = self.color + (alpha,)
+        pygame.draw.circle(
+            surf, color_with_alpha, (size // 2, size // 2), current_radius, self.width
+        )
+
+        screen.blit(
+            surf, (int(self.center.x - size // 2), int(self.center.y - size // 2))
+        )
+
+
+# ============================================================
+# Lightning Effect
+# ============================================================
+
+class LightningEffect:
+    """번개 체인 시각 효과 - 이미지 기반"""
+
+    # 클래스 변수로 이미지 캐싱
+    _lightning_image = None
+    _image_loaded = False
+
+    def __init__(
+        self,
+        start_pos: Tuple[float, float],
+        end_pos: Tuple[float, float],
+        duration: float = 0.4,
+    ):
+        """
+        번개 효과 초기화
+
+        Args:
+            start_pos: 시작 위치 (x, y)
+            end_pos: 끝 위치 (x, y)
+            duration: 지속 시간 (초)
+        """
+        self.start_pos = pygame.math.Vector2(start_pos)
+        self.end_pos = pygame.math.Vector2(end_pos)
+        self.duration = duration
+        self.elapsed = 0.0
+        self.is_alive = True
+
+        # 이미지 로드 (최초 1회만)
+        if not LightningEffect._image_loaded:
+            LightningEffect._load_image()
+
+        # 이미지 기반 번개 준비
+        if LightningEffect._lightning_image:
+            self._prepare_image_lightning()
+        else:
+            self.scaled_image = None
+
+    @classmethod
+    def _load_image(cls):
+        """번개 이미지 로드 (클래스 메서드)"""
+        cls._image_loaded = True
+        try:
+            from pathlib import Path
+
+            image_path = Path("assets/images/effects/lightning_chain.png")
+            if image_path.exists():
+                cls._lightning_image = pygame.image.load(
+                    str(image_path)
+                ).convert_alpha()
+            else:
+                cls._lightning_image = None
+        except:
+            cls._lightning_image = None
+
+    def _prepare_image_lightning(self):
+        """이미지 기반 번개 준비"""
+        # 시작-끝 거리와 각도 계산
+        direction = self.end_pos - self.start_pos
+        distance = direction.length()
+
+        if distance == 0:
+            self.scaled_image = None
+            return
+
+        angle = math.degrees(math.atan2(direction.y, direction.x))
+
+        # 이미지를 거리에 맞게 스케일링
+        img_width = LightningEffect._lightning_image.get_width()
+        scale_factor = distance / img_width if img_width > 0 else 1.0
+
+        scaled_width = int(img_width * scale_factor)
+        scaled_height = int(
+            LightningEffect._lightning_image.get_height() * scale_factor
+        )
+
+        if scaled_width <= 0 or scaled_height <= 0:
+            self.scaled_image = None
+            return
+
+        self.scaled_image = pygame.transform.scale(
+            LightningEffect._lightning_image, (scaled_width, scaled_height)
+        )
+
+        # 이미지 회전
+        self.rotated_image = pygame.transform.rotate(self.scaled_image, -angle)
+
+        # 렌더링 위치 계산
+        rect = self.rotated_image.get_rect()
+        rect.center = (
+            (self.start_pos.x + self.end_pos.x) / 2,
+            (self.start_pos.y + self.end_pos.y) / 2,
+        )
+        self.render_rect = rect
+
+    def update(self, dt: float):
+        """번개 효과 업데이트"""
+        self.elapsed += dt
+        if self.elapsed >= self.duration:
+            self.is_alive = False
+
+    def draw(self, screen: pygame.Surface):
+        """번개 효과 그리기"""
+        if not self.is_alive:
+            return
+
+        # 알파값 계산 (페이드아웃)
+        alpha = int(255 * (1.0 - self.elapsed / self.duration))
+
+        if self.scaled_image and hasattr(self, "rotated_image"):
+            # 이미지 기반 번개
+            temp_image = self.rotated_image.copy()
+            temp_image.set_alpha(alpha)
+            screen.blit(temp_image, self.render_rect)
+        else:
+            # 폴백: 프로시저럴 번개
+            self._draw_procedural(screen, alpha)
+
+    def _draw_procedural(self, screen: pygame.Surface, alpha: int):
+        """프로시저럴 번개 그리기 (이미지가 없을 때 폴백)"""
+        # 번개 경로 생성
+        points = [self.start_pos]
+        direction = self.end_pos - self.start_pos
+        distance = direction.length()
+
+        if distance > 0:
+            direction = direction.normalize()
+            segments = max(3, int(distance / 30))
+
+            for i in range(1, segments):
+                progress = i / segments
+                base_point = self.start_pos + direction * (distance * progress)
+                perpendicular = pygame.math.Vector2(-direction.y, direction.x)
+                offset = perpendicular * random.uniform(-15, 15)
+                points.append(base_point + offset)
+
+        points.append(self.end_pos)
+
+        # 번개 색상
+        colors = [
+            (200, 220, 255),
+            (255, 255, 255),
+            (150, 200, 255),
+        ]
+
+        # 번개 그리기
+        for width, color in [(5, colors[2]), (3, colors[0]), (1, colors[1])]:
+            if len(points) >= 2:
+                try:
+                    pygame.draw.lines(
+                        screen,
+                        color,
+                        False,
+                        [(int(p.x), int(p.y)) for p in points],
+                        width,
+                    )
+                except:
+                    pass
+
+
+# ============================================================
+# Skill Effects
+# ============================================================
+
+class ExecuteEffect:
+    """처형 스킬 시각 효과 - 적이 처형될 때 표시"""
+
+    def __init__(self, pos: Tuple[float, float], duration: float = 0.5):
+        self.pos = pygame.math.Vector2(pos)
+        self.duration = duration
+        self.age = 0.0
+        self.is_alive = True
+
+    def update(self, dt: float):
+        """효과 업데이트"""
+        self.age += dt
+        if self.age >= self.duration:
+            self.is_alive = False
+
+    def draw(self, screen: pygame.Surface):
+        """효과 그리기"""
+        if not self.is_alive:
+            return
+
+        progress = self.age / self.duration
+        alpha = int(255 * (1 - progress))
+
+        # 십자가 모양 그리기
+        size = 30
+        color = (200, 0, 0, alpha)
+
+        # 세로선
+        pygame.draw.line(
+            screen,
+            color,
+            (int(self.pos.x), int(self.pos.y - size)),
+            (int(self.pos.x), int(self.pos.y + size)),
+            3
+        )
+        # 가로선
+        pygame.draw.line(
+            screen,
+            color,
+            (int(self.pos.x - size), int(self.pos.y)),
+            (int(self.pos.x + size), int(self.pos.y)),
+            3
+        )
+
+
+class StarfallEffect:
+    """별똥별 스킬 시각 효과"""
+
+    def __init__(self, pos: Tuple[float, float], duration: float = 0.8):
+        self.pos = pygame.math.Vector2(pos)
+        self.duration = duration
+        self.age = 0.0
+        self.is_alive = True
+        self.max_radius = 100
+
+    def update(self, dt: float):
+        """효과 업데이트"""
+        self.age += dt
+        if self.age >= self.duration:
+            self.is_alive = False
+
+    def draw(self, screen: pygame.Surface):
+        """효과 그리기"""
+        if not self.is_alive:
+            return
+
+        progress = self.age / self.duration
+        current_radius = int(self.max_radius * progress)
+        alpha = int(255 * (1 - progress))
+
+        # 밝은 노란색 원형 폭발
+        surf = pygame.Surface((current_radius * 2, current_radius * 2), pygame.SRCALPHA)
+
+        # 여러 겹의 원으로 빛나는 효과
+        for i in range(3, 0, -1):
+            radius = int(current_radius * i / 3)
+            layer_alpha = int(alpha * i / 3)
+            color = (255, 220, 100, layer_alpha)
+            pygame.draw.circle(surf, color, (current_radius, current_radius), radius)
+
+        screen.blit(surf, (int(self.pos.x - current_radius), int(self.pos.y - current_radius)))
+
+
 # =============================================================================
 # 2막 벙커 포신 연출 효과
 # =============================================================================

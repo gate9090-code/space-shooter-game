@@ -532,7 +532,7 @@ class ReflectionMode(GameMode):
         if self.dialogue_state == "intro" or self.dialogue_state == "outro":
             return
 
-        from objects import render_dialogue_box
+        from cutscenes.base import render_dialogue_box
 
         # 현재 대화 데이터 구성
         current_dialogue = {

@@ -16,11 +16,20 @@ import random
 
 # Screen effects imported from effects.screen_effects
 from effects.screen_effects import (
-    Particle, ScreenFlash, ScreenShake,
-    DamageFlash, LevelUpEffect,
-    DynamicTextEffect, ReviveTextEffect,
-    NebulaParticle, SmokeParticle, BurstParticle,
-    DissolveEffect, FadeEffect, ImplodeEffect, TimeSlowEffect
+    Particle,
+    ScreenFlash,
+    ScreenShake,
+    DamageFlash,
+    LevelUpEffect,
+    DynamicTextEffect,
+    ReviveTextEffect,
+    NebulaParticle,
+    SmokeParticle,
+    BurstParticle,
+    DissolveEffect,
+    FadeEffect,
+    ImplodeEffect,
+    TimeSlowEffect,
 )
 
 
@@ -47,9 +56,15 @@ class BaseCutsceneEffect:
     PHASE_FADEOUT = 3
     PHASE_DONE = 4
 
-    def __init__(self, screen_size: tuple, background_path: str = None,
-                 dialogue_after: list = None, sound_manager=None,
-                 special_effects: dict = None, scene_id: str = "base_scene"):
+    def __init__(
+        self,
+        screen_size: tuple,
+        background_path: str = None,
+        dialogue_after: list = None,
+        sound_manager=None,
+        special_effects: dict = None,
+        scene_id: str = "base_scene",
+    ):
         """
         Args:
             screen_size: 화면 크기 (width, height)
@@ -129,6 +144,7 @@ class BaseCutsceneEffect:
 
         try:
             from mode_configs.config_story_dialogue import CHARACTER_PORTRAITS
+
             path = CHARACTER_PORTRAITS.get(speaker)
         except ImportError:
             path = None
@@ -148,7 +164,9 @@ class BaseCutsceneEffect:
     def _start_dialogue(self):
         """현재 대화 시작"""
         if self.current_dialogue_index < len(self.dialogue_after):
-            self.dialogue_text = self.dialogue_after[self.current_dialogue_index].get("text", "")
+            self.dialogue_text = self.dialogue_after[self.current_dialogue_index].get(
+                "text", ""
+            )
             self.typing_progress = 0.0
             self.waiting_for_click = False
 
@@ -267,20 +285,37 @@ class BaseCutsceneEffect:
         else:
             screen.fill((20, 20, 30))
 
-    def _render_dialogue(self, screen: pygame.Surface, box_color: tuple = (20, 30, 40, 220),
-                         border_color: tuple = (100, 100, 150), text_color: tuple = (220, 220, 220)):
+    def _render_dialogue(
+        self,
+        screen: pygame.Surface,
+        box_color: tuple = (20, 30, 40, 220),
+        border_color: tuple = (100, 100, 150),
+        text_color: tuple = (220, 220, 220),
+    ):
         """대화창 렌더링 (초상화 포함)"""
-        if not self.dialogue_after or self.current_dialogue_index >= len(self.dialogue_after):
+        if not self.dialogue_after or self.current_dialogue_index >= len(
+            self.dialogue_after
+        ):
             return
 
         dialogue = self.dialogue_after[self.current_dialogue_index]
         speaker = dialogue.get("speaker", "")
         portrait = self._get_portrait(speaker) if speaker else None
 
-        render_dialogue_box(screen, self.screen_size, self.fonts, dialogue,
-                           self.dialogue_text, self.typing_progress, self.waiting_for_click,
-                           box_color=box_color, border_color=border_color, text_color=text_color,
-                           has_portrait=(portrait is not None), portrait=portrait)
+        render_dialogue_box(
+            screen,
+            self.screen_size,
+            self.fonts,
+            dialogue,
+            self.dialogue_text,
+            self.typing_progress,
+            self.waiting_for_click,
+            box_color=box_color,
+            border_color=border_color,
+            text_color=text_color,
+            has_portrait=(portrait is not None),
+            portrait=portrait,
+        )
 
     def _render_click_hint(self, screen: pygame.Surface, text: str = "클릭하여 계속"):
         """클릭 힌트 렌더링"""
@@ -290,18 +325,30 @@ class BaseCutsceneEffect:
         alpha = int(128 + 127 * math.sin(pygame.time.get_ticks() / 300))
         hint_surf = self.fonts["small"].render(text, True, (200, 200, 200))
         hint_surf.set_alpha(alpha)
-        hint_rect = hint_surf.get_rect(midbottom=(self.screen_size[0] // 2, self.screen_size[1] - 20))
+        hint_rect = hint_surf.get_rect(
+            midbottom=(self.screen_size[0] // 2, self.screen_size[1] - 20)
+        )
         screen.blit(hint_surf, hint_rect)
 
 
 # =========================================================
 # 공통 대화창 렌더링 헬퍼 함수
 # =========================================================
-def render_dialogue_box(screen: pygame.Surface, screen_size: tuple, fonts: dict,
-                        dialogue: dict, dialogue_text: str, typing_progress: float,
-                        waiting_for_click: bool, box_color: tuple = (20, 20, 40, 220),
-                        border_color: tuple = (100, 100, 150), text_color: tuple = (255, 255, 255),
-                        box_height: int = 180, has_portrait: bool = False, portrait: pygame.Surface = None):
+def render_dialogue_box(
+    screen: pygame.Surface,
+    screen_size: tuple,
+    fonts: dict,
+    dialogue: dict,
+    dialogue_text: str,
+    typing_progress: float,
+    waiting_for_click: bool,
+    box_color: tuple = (20, 20, 40, 220),
+    border_color: tuple = (100, 100, 150),
+    text_color: tuple = (255, 255, 255),
+    box_height: int = 180,
+    has_portrait: bool = False,
+    portrait: pygame.Surface = None,
+):
     """
     공통 대화창 렌더링 함수 - StoryBriefingEffect 스타일 (인트로 기준)
 
@@ -329,22 +376,34 @@ def render_dialogue_box(screen: pygame.Surface, screen_size: tuple, fonts: dict,
 
     # 박스 배경 및 테두리 (StoryBriefingEffect 스타일)
     box_surf = pygame.Surface((box_width, box_height), pygame.SRCALPHA)
-    pygame.draw.rect(box_surf, box_color, (0, 0, box_width, box_height), border_radius=10)
+    pygame.draw.rect(
+        box_surf, box_color, (0, 0, box_width, box_height), border_radius=10
+    )
     border_col = border_color if len(border_color) == 4 else border_color + (200,)
-    pygame.draw.rect(box_surf, border_col, (0, 0, box_width, box_height), 2, border_radius=10)
+    pygame.draw.rect(
+        box_surf, border_col, (0, 0, box_width, box_height), 2, border_radius=10
+    )
     screen.blit(box_surf, (box_x, box_y))
 
     # 초상화 (StoryBriefingEffect 스타일: 200x200, 하단 왼쪽 정렬, 사각형)
     portrait_width = 0
     if has_portrait and portrait:
-        portrait_size = 200  # StoryBriefingEffect와 동일
+        # 화자에 따라 초상화 크기 조정
+        speaker = dialogue.get("speaker", "") if dialogue else ""
+        if speaker == "ARTEMIS":
+            portrait_size = 280  # 아르테미스: 40% 확대 (200 * 1.4 = 280)
+        else:
+            portrait_size = 260  # 기타 캐릭터: 30% 확대 (200 * 1.3 = 260)
+
         portrait_x = box_x + 20
         portrait_y = box_y + box_height - portrait_size - 10  # bottomleft 정렬
 
         # 초상화 스케일 및 표시
-        portrait_copy = pygame.transform.smoothscale(portrait, (portrait_size, portrait_size))
+        portrait_copy = pygame.transform.smoothscale(
+            portrait, (portrait_size, portrait_size)
+        )
         screen.blit(portrait_copy, (portrait_x, portrait_y))
-        portrait_width = portrait_size + 30  # StoryBriefingEffect와 동일한 간격
+        portrait_width = portrait_size + 30  # 간격 유지
 
     # 텍스트 시작 위치 (초상화 오른쪽)
     text_left_x = box_x + portrait_width + 20
@@ -353,7 +412,11 @@ def render_dialogue_box(screen: pygame.Surface, screen_size: tuple, fonts: dict,
     text_y = box_y + 15
     if speaker and speaker != "NARRATOR" and "medium" in fonts:
         try:
-            from mode_configs.config_story_dialogue import CHARACTER_COLORS, CHARACTER_NAMES
+            from mode_configs.config_story_dialogue import (
+                CHARACTER_COLORS,
+                CHARACTER_NAMES,
+            )
+
             name_color = CHARACTER_COLORS.get(speaker, (200, 200, 200))
             name = CHARACTER_NAMES.get(speaker, speaker)
         except ImportError:
@@ -368,7 +431,7 @@ def render_dialogue_box(screen: pygame.Surface, screen_size: tuple, fonts: dict,
 
     # 대사 텍스트 (단어 단위 줄바꿈 - StoryBriefingEffect 스타일)
     if "small" in fonts and dialogue_text:
-        visible_text = dialogue_text[:int(typing_progress)]
+        visible_text = dialogue_text[: int(typing_progress)]
 
         # 텍스트 영역 너비 계산
         max_width = box_width - portrait_width - 60
@@ -395,7 +458,9 @@ def render_dialogue_box(screen: pygame.Surface, screen_size: tuple, fonts: dict,
         # 각 줄 렌더링
         for i, line in enumerate(lines):
             text_surf = fonts["small"].render(line, True, final_text_color)
-            screen.blit(text_surf, (text_left_x, text_y + i * 28))  # 28px 간격 (StoryBriefingEffect)
+            screen.blit(
+                text_surf, (text_left_x, text_y + i * 28)
+            )  # 28px 간격 (StoryBriefingEffect)
 
     # 클릭 대기 표시 (StoryBriefingEffect 스타일)
     if waiting_for_click and "small" in fonts:
@@ -404,16 +469,23 @@ def render_dialogue_box(screen: pygame.Surface, screen_size: tuple, fonts: dict,
 
     return box_x, box_y, box_width, box_height  # 필요시 반환
 
+
 # =========================================================
 # 0. Weapon 클래스 (무기 로직)
 # =========================================================
 class Weapon:
-    def __init__(self, damage: float, cooldown: float, bullet_count: int, spread_angle: float = 5.0):
+    def __init__(
+        self,
+        damage: float,
+        cooldown: float,
+        bullet_count: int,
+        spread_angle: float = 5.0,
+    ):
         self.damage = damage
         self.cooldown = cooldown
         self.bullet_count = bullet_count
         self.spread_angle = spread_angle
-        self.time_since_last_shot = 0.0 # 발사 쿨타임 추적
+        self.time_since_last_shot = 0.0  # 발사 쿨타임 추적
 
     def update(self, dt: float):
         """무기의 쿨타임을 업데이트합니다."""
@@ -423,14 +495,21 @@ class Weapon:
         """현재 발사 가능한지 확인합니다."""
         return self.time_since_last_shot >= self.cooldown
 
-    def fire(self, start_pos: pygame.math.Vector2, target_pos: pygame.math.Vector2, bullets: List, piercing_state: bool, player=None):
+    def fire(
+        self,
+        start_pos: pygame.math.Vector2,
+        target_pos: pygame.math.Vector2,
+        bullets: List,
+        piercing_state: bool,
+        player=None,
+    ):
         """
         지정된 목표 위치로 총알을 발사합니다.
         """
         if not self.can_shoot():
             return
 
-        self.time_since_last_shot = 0.0 # 쿨타임 초기화
+        self.time_since_last_shot = 0.0  # 쿨타임 초기화
 
         # 목표 방향 벡터 계산
         direction = target_pos - start_pos
@@ -438,7 +517,7 @@ class Weapon:
 
         # Berserker 스킬: 저체력 시 데미지 2배
         bullet_damage = self.damage
-        if player and hasattr(player, 'has_berserker') and player.has_berserker:
+        if player and hasattr(player, "has_berserker") and player.has_berserker:
             if player.hp / player.max_hp < 0.3:
                 bullet_damage = int(self.damage * 2.0)
 
@@ -454,14 +533,16 @@ class Weapon:
 
             # 각도를 라디안에서 쿼터니언 (이동 벡터)로 변환
             new_angle = base_angle + math.radians(angle_offset)
-            bullet_direction = pygame.math.Vector2(math.cos(new_angle), math.sin(new_angle)).normalize()
+            bullet_direction = pygame.math.Vector2(
+                math.cos(new_angle), math.sin(new_angle)
+            ).normalize()
 
             # 새 총알 객체 생성 및 리스트에 추가
             bullet = Bullet(
                 start_pos.copy(),
                 bullet_direction,
                 bullet_damage,
-                piercing_state # 피어싱 상태를 Bullet에 전달
+                piercing_state,  # 피어싱 상태를 Bullet에 전달
             )
             bullets.append(bullet)
 
@@ -478,13 +559,24 @@ class Weapon:
         self.bullet_count += 1
         print(f"INFO: Bullet count increased to {self.bullet_count}")
 
+
 # =========================================================
 # 1. 애니메이션/이펙트 클래스
 # =========================================================
 
+
 class AnimatedEffect:
     """애니메이션을 재생하고 스스로 제거되는 이펙트 클래스"""
-    def __init__(self, pos: Tuple[int, int], screen_height: int, image_path: Path, object_type_key: str, frame_duration: float = 0.1, total_frames: int = 1):
+
+    def __init__(
+        self,
+        pos: Tuple[int, int],
+        screen_height: int,
+        image_path: Path,
+        object_type_key: str,
+        frame_duration: float = 0.1,
+        total_frames: int = 1,
+    ):
         self.pos = pygame.math.Vector2(pos)
         self.start_time = pygame.time.get_ticks() / 1000.0
         self.frame_duration = frame_duration
@@ -492,7 +584,7 @@ class AnimatedEffect:
         self.is_finished = False
 
         # 이미지 로드 및 크기 설정 (config.IMAGE_SIZE_RATIOS 사용)
-        size_ratio = config.IMAGE_SIZE_RATIOS.get(object_type_key, 0.03) # 기본값 0.03
+        size_ratio = config.IMAGE_SIZE_RATIOS.get(object_type_key, 0.03)  # 기본값 0.03
         image_height = int(screen_height * size_ratio)
 
         # 이미지 크기는 이펙트 종류에 따라 조정 가능하도록 함
@@ -506,7 +598,7 @@ class AnimatedEffect:
 
         # 단일 프레임 이펙트이므로 바로 종료
         if elapsed_time > self.frame_duration * self.total_frames:
-             self.is_finished = True
+            self.is_finished = True
 
     def draw(self, screen: pygame.Surface):
         """현재 프레임의 이미지를 화면에 그립니다."""
@@ -519,15 +611,46 @@ class DamageNumber:
 
     # 데미지 크기에 따른 폰트/색상 설정
     DAMAGE_TIERS = {
-        "small": {"threshold": 0, "font_size": 20, "color": (200, 200, 200), "lifetime": 0.8},
-        "normal": {"threshold": 30, "font_size": 26, "color": (255, 255, 100), "lifetime": 1.2},
-        "big": {"threshold": 100, "font_size": 34, "color": (255, 180, 50), "lifetime": 1.5},
-        "huge": {"threshold": 300, "font_size": 44, "color": (255, 100, 50), "lifetime": 2.0},
-        "massive": {"threshold": 1000, "font_size": 56, "color": (255, 50, 50), "lifetime": 2.5},
+        "small": {
+            "threshold": 0,
+            "font_size": 20,
+            "color": (200, 200, 200),
+            "lifetime": 0.8,
+        },
+        "normal": {
+            "threshold": 30,
+            "font_size": 26,
+            "color": (255, 255, 100),
+            "lifetime": 1.2,
+        },
+        "big": {
+            "threshold": 100,
+            "font_size": 34,
+            "color": (255, 180, 50),
+            "lifetime": 1.5,
+        },
+        "huge": {
+            "threshold": 300,
+            "font_size": 44,
+            "color": (255, 100, 50),
+            "lifetime": 2.0,
+        },
+        "massive": {
+            "threshold": 1000,
+            "font_size": 56,
+            "color": (255, 50, 50),
+            "lifetime": 2.5,
+        },
     }
 
-    def __init__(self, damage: float, pos: Tuple[float, float], is_accumulated: bool = False,
-                 is_critical: bool = False, font: pygame.font.Font = None):
+    def __init__(
+        self,
+        damage: float,
+        pos: Tuple[float, float],
+        is_accumulated: bool = False,
+        is_critical: bool = False,
+        font: pygame.font.Font = None,
+    ):
         self.damage = int(damage)
         self.pos = pygame.math.Vector2(pos)
         self.start_time = pygame.time.get_ticks() / 1000.0
@@ -590,8 +713,10 @@ class DamageNumber:
 
         # 스케일 적용
         if self.scale != 1.0:
-            new_size = (int(base_text.get_width() * self.scale),
-                       int(base_text.get_height() * self.scale))
+            new_size = (
+                int(base_text.get_width() * self.scale),
+                int(base_text.get_height() * self.scale),
+            )
             self.text = pygame.transform.smoothscale(base_text, new_size)
         else:
             self.text = base_text
@@ -618,7 +743,9 @@ class DamageNumber:
         # 페이드 아웃 (후반부에만)
         fade_start = self.lifetime * 0.6
         if elapsed_time > fade_start:
-            alpha = int(255 * (1 - (elapsed_time - fade_start) / (self.lifetime - fade_start)))
+            alpha = int(
+                255 * (1 - (elapsed_time - fade_start) / (self.lifetime - fade_start))
+            )
             self.text.set_alpha(max(0, alpha))
 
     def draw(self, screen: pygame.Surface):
@@ -637,8 +764,12 @@ class DamageNumberManager:
     3. 개별 작은 틱 데미지는 선택적으로 표시 가능
     """
 
-    def __init__(self, accumulate_window: float = 0.4, show_ticks: bool = False,
-                 max_numbers: int = 15):
+    def __init__(
+        self,
+        accumulate_window: float = 0.4,
+        show_ticks: bool = False,
+        max_numbers: int = 15,
+    ):
         """
         Args:
             accumulate_window: 데미지 누적 시간 (초)
@@ -655,8 +786,13 @@ class DamageNumberManager:
         # 대상별 누적 데미지 {enemy_id: {"damage": total, "pos": last_pos, "start_time": time}}
         self.accumulated_damage: Dict[int, Dict] = {}
 
-    def add_damage(self, damage: float, pos: Tuple[float, float], target_id: int = None,
-                   is_critical: bool = False):
+    def add_damage(
+        self,
+        damage: float,
+        pos: Tuple[float, float],
+        target_id: int = None,
+        is_critical: bool = False,
+    ):
         """
         데미지 추가
 
@@ -688,7 +824,9 @@ class DamageNumberManager:
                 self._add_tick_damage(damage, pos)
         else:
             # 대상 없으면 바로 표시
-            self._create_damage_number(damage, pos, is_accumulated=False, is_critical=is_critical)
+            self._create_damage_number(
+                damage, pos, is_accumulated=False, is_critical=is_critical
+            )
 
     def _add_tick_damage(self, damage: float, pos: Tuple[float, float]):
         """작은 틱 데미지 표시"""
@@ -698,16 +836,23 @@ class DamageNumberManager:
         dmg_num.rise_speed = 80
         self.damage_numbers.append(dmg_num)
 
-    def _create_damage_number(self, damage: float, pos: Tuple[float, float],
-                              is_accumulated: bool = False, is_critical: bool = False):
+    def _create_damage_number(
+        self,
+        damage: float,
+        pos: Tuple[float, float],
+        is_accumulated: bool = False,
+        is_critical: bool = False,
+    ):
         """데미지 숫자 생성"""
-        dmg_num = DamageNumber(damage, pos, is_accumulated=is_accumulated, is_critical=is_critical)
+        dmg_num = DamageNumber(
+            damage, pos, is_accumulated=is_accumulated, is_critical=is_critical
+        )
         self.damage_numbers.append(dmg_num)
 
         # 최대 개수 제한
         if len(self.damage_numbers) > self.max_numbers:
             # 가장 오래된 것 제거
-            self.damage_numbers = self.damage_numbers[-self.max_numbers:]
+            self.damage_numbers = self.damage_numbers[-self.max_numbers :]
 
     def update(self, dt: float):
         """업데이트 - 누적 시간 체크 및 데미지 숫자 업데이트"""
@@ -724,7 +869,7 @@ class DamageNumberManager:
                     acc["damage"],
                     acc["pos"],
                     is_accumulated=True,
-                    is_critical=acc.get("is_critical", False)
+                    is_critical=acc.get("is_critical", False),
                 )
                 targets_to_remove.append(target_id)
 
@@ -747,7 +892,7 @@ class DamageNumberManager:
                 acc["damage"],
                 acc["pos"],
                 is_accumulated=True,
-                is_critical=acc.get("is_critical", False)
+                is_critical=acc.get("is_critical", False),
             )
             del self.accumulated_damage[target_id]
 
@@ -766,16 +911,25 @@ class DamageNumberManager:
 # 2. 플레이어 클래스
 # =========================================================
 
+
 class Player:
     """플레이어 우주선 클래스"""
 
-    def __init__(self, pos: pygame.math.Vector2, screen_height: int, upgrades: Dict[str, int], ship_type: str = None):
+    def __init__(
+        self,
+        pos: pygame.math.Vector2,
+        screen_height: int,
+        upgrades: Dict[str, int],
+        ship_type: str = None,
+    ):
         # 0. 영구 업그레이드 저장
         self.upgrades = upgrades
 
         # 0-1. 함선 타입 설정
         self.ship_type = ship_type or config.DEFAULT_SHIP
-        self.ship_data = config.SHIP_TYPES.get(self.ship_type, config.SHIP_TYPES[config.DEFAULT_SHIP])
+        self.ship_data = config.SHIP_TYPES.get(
+            self.ship_type, config.SHIP_TYPES[config.DEFAULT_SHIP]
+        )
         self.ship_stats = self.ship_data["stats"]
 
         # 1. 위치 및 이동
@@ -801,16 +955,27 @@ class Player:
 
         # 3. 이미지 및 히트박스 (함선 크기에 따라 조정)
         ship_size = self.ship_stats.get("size", "medium")
-        size_ratio = config.SHIP_SIZE_RATIOS.get(ship_size, config.IMAGE_SIZE_RATIOS["PLAYER"])
+        size_ratio = config.SHIP_SIZE_RATIOS.get(
+            ship_size, config.IMAGE_SIZE_RATIOS["PLAYER"]
+        )
         image_size = int(screen_height * size_ratio)
 
         # 함선 이미지 로드 시도
-        ship_image_path = config.ASSET_DIR / "images" / "ships" / self.ship_data.get("image", "fighter_front.png")
+        ship_image_path = (
+            config.ASSET_DIR
+            / "images"
+            / "ships"
+            / self.ship_data.get("image", "fighter_front.png")
+        )
         if ship_image_path.exists():
-            self.image = AssetManager.get_image(ship_image_path, (image_size, image_size))
+            self.image = AssetManager.get_image(
+                ship_image_path, (image_size, image_size)
+            )
         else:
             # 기본 플레이어 이미지 사용
-            self.image = AssetManager.get_image(config.PLAYER_SHIP_IMAGE_PATH, (image_size, image_size))
+            self.image = AssetManager.get_image(
+                config.PLAYER_SHIP_IMAGE_PATH, (image_size, image_size)
+            )
         self.image_rect = self.image.get_rect(center=(self.pos.x, self.pos.y))
 
         hitbox_size = int(image_size * config.PLAYER_HITBOX_RATIO)
@@ -855,9 +1020,9 @@ class Player:
 
         # 3-8. 스킬 활성화 타임 추적 (스킬 UI 표시용)
         self.skill_last_trigger = {
-            'add_explosive': 0.0,
-            'add_lightning': 0.0,
-            'add_frost': 0.0,
+            "add_explosive": 0.0,
+            "add_lightning": 0.0,
+            "add_frost": 0.0,
         }
 
         # 4. 무기 초기화 (함선 배율 + Workshop 업그레이드 적용)
@@ -874,7 +1039,11 @@ class Player:
         fire_rate_level = self.upgrades.get("FIRE_RATE", 0)
         workshop_cd_reduction = 0.10 * fire_rate_level
 
-        final_cooldown = base_cooldown * (1 - cd_reduction_ratio - workshop_cd_reduction) * cooldown_mult
+        final_cooldown = (
+            base_cooldown
+            * (1 - cd_reduction_ratio - workshop_cd_reduction)
+            * cooldown_mult
+        )
         final_cooldown = max(0.05, final_cooldown)  # 최소 쿨다운 제한
 
         # 데미지 계산
@@ -890,7 +1059,7 @@ class Player:
             damage=int(base_damage * damage_mult),
             cooldown=final_cooldown,
             bullet_count=1,
-            spread_angle=5.0
+            spread_angle=5.0,
         )
 
         # Workshop PIERCING: +1 penetration per level
@@ -908,7 +1077,9 @@ class Player:
 
         # 7. 궁극기 시스템 (Q 키)
         self.ultimate_type = "NOVA_BLAST"  # 기본 궁극기 타입
-        self.ultimate_charge = config.ULTIMATE_SETTINGS["charge_time"]  # 궁극기 충전 타이머
+        self.ultimate_charge = config.ULTIMATE_SETTINGS[
+            "charge_time"
+        ]  # 궁극기 충전 타이머
         self.ultimate_cooldown_timer = 0.0  # 궁극기 쿨다운 타이머
         self.ultimate_active = False  # 궁극기 활성화 상태
         self.ultimate_timer = 0.0  # 궁극기 효과 지속 시간
@@ -932,11 +1103,14 @@ class Player:
 
         # 10. 이동 효과 시스템
         self.velocity = pygame.math.Vector2(0, 0)  # 현재 이동 속도 벡터
-        self.trail_particles = []  # 이동 트레일 파티클 [(pos, lifetime, color, size), ...]
+        self.trail_particles = (
+            []
+        )  # 이동 트레일 파티클 [(pos, lifetime, color, size), ...]
         self.afterimages = []  # 잔상 효과 [(image, pos, alpha, lifetime), ...]
         self.last_trail_spawn = 0.0  # 마지막 트레일 생성 시간
         self.trail_spawn_interval = 0.02  # 트레일 생성 간격 (초)
         self.disable_afterimages = False  # 잔상 비활성화 플래그 (공성 모드용)
+        self.disable_trail = False  # 트레일 비활성화 플래그 (승리 애니메이션용)
 
         # 10-1. 이동 방향 기울기(틸트) 시스템
         self.current_tilt = 0.0  # 현재 기울기 각도 (도)
@@ -1066,7 +1240,14 @@ class Player:
         if defense_level > 0:
             self.damage_reduction = 0.03 * defense_level
 
-    def move(self, keys: Dict, dt: float, screen_size: Tuple[int, int], current_time: float = 0.0, game_data: Dict = None):
+    def move(
+        self,
+        keys: Dict,
+        dt: float,
+        screen_size: Tuple[int, int],
+        current_time: float = 0.0,
+        game_data: Dict = None,
+    ):
         """키 입력 또는 마우스 클릭 목표를 기반으로 플레이어를 이동시키고 이동 효과를 생성합니다."""
 
         # 이동 벡터 초기화
@@ -1100,7 +1281,7 @@ class Player:
 
         # 보스 웨이브 속도 버프 계산 (20% 증가)
         speed_multiplier = 1.0
-        if game_data and game_data.get('current_wave') in config.BOSS_WAVES:
+        if game_data and game_data.get("current_wave") in config.BOSS_WAVES:
             speed_multiplier = 1.2  # 보스 웨이브에서 20% 속도 증가
 
         # 대각선 이동 시 속도 보정 (정규화)
@@ -1152,10 +1333,10 @@ class Player:
             return None
 
         closest_enemy = None
-        closest_dist = float('inf')
+        closest_dist = float("inf")
 
         for enemy in enemies:
-            if not hasattr(enemy, 'pos'):
+            if not hasattr(enemy, "pos"):
                 continue
             dist = (enemy.pos - self.pos).length()
             if dist < closest_dist:
@@ -1174,7 +1355,7 @@ class Player:
         Returns:
             적 방향 단위 벡터 또는 (0, -1) (위쪽)
         """
-        if enemy is None or not hasattr(enemy, 'pos'):
+        if enemy is None or not hasattr(enemy, "pos"):
             return pygame.math.Vector2(0, -1)  # 기본: 위쪽
 
         to_enemy = enemy.pos - self.pos
@@ -1272,7 +1453,7 @@ class Player:
                 'lifetime': 0.3,  # 잔상 지속 시간
                 'max_lifetime': 0.3
             })
-            '''     
+            '''
 
     def _create_movement_effects(self, current_time: float):
         """이동 속도와 방향에 따른 시각 효과 생성"""
@@ -1303,13 +1484,11 @@ class Player:
             particle_count = int(2 + speed_ratio * 3)
 
             for _ in range(particle_count):
-            # 약간의 랜덤 분산
+                # 약간의 랜덤 분산
                 spread = pygame.math.Vector2(
-                random.uniform(-10, 10),
-                random.uniform(-10, 10)
-            )
+                    random.uniform(-10, 10), random.uniform(-10, 10)
+                )
             particle_pos = spawn_pos + spread
-
 
         if speed_ratio < 0.5:
             color = (100, 150, 255)  # 파란색
@@ -1318,20 +1497,21 @@ class Player:
         else:
             color = (255, 215, 0)  # 주황색
 
-
             # 속도에 따른 파티클 크기
             size = int(3 + speed_ratio * 5)
 
             # 파티클 수명 (속도가 빠를수록 길게)
             lifetime = 0.3 + speed_ratio * 0.3
 
-            self.trail_particles.append({
-            'pos': particle_pos.copy(),
-            'lifetime': lifetime,
-            'max_lifetime': lifetime,
-            'color': color,
-            'size': size
-            })
+            self.trail_particles.append(
+                {
+                    "pos": particle_pos.copy(),
+                    "lifetime": lifetime,
+                    "max_lifetime": lifetime,
+                    "color": color,
+                    "size": size,
+                }
+            )
 
             # 고속 이동 시 잔상 효과 추가 (공성 모드에서는 비활성화)
             if speed_ratio > 0.7 and not self.disable_afterimages:
@@ -1344,21 +1524,15 @@ class Player:
                 if abs(self.current_tilt) > 0.5:
                     afterimage = pygame.transform.rotate(afterimage, self.current_tilt)
 
-                self.afterimages.append({
-                    'image': afterimage,
-                    'pos': self.pos.copy(),
-                    'alpha': alpha,
-                    'lifetime': 0.15,  # 잔상 지속 시간
-                    'max_lifetime': 0.15
-                })    
-
-
-
-
-
-
-
-
+                self.afterimages.append(
+                    {
+                        "image": afterimage,
+                        "pos": self.pos.copy(),
+                        "alpha": alpha,
+                        "lifetime": 0.15,  # 잔상 지속 시간
+                        "max_lifetime": 0.15,
+                    }
+                )
 
     def activate_ultimate(self, enemies: List):
         """궁극기를 발동합니다 (Q 키)
@@ -1397,14 +1571,16 @@ class Player:
         settings = config.ULTIMATE_SETTINGS["NOVA_BLAST"]
 
         # 폭발 효과 추가
-        self.ultimate_effects.append({
-            "type": "NOVA_BLAST",
-            "pos": self.pos.copy(),
-            "radius": 0,
-            "max_radius": settings["radius"],
-            "timer": settings["duration"],
-            "color": settings["color"],
-        })
+        self.ultimate_effects.append(
+            {
+                "type": "NOVA_BLAST",
+                "pos": self.pos.copy(),
+                "radius": 0,
+                "max_radius": settings["radius"],
+                "timer": settings["duration"],
+                "color": settings["color"],
+            }
+        )
 
         # 범위 내 모든 적에게 데미지 및 넉백
         for enemy in enemies:
@@ -1416,7 +1592,11 @@ class Player:
                 # 넉백 적용
                 if dist > 0:
                     knockback_dir = (enemy.pos - self.pos).normalize()
-                    enemy.pos += knockback_dir * settings["knockback"] * (1 - dist / settings["radius"])
+                    enemy.pos += (
+                        knockback_dir
+                        * settings["knockback"]
+                        * (1 - dist / settings["radius"])
+                    )
 
     def _activate_time_freeze(self, enemies: List):
         """Time Freeze 궁극기 - 모든 적 시간 정지"""
@@ -1431,16 +1611,19 @@ class Player:
 
         # 모든 적 위치에 레이저 타겟 설정
         import random
+
         targets = []
         for i in range(min(settings["strike_count"], len(enemies) * 2)):
             if enemies:
                 target_enemy = random.choice(enemies)
-                targets.append({
-                    "pos": target_enemy.pos.copy(),
-                    "delay": i * settings["strike_interval"],
-                    "timer": 0.0,
-                    "active": False,
-                })
+                targets.append(
+                    {
+                        "pos": target_enemy.pos.copy(),
+                        "delay": i * settings["strike_interval"],
+                        "timer": 0.0,
+                        "active": False,
+                    }
+                )
 
         self.orbital_strikes = targets
         self.orbital_strike_timer = 0.0
@@ -1452,7 +1635,7 @@ class Player:
             return
 
         # Second Chance 스킬: 치명타 회피 (사망 직전에만 발동)
-        if hasattr(self, 'second_chance_rate') and self.second_chance_rate > 0:
+        if hasattr(self, "second_chance_rate") and self.second_chance_rate > 0:
             would_die = (self.hp - damage * (1.0 - self.damage_reduction)) <= 0
             if would_die and random.random() < self.second_chance_rate:
                 print(f"INFO: Second Chance! Dodged lethal damage!")
@@ -1484,12 +1667,15 @@ class Player:
 
     def increase_max_hp(self, amount: int):
         """최대 체력을 증가시키고 현재 체력을 비례적으로 조정합니다."""
-        if amount <= 0: return
+        if amount <= 0:
+            return
 
         # HP가 0 이하면 max_hp만 증가 (게임 오버 상태에서는 회복 안 함)
         if self.hp <= 0:
             self.max_hp += amount
-            print(f"INFO: Max HP increased to {self.max_hp}, HP remains at 0 (game over state)")
+            print(
+                f"INFO: Max HP increased to {self.max_hp}, HP remains at 0 (game over state)"
+            )
             return
 
         # 현재 체력 비율 유지
@@ -1505,19 +1691,22 @@ class Player:
 
     def increase_speed(self, amount: int):
         """이동 속도를 증가시킵니다."""
-        if amount <= 0: return
+        if amount <= 0:
+            return
         self.speed += amount
         print(f"INFO: Speed increased to {self.speed}")
 
     def add_damage_reduction(self, ratio: float):
         """피해 감소 비율을 추가합니다."""
-        if ratio <= 0: return
+        if ratio <= 0:
+            return
         self.damage_reduction = min(0.75, self.damage_reduction + ratio)  # 최대 75%
         print(f"INFO: Damage reduction: {self.damage_reduction * 100:.0f}%")
 
     def add_regeneration(self, rate: float):
         """초당 체력 회복량을 추가합니다."""
-        if rate <= 0: return
+        if rate <= 0:
+            return
         self.regeneration_rate += rate
         print(f"INFO: Regeneration rate: {self.regeneration_rate} HP/s")
 
@@ -1550,7 +1739,9 @@ class Player:
         # 궁극기 충전 타이머 업데이트
         if self.ultimate_charge < config.ULTIMATE_SETTINGS["charge_time"]:
             self.ultimate_charge += dt
-            self.ultimate_charge = min(self.ultimate_charge, config.ULTIMATE_SETTINGS["charge_time"])
+            self.ultimate_charge = min(
+                self.ultimate_charge, config.ULTIMATE_SETTINGS["charge_time"]
+            )
 
         # 궁극기 쿨다운 타이머 업데이트
         if self.ultimate_cooldown_timer > 0:
@@ -1568,22 +1759,31 @@ class Player:
         if self.orbital_strikes:
             self.orbital_strike_timer += dt
             for strike in self.orbital_strikes:
-                if not strike["active"] and self.orbital_strike_timer >= strike["delay"]:
+                if (
+                    not strike["active"]
+                    and self.orbital_strike_timer >= strike["delay"]
+                ):
                     strike["active"] = True
-                    strike["timer"] = config.ULTIMATE_SETTINGS["ORBITAL_STRIKE"]["beam_duration"]
+                    strike["timer"] = config.ULTIMATE_SETTINGS["ORBITAL_STRIKE"][
+                        "beam_duration"
+                    ]
 
                 if strike["active"]:
                     strike["timer"] -= dt
 
             # 완료된 스트라이크 제거
-            self.orbital_strikes = [s for s in self.orbital_strikes if s["timer"] > 0 or not s["active"]]
+            self.orbital_strikes = [
+                s for s in self.orbital_strikes if s["timer"] > 0 or not s["active"]
+            ]
 
         # 궁극기 시각 효과 업데이트
         for effect in self.ultimate_effects:
             effect["timer"] -= dt
             if effect["type"] == "NOVA_BLAST":
                 # 폭발 반경 확장
-                progress = 1 - (effect["timer"] / config.ULTIMATE_SETTINGS["NOVA_BLAST"]["duration"])
+                progress = 1 - (
+                    effect["timer"] / config.ULTIMATE_SETTINGS["NOVA_BLAST"]["duration"]
+                )
                 effect["radius"] = effect["max_radius"] * progress
 
         # 완료된 효과 제거
@@ -1626,7 +1826,9 @@ class Player:
             self.current_tilt = self.target_tilt
 
         # 각도 클램핑
-        self.current_tilt = max(-self.max_tilt_angle, min(self.max_tilt_angle, self.current_tilt))
+        self.current_tilt = max(
+            -self.max_tilt_angle, min(self.max_tilt_angle, self.current_tilt)
+        )
 
     def _update_ship_ability(self, dt: float):
         """함선 특수 능력 상태 업데이트"""
@@ -1658,6 +1860,7 @@ class Player:
                 else:
                     # 은신 중 투명도 조절 (깜빡임 효과)
                     import math
+
                     flicker = 0.3 + 0.2 * math.sin(self.ship_ability_timer * 10)
                     self.cloak_alpha = int(255 * flicker)
 
@@ -1782,19 +1985,19 @@ class Player:
         """이동 효과 업데이트 (파티클 트레일과 잔상)"""
         # 트레일 파티클 업데이트
         for particle in self.trail_particles[:]:
-            particle['lifetime'] -= dt
-            if particle['lifetime'] <= 0:
+            particle["lifetime"] -= dt
+            if particle["lifetime"] <= 0:
                 self.trail_particles.remove(particle)
 
         # 잔상 업데이트
         for afterimage in self.afterimages[:]:
-            afterimage['lifetime'] -= dt
-            if afterimage['lifetime'] <= 0:
+            afterimage["lifetime"] -= dt
+            if afterimage["lifetime"] <= 0:
                 self.afterimages.remove(afterimage)
             else:
                 # 페이드 아웃 효과
-                fade_ratio = afterimage['lifetime'] / afterimage['max_lifetime']
-                afterimage['image'].set_alpha(int(afterimage['alpha'] * fade_ratio))
+                fade_ratio = afterimage["lifetime"] / afterimage["max_lifetime"]
+                afterimage["image"].set_alpha(int(afterimage["alpha"] * fade_ratio))
 
     def _calculate_perspective_scale(self, screen_height: int) -> float:
         """Y 위치 기반 원근감 스케일 계산"""
@@ -1806,7 +2009,9 @@ class Player:
         depth_ratio = max(0.0, min(1.0, depth_ratio))
 
         # 스케일 계산
-        scale = config.PERSPECTIVE_SCALE_MIN + (depth_ratio * (config.PERSPECTIVE_SCALE_MAX - config.PERSPECTIVE_SCALE_MIN))
+        scale = config.PERSPECTIVE_SCALE_MIN + (
+            depth_ratio * (config.PERSPECTIVE_SCALE_MAX - config.PERSPECTIVE_SCALE_MIN)
+        )
         return scale
 
     def draw(self, screen: pygame.Surface):
@@ -1817,58 +2022,86 @@ class Player:
         # 1. 잔상 효과 그리기 (플레이어 뒤에)
         for afterimage in self.afterimages:
             # 잔상에도 원근감 적용
-            if config.PERSPECTIVE_ENABLED and config.PERSPECTIVE_APPLY_TO_PLAYER and perspective_scale != 1.0:
-                afterimage_scale = self._calculate_perspective_scale(screen.get_height())
-                scaled_afterimage = pygame.transform.smoothscale(
-                    afterimage['image'],
-                    (int(afterimage['image'].get_width() * afterimage_scale),
-                     int(afterimage['image'].get_height() * afterimage_scale))
+            if (
+                config.PERSPECTIVE_ENABLED
+                and config.PERSPECTIVE_APPLY_TO_PLAYER
+                and perspective_scale != 1.0
+            ):
+                afterimage_scale = self._calculate_perspective_scale(
+                    screen.get_height()
                 )
-                rect = scaled_afterimage.get_rect(center=(int(afterimage['pos'].x), int(afterimage['pos'].y)))
+                scaled_afterimage = pygame.transform.smoothscale(
+                    afterimage["image"],
+                    (
+                        int(afterimage["image"].get_width() * afterimage_scale),
+                        int(afterimage["image"].get_height() * afterimage_scale),
+                    ),
+                )
+                rect = scaled_afterimage.get_rect(
+                    center=(int(afterimage["pos"].x), int(afterimage["pos"].y))
+                )
                 screen.blit(scaled_afterimage, rect)
             else:
-                rect = afterimage['image'].get_rect(center=(int(afterimage['pos'].x), int(afterimage['pos'].y)))
-                screen.blit(afterimage['image'], rect)
+                rect = afterimage["image"].get_rect(
+                    center=(int(afterimage["pos"].x), int(afterimage["pos"].y))
+                )
+                screen.blit(afterimage["image"], rect)
 
         # 2. 트레일 파티클 그리기
         for particle in self.trail_particles:
             # 페이드 아웃 효과
-            fade_ratio = particle['lifetime'] / particle['max_lifetime']
+            fade_ratio = particle["lifetime"] / particle["max_lifetime"]
             alpha = int(255 * fade_ratio)
 
             # 파티클 크기도 점점 작아짐
-            current_size = max(1, int(particle['size'] * fade_ratio * perspective_scale))
+            current_size = max(
+                1, int(particle["size"] * fade_ratio * perspective_scale)
+            )
 
             # 투명도를 가진 서페이스 생성
-            particle_surface = pygame.Surface((current_size * 2, current_size * 2), pygame.SRCALPHA)
-            pygame.draw.circle(particle_surface, (*particle['color'], alpha),
-                             (current_size, current_size), current_size)
+            particle_surface = pygame.Surface(
+                (current_size * 2, current_size * 2), pygame.SRCALPHA
+            )
+            pygame.draw.circle(
+                particle_surface,
+                (*particle["color"], alpha),
+                (current_size, current_size),
+                current_size,
+            )
 
             # 파티클 위치에 그리기
-            rect = particle_surface.get_rect(center=(int(particle['pos'].x), int(particle['pos'].y)))
+            rect = particle_surface.get_rect(
+                center=(int(particle["pos"].x), int(particle["pos"].y))
+            )
             screen.blit(particle_surface, rect)
 
         # 3. 그릴 이미지 결정 (히트 플래시 적용 + 능력 효과)
         if self.is_flashing:
             # 피격 시 - 붉은색 가미
             flash_surface = self.original_image.copy()
-            flash_surface.fill(config.HIT_FLASH_COLOR, special_flags=pygame.BLEND_RGB_ADD)
+            flash_surface.fill(
+                config.HIT_FLASH_COLOR, special_flags=pygame.BLEND_RGB_ADD
+            )
             draw_image = flash_surface
-        elif getattr(self, 'cloak_active', False):
+        elif getattr(self, "cloak_active", False):
             # 클로킹: 반투명 + 보라색 틴트
             cloak_surface = self.image.copy()
             cloak_surface.set_alpha(80)  # 반투명
             # 보라색 틴트
             tint_surface = pygame.Surface(cloak_surface.get_size(), pygame.SRCALPHA)
             tint_surface.fill((100, 50, 150, 50))
-            cloak_surface.blit(tint_surface, (0, 0), special_flags=pygame.BLEND_RGBA_ADD)
+            cloak_surface.blit(
+                tint_surface, (0, 0), special_flags=pygame.BLEND_RGBA_ADD
+            )
             draw_image = cloak_surface
-        elif getattr(self, 'evasion_active', False):
+        elif getattr(self, "evasion_active", False):
             # 회피 부스트: 노란색 글로우
             evasion_surface = self.image.copy()
             glow_surface = pygame.Surface(evasion_surface.get_size(), pygame.SRCALPHA)
             glow_surface.fill((255, 255, 100, 60))
-            evasion_surface.blit(glow_surface, (0, 0), special_flags=pygame.BLEND_RGBA_ADD)
+            evasion_surface.blit(
+                glow_surface, (0, 0), special_flags=pygame.BLEND_RGBA_ADD
+            )
             draw_image = evasion_surface
         else:
             draw_image = self.image
@@ -1879,11 +2112,17 @@ class Player:
             draw_image = pygame.transform.rotate(draw_image, self.current_tilt)
 
         # 4. 플레이어 이미지 그리기 (원근감 + 틸트 적용)
-        if config.PERSPECTIVE_ENABLED and config.PERSPECTIVE_APPLY_TO_PLAYER and perspective_scale != 1.0:
+        if (
+            config.PERSPECTIVE_ENABLED
+            and config.PERSPECTIVE_APPLY_TO_PLAYER
+            and perspective_scale != 1.0
+        ):
             scaled_image = pygame.transform.smoothscale(
                 draw_image,
-                (int(draw_image.get_width() * perspective_scale),
-                 int(draw_image.get_height() * perspective_scale))
+                (
+                    int(draw_image.get_width() * perspective_scale),
+                    int(draw_image.get_height() * perspective_scale),
+                ),
             )
             scaled_rect = scaled_image.get_rect(center=self.image_rect.center)
             screen.blit(scaled_image, scaled_rect)
@@ -1896,9 +2135,13 @@ class Player:
         for effect in self.ultimate_effects:
             if effect["type"] == "NOVA_BLAST":
                 # 확장하는 원형 폭발 이펙트
-                pygame.draw.circle(screen, effect["color"],
-                                   (int(effect["pos"].x), int(effect["pos"].y)),
-                                   int(effect["radius"]), 5)
+                pygame.draw.circle(
+                    screen,
+                    effect["color"],
+                    (int(effect["pos"].x), int(effect["pos"].y)),
+                    int(effect["radius"]),
+                    5,
+                )
 
         # 6. Time Freeze 화면 틴트
         if self.time_freeze_active:
@@ -1912,25 +2155,35 @@ class Player:
             if strike["active"] and strike["timer"] > 0:
                 settings = config.ULTIMATE_SETTINGS["ORBITAL_STRIKE"]
                 # 레이저 빔 (빨간 원)
-                pygame.draw.circle(screen, settings["color"],
-                                   (int(strike["pos"].x), int(strike["pos"].y)),
-                                   settings["strike_radius"], 3)
+                pygame.draw.circle(
+                    screen,
+                    settings["color"],
+                    (int(strike["pos"].x), int(strike["pos"].y)),
+                    settings["strike_radius"],
+                    3,
+                )
                 # 내부 빛나는 효과
-                pygame.draw.circle(screen, (255, 200, 200),
-                                   (int(strike["pos"].x), int(strike["pos"].y)),
-                                   settings["strike_radius"] // 2)
+                pygame.draw.circle(
+                    screen,
+                    (255, 200, 200),
+                    (int(strike["pos"].x), int(strike["pos"].y)),
+                    settings["strike_radius"] // 2,
+                )
 
         # 8. Ship Ability: Shield 시각 효과
-        if getattr(self, 'shield_active', False):
-            shield_hp = getattr(self, 'shield_hp', 0)
-            shield_max = getattr(self, 'shield_max_hp', 1)
+        if getattr(self, "shield_active", False):
+            shield_hp = getattr(self, "shield_hp", 0)
+            shield_max = getattr(self, "shield_max_hp", 1)
             shield_ratio = shield_hp / shield_max if shield_max > 0 else 0
 
             # 보호막 반지름 (플레이어 크기 기반)
-            shield_radius = int(max(self.image.get_width(), self.image.get_height()) * 0.8)
+            shield_radius = int(
+                max(self.image.get_width(), self.image.get_height()) * 0.8
+            )
 
             # 펄스 효과 (시간에 따라 크기 변화)
             import math
+
             pulse = 1.0 + 0.05 * math.sin(pygame.time.get_ticks() * 0.01)
             shield_radius = int(shield_radius * pulse)
 
@@ -1943,35 +2196,59 @@ class Player:
                 shield_color = (255, 100, 100)  # 빨강
 
             # 외곽 원 (두꺼운 테두리)
-            pygame.draw.circle(screen, shield_color,
-                             (int(self.pos.x), int(self.pos.y)),
-                             shield_radius, 4)
+            pygame.draw.circle(
+                screen,
+                shield_color,
+                (int(self.pos.x), int(self.pos.y)),
+                shield_radius,
+                4,
+            )
 
             # 내부 반투명 원
-            shield_surface = pygame.Surface((shield_radius * 2, shield_radius * 2), pygame.SRCALPHA)
-            pygame.draw.circle(shield_surface, (*shield_color, 40),
-                             (shield_radius, shield_radius), shield_radius)
-            screen.blit(shield_surface, (int(self.pos.x) - shield_radius, int(self.pos.y) - shield_radius))
+            shield_surface = pygame.Surface(
+                (shield_radius * 2, shield_radius * 2), pygame.SRCALPHA
+            )
+            pygame.draw.circle(
+                shield_surface,
+                (*shield_color, 40),
+                (shield_radius, shield_radius),
+                shield_radius,
+            )
+            screen.blit(
+                shield_surface,
+                (int(self.pos.x) - shield_radius, int(self.pos.y) - shield_radius),
+            )
 
 
 # =========================================================
 # 3. 적 클래스
 # =========================================================
 
+
 class Enemy:
     """적 우주선 클래스"""
 
-    def __init__(self, pos: pygame.math.Vector2, screen_height: int, chase_probability: float = 1.0, enemy_type: str = "NORMAL"):
+    def __init__(
+        self,
+        pos: pygame.math.Vector2,
+        screen_height: int,
+        chase_probability: float = 1.0,
+        enemy_type: str = "NORMAL",
+    ):
 
         # 0. 적 타입 설정
         self.enemy_type = enemy_type
-        self.type_config = config.ENEMY_TYPES.get(enemy_type, config.ENEMY_TYPES["NORMAL"])
+        self.type_config = config.ENEMY_TYPES.get(
+            enemy_type, config.ENEMY_TYPES["NORMAL"]
+        )
 
         # 1. 위치 및 이동
         self.pos = pos
         self.speed = config.ENEMY_BASE_SPEED * self.type_config["speed_mult"]
         self.chase_probability = chase_probability  # 플레이어 추적 확률 (0.0 ~ 1.0)
-        self.wander_direction = pygame.math.Vector2(random.uniform(-1, 1), random.uniform(-1, 1)).normalize()
+        self.wander_direction = pygame.math.Vector2(
+            random.uniform(-1, 1), random.uniform(-1, 1)
+        ).normalize()
         self.wander_timer = 0.0
         self.wander_change_interval = 2.0  # 방황 방향 변경 간격 (초)
 
@@ -1987,7 +2264,9 @@ class Enemy:
         image_size = int(screen_height * size_ratio * self.type_config["size_mult"])
 
         # 이미지 로드 및 색상 tint 적용
-        original_image = AssetManager.get_image(config.ENEMY_SHIP_IMAGE_PATH, (image_size, image_size))
+        original_image = AssetManager.get_image(
+            config.ENEMY_SHIP_IMAGE_PATH, (image_size, image_size)
+        )
         self.color = self.type_config["color_tint"]  # 사망 효과용 색상 저장
         self.size = image_size // 2  # 사망 효과용 크기 저장 (반지름)
         self.image = self._apply_color_tint(original_image, self.color)
@@ -2009,7 +2288,10 @@ class Enemy:
         self.is_burning = False  # 플레이어와 접촉 중 여부
         # Burn 이미지를 10% 작게 표시
         burn_size = int(image_size * 0.9)
-        burn_image = AssetManager.get_image("assets/images/characters/enemies/enemy_ship_burn.png", (burn_size, burn_size))
+        burn_image = AssetManager.get_image(
+            "assets/images/characters/enemies/enemy_ship_burn.png",
+            (burn_size, burn_size),
+        )
         # 화상 이미지는 불꽃 효과이므로 색상 tint를 적용하지 않음 (원본 그대로 사용)
         self.burn_image = burn_image
 
@@ -2041,14 +2323,18 @@ class Enemy:
         self.has_exploded = False  # 자폭 여부 (한 번만 폭발)
 
         # 8. 웨이브 전환 AI 모드
-        self.is_respawned = self.type_config.get("is_respawned", False)  # 리스폰 적 여부
+        self.is_respawned = self.type_config.get(
+            "is_respawned", False
+        )  # 리스폰 적 여부
         self.is_retreating = False  # 퇴각 모드 (기존 적)
-        self.is_circling = False    # 회전 공격 모드 (빨간 적)
+        self.is_circling = False  # 회전 공격 모드 (빨간 적)
         self.circle_angle = random.uniform(0, 2 * math.pi)  # 회전 시작 각도 (랜덤)
         self.retreat_target = None  # 퇴각 목표 위치
         self.escaped = False  # 화면 밖으로 도망 성공 여부 (킬 카운트 제외용)
 
-    def _apply_color_tint(self, image: pygame.Surface, tint_color: tuple) -> pygame.Surface:
+    def _apply_color_tint(
+        self, image: pygame.Surface, tint_color: tuple
+    ) -> pygame.Surface:
         """이미지에 색상 tint를 적용합니다."""
         if tint_color == (255, 255, 255):
             return image  # 원본 색상 그대로
@@ -2063,7 +2349,9 @@ class Enemy:
 
         return tinted
 
-    def move_towards_player(self, player_pos: pygame.math.Vector2, dt: float, other_enemies: list = None):
+    def move_towards_player(
+        self, player_pos: pygame.math.Vector2, dt: float, other_enemies: list = None
+    ):
         """플레이어를 향해 이동하되, 다른 적들과 거리를 유지하고 포위 공격합니다."""
 
         direction = player_pos - self.pos
@@ -2074,15 +2362,21 @@ class Enemy:
 
             # 포위 공격: 플레이어 주변에 원형으로 분산
             flank_force = pygame.math.Vector2(0, 0)
-            if config.ENEMY_FLANK_ENABLED and distance_to_player < config.ENEMY_FLANK_DISTANCE:
+            if (
+                config.ENEMY_FLANK_ENABLED
+                and distance_to_player < config.ENEMY_FLANK_DISTANCE
+            ):
                 # 적의 ID를 기반으로 목표 각도 계산 (각 적마다 고유한 각도)
                 import math
+
                 base_angle = (self.enemy_id % 360) * (math.pi / 180)  # ID 기반 각도
 
                 # 플레이어 중심으로 목표 위치 계산
                 target_offset_x = math.cos(base_angle) * config.ENEMY_FLANK_DISTANCE
                 target_offset_y = math.sin(base_angle) * config.ENEMY_FLANK_DISTANCE
-                target_pos = pygame.math.Vector2(player_pos.x + target_offset_x, player_pos.y + target_offset_y)
+                target_pos = pygame.math.Vector2(
+                    player_pos.x + target_offset_x, player_pos.y + target_offset_y
+                )
 
                 # 목표 위치로 이동하는 힘
                 to_target = target_pos - self.pos
@@ -2098,9 +2392,13 @@ class Enemy:
             separation_force = pygame.math.Vector2(0, 0)
             if other_enemies:
                 # 보스는 더 큰 분리 반경 사용
-                if hasattr(self, 'is_boss') and self.is_boss:
-                    separation_radius = config.ENEMY_SEPARATION_RADIUS * 3.0  # 보스는 3배
-                    separation_strength = config.ENEMY_SEPARATION_STRENGTH * 2.0  # 보스는 2배 강도
+                if hasattr(self, "is_boss") and self.is_boss:
+                    separation_radius = (
+                        config.ENEMY_SEPARATION_RADIUS * 3.0
+                    )  # 보스는 3배
+                    separation_strength = (
+                        config.ENEMY_SEPARATION_STRENGTH * 2.0
+                    )  # 보스는 2배 강도
                 else:
                     separation_radius = config.ENEMY_SEPARATION_RADIUS
                     separation_strength = config.ENEMY_SEPARATION_STRENGTH
@@ -2115,7 +2413,9 @@ class Enemy:
                         if 0 < distance < separation_radius:
                             # 거리에 반비례하는 힘 (가까울수록 강함)
                             # 제곱 반비례로 변경하여 가까울수록 훨씬 강하게
-                            force_magnitude = ((separation_radius - distance) / separation_radius) ** 2
+                            force_magnitude = (
+                                (separation_radius - distance) / separation_radius
+                            ) ** 2
                             if distance > 0:
                                 diff_normalized = diff.normalize()
                                 separation_force += diff_normalized * force_magnitude
@@ -2148,7 +2448,11 @@ class Enemy:
     def take_damage(self, damage: float, player=None):
         """피해를 입습니다."""
         # Execute 스킬: 체력 임계값 이하 적 즉사
-        if player and hasattr(player, 'execute_threshold') and player.execute_threshold > 0:
+        if (
+            player
+            and hasattr(player, "execute_threshold")
+            and player.execute_threshold > 0
+        ):
             hp_ratio = self.hp / self.max_hp
             if hp_ratio <= player.execute_threshold:
                 self.hp = 0
@@ -2163,7 +2467,7 @@ class Enemy:
             self.hit_flash_timer = config.HIT_FLASH_DURATION
             self.is_flashing = True
 
-    def attack(self, player: 'Player', current_time: float) -> bool:
+    def attack(self, player: "Player", current_time: float) -> bool:
         """플레이어를 공격합니다. 공격 성공 시 True 반환"""
         if current_time - self.last_attack_time >= config.ENEMY_ATTACK_COOLDOWN:
             player.take_damage(self.damage)
@@ -2171,7 +2475,14 @@ class Enemy:
             return True
         return False
 
-    def update(self, player_pos: pygame.math.Vector2, dt: float, other_enemies: list = None, screen_size: tuple = None, current_time: float = 0.0):
+    def update(
+        self,
+        player_pos: pygame.math.Vector2,
+        dt: float,
+        other_enemies: list = None,
+        screen_size: tuple = None,
+        current_time: float = 0.0,
+    ):
         """적의 상태를 업데이트합니다."""
         if self.is_alive:
             # SHIELDED 타입: 보호막 재생
@@ -2222,11 +2533,15 @@ class Enemy:
                 self.wander_timer += dt
                 if self.wander_timer >= self.wander_change_interval:
                     # 새로운 랜덤 방향 설정
-                    self.wander_direction = pygame.math.Vector2(random.uniform(-1, 1), random.uniform(-1, 1)).normalize()
+                    self.wander_direction = pygame.math.Vector2(
+                        random.uniform(-1, 1), random.uniform(-1, 1)
+                    ).normalize()
                     self.wander_timer = 0.0
 
                 # 방황 방향으로 이동
-                self.pos += self.wander_direction * self.speed * dt * 0.5  # 방황 시 속도 50%
+                self.pos += (
+                    self.wander_direction * self.speed * dt * 0.5
+                )  # 방황 시 속도 50%
                 self.image_rect.center = (int(self.pos.x), int(self.pos.y))
                 self.hitbox.center = self.image_rect.center
 
@@ -2298,7 +2613,9 @@ class Enemy:
         depth_ratio = max(0.0, min(1.0, depth_ratio))  # 0~1 범위로 제한
 
         # 스케일 계산 (상단 = 작게, 하단 = 크게)
-        scale = config.PERSPECTIVE_SCALE_MIN + (depth_ratio * (config.PERSPECTIVE_SCALE_MAX - config.PERSPECTIVE_SCALE_MIN))
+        scale = config.PERSPECTIVE_SCALE_MIN + (
+            depth_ratio * (config.PERSPECTIVE_SCALE_MAX - config.PERSPECTIVE_SCALE_MIN)
+        )
         return scale
 
     # ✅ [추가] 화면에 객체를 그리는 draw 메서드
@@ -2314,23 +2631,33 @@ class Enemy:
         elif self.is_flashing:
             # 피격 시 - 히트 플래시 (붉은색 가미)
             flash_surface = self.original_image.copy()
-            flash_surface.fill(config.HIT_FLASH_COLOR, special_flags=pygame.BLEND_RGB_ADD)
+            flash_surface.fill(
+                config.HIT_FLASH_COLOR, special_flags=pygame.BLEND_RGB_ADD
+            )
             current_image = flash_surface
         elif self.is_frozen:
             # 동결 상태 - 흰색-푸른색 가미
             freeze_surface = self.original_image.copy()
-            freeze_surface.fill(config.FREEZE_FLASH_COLOR, special_flags=pygame.BLEND_RGB_ADD)
+            freeze_surface.fill(
+                config.FREEZE_FLASH_COLOR, special_flags=pygame.BLEND_RGB_ADD
+            )
             current_image = freeze_surface
         else:
             # 기본 이미지
             current_image = self.image
 
         # 원근감 적용된 이미지 생성
-        if config.PERSPECTIVE_ENABLED and config.PERSPECTIVE_APPLY_TO_ENEMIES and perspective_scale != 1.0:
+        if (
+            config.PERSPECTIVE_ENABLED
+            and config.PERSPECTIVE_APPLY_TO_ENEMIES
+            and perspective_scale != 1.0
+        ):
             scaled_image = pygame.transform.smoothscale(
                 current_image,
-                (int(current_image.get_width() * perspective_scale),
-                 int(current_image.get_height() * perspective_scale))
+                (
+                    int(current_image.get_width() * perspective_scale),
+                    int(current_image.get_height() * perspective_scale),
+                ),
             )
             scaled_rect = scaled_image.get_rect(center=self.image_rect.center)
         else:
@@ -2340,10 +2667,14 @@ class Enemy:
         # 상태 이펙트 시각 효과 (이미지 뒤에 광선 효과)
         if self.is_frozen:
             # 프리즈: 밝은 청백색 광선 효과
-            self._draw_glow_effect(screen, (180, 220, 255), intensity=3, layers=3, scale=perspective_scale)
+            self._draw_glow_effect(
+                screen, (180, 220, 255), intensity=3, layers=3, scale=perspective_scale
+            )
         elif self.is_slowed:
             # 슬로우: 파란색 광선 효과
-            self._draw_glow_effect(screen, (100, 150, 255), intensity=2, layers=2, scale=perspective_scale)
+            self._draw_glow_effect(
+                screen, (100, 150, 255), intensity=2, layers=2, scale=perspective_scale
+            )
 
         # 이미지 그리기
         screen.blit(scaled_image, scaled_rect)
@@ -2368,9 +2699,18 @@ class Enemy:
         # 현재 체력 (초록색)
         health_ratio = self.hp / self.max_hp
         current_health_width = int(bar_width * health_ratio)
-        pygame.draw.rect(screen, config.GREEN, (bar_x, bar_y, current_health_width, bar_height))
+        pygame.draw.rect(
+            screen, config.GREEN, (bar_x, bar_y, current_health_width, bar_height)
+        )
 
-    def _draw_glow_effect(self, screen: pygame.Surface, color: tuple, intensity: int = 2, layers: int = 2, scale: float = 1.0):
+    def _draw_glow_effect(
+        self,
+        screen: pygame.Surface,
+        color: tuple,
+        intensity: int = 2,
+        layers: int = 2,
+        scale: float = 1.0,
+    ):
         """이미지 윤곽선 기반 광선 효과 (Glow Effect)"""
         # 이미지의 알파 채널을 이용한 마스크 생성
         try:
@@ -2387,14 +2727,16 @@ class Enemy:
                 # 확대된 이미지 생성
                 scaled_size = (
                     int(self.image.get_width() * scale_factor),
-                    int(self.image.get_height() * scale_factor)
+                    int(self.image.get_height() * scale_factor),
                 )
                 scaled_image = pygame.transform.scale(self.image, scaled_size)
 
                 # 색상 적용
                 colored_surface = scaled_image.copy()
                 colored_surface.fill(color + (0,), special_flags=pygame.BLEND_RGBA_MULT)
-                colored_surface.fill((255, 255, 255, alpha), special_flags=pygame.BLEND_RGBA_MIN)
+                colored_surface.fill(
+                    (255, 255, 255, alpha), special_flags=pygame.BLEND_RGBA_MIN
+                )
 
                 # 중앙 정렬하여 그리기
                 offset_x = (scaled_size[0] - self.image.get_width()) // 2
@@ -2408,18 +2750,28 @@ class Enemy:
                 alpha = int(60 / layer)
 
                 glow_surf = pygame.Surface((radius * 2, radius * 2), pygame.SRCALPHA)
-                pygame.draw.circle(glow_surf, color + (alpha,), (radius, radius), radius)
+                pygame.draw.circle(
+                    glow_surf, color + (alpha,), (radius, radius), radius
+                )
                 glow_rect = glow_surf.get_rect(center=self.image_rect.center)
                 screen.blit(glow_surf, glow_rect)
+
 
 # =========================================================
 # 4. 총알 클래스
 # =========================================================
 
+
 class Bullet:
     """총알 클래스"""
 
-    def __init__(self, pos: pygame.math.Vector2, direction: pygame.math.Vector2, damage: float, piercing: bool = False):
+    def __init__(
+        self,
+        pos: pygame.math.Vector2,
+        direction: pygame.math.Vector2,
+        damage: float,
+        piercing: bool = False,
+    ):
 
         # 1. 위치 및 이동
         self.pos = pos
@@ -2450,7 +2802,9 @@ class Bullet:
         size_ratio = config.IMAGE_SIZE_RATIOS["BULLET"]
         image_size = int(screen_height * size_ratio)
 
-        self.image = AssetManager.get_image(config.PLAYER_BULLET_IMAGE_PATH, (image_size, image_size))
+        self.image = AssetManager.get_image(
+            config.PLAYER_BULLET_IMAGE_PATH, (image_size, image_size)
+        )
         self.image_rect = self.image.get_rect(center=(self.pos.x, self.pos.y))
 
         hitbox_size = int(image_size * config.BULLET_HITBOX_RATIO)
@@ -2460,7 +2814,7 @@ class Bullet:
     def update(self, dt: float, screen_size: Tuple[int, int]):
         """총알 위치를 업데이트하고, 화면 밖으로 나가면 제거합니다."""
 
-        if not hasattr(self, 'image'):
+        if not hasattr(self, "image"):
             # 첫 update 시 이미지 초기화
             self.initialize_image(screen_size[1])
 
@@ -2478,29 +2832,43 @@ class Bullet:
 
             # 화면 밖으로 나가면 제거
             SCREEN_WIDTH, SCREEN_HEIGHT = screen_size
-            if (self.pos.x < -50 or self.pos.x > SCREEN_WIDTH + 50 or
-                self.pos.y < -50 or self.pos.y > SCREEN_HEIGHT + 50):
+            if (
+                self.pos.x < -50
+                or self.pos.x > SCREEN_WIDTH + 50
+                or self.pos.y < -50
+                or self.pos.y > SCREEN_HEIGHT + 50
+            ):
                 self.is_alive = False
 
     def draw(self, screen: pygame.Surface):
         """총알 객체와 트레일을 화면에 그립니다."""
         if self.is_alive:
             # 이미지가 아직 초기화되지 않았다면 폴백 렌더링
-            if not hasattr(self, 'image') or self.image is None:
+            if not hasattr(self, "image") or self.image is None:
                 # 간단한 원으로 그리기 (폴백)
-                pygame.draw.circle(screen, (255, 0, 0), (int(self.pos.x), int(self.pos.y)), 20, 0)
-                pygame.draw.circle(screen, (255, 255, 0), (int(self.pos.x), int(self.pos.y)), 20, 3)
+                pygame.draw.circle(
+                    screen, (255, 0, 0), (int(self.pos.x), int(self.pos.y)), 20, 0
+                )
+                pygame.draw.circle(
+                    screen, (255, 255, 0), (int(self.pos.x), int(self.pos.y)), 20, 3
+                )
                 return
 
             # 원근감 스케일 계산
             perspective_scale = self._calculate_perspective_scale(screen.get_height())
 
             # 원근감 적용된 이미지
-            if config.PERSPECTIVE_ENABLED and config.PERSPECTIVE_APPLY_TO_BULLETS and perspective_scale != 1.0:
+            if (
+                config.PERSPECTIVE_ENABLED
+                and config.PERSPECTIVE_APPLY_TO_BULLETS
+                and perspective_scale != 1.0
+            ):
                 scaled_image = pygame.transform.scale(
                     self.image,
-                    (int(self.image.get_width() * perspective_scale),
-                     int(self.image.get_height() * perspective_scale))
+                    (
+                        int(self.image.get_width() * perspective_scale),
+                        int(self.image.get_height() * perspective_scale),
+                    ),
                 )
                 scaled_rect = scaled_image.get_rect(center=self.image_rect.center)
             else:
@@ -2509,13 +2877,20 @@ class Bullet:
 
             # 트레일 그리기 (뒤에서부터 앞으로, 점점 투명하게)
             for i, trail_pos in enumerate(self.trail_positions):
-                alpha = int(255 * (i + 1) / len(self.trail_positions) * config.BULLET_TRAIL_ALPHA_DECAY)
+                alpha = int(
+                    255
+                    * (i + 1)
+                    / len(self.trail_positions)
+                    * config.BULLET_TRAIL_ALPHA_DECAY
+                )
                 alpha = max(0, min(255, alpha))
 
                 # 트레일용 반투명 서피스 생성
                 trail_surf = scaled_image.copy()
                 trail_surf.set_alpha(alpha)
-                trail_rect = trail_surf.get_rect(center=(int(trail_pos.x), int(trail_pos.y)))
+                trail_rect = trail_surf.get_rect(
+                    center=(int(trail_pos.x), int(trail_pos.y))
+                )
                 screen.blit(trail_surf, trail_rect)
 
             # 총알 본체 그리기
@@ -2531,17 +2906,21 @@ class Bullet:
         depth_ratio = max(0.0, min(1.0, depth_ratio))
 
         # 스케일 계산
-        scale = config.PERSPECTIVE_SCALE_MIN + (depth_ratio * (config.PERSPECTIVE_SCALE_MAX - config.PERSPECTIVE_SCALE_MIN))
+        scale = config.PERSPECTIVE_SCALE_MIN + (
+            depth_ratio * (config.PERSPECTIVE_SCALE_MAX - config.PERSPECTIVE_SCALE_MIN)
+        )
         return scale
+
 
 # =========================================================
 # 5. 아이템 클래스
 # =========================================================
 
+
 class CoinGem:
     """코인/젬 클래스 (적을 죽이면 드롭)"""
 
-    COIN_AMOUNT = config.BASE_COIN_DROP_PER_KILL # 코인 획득 시 점수
+    COIN_AMOUNT = config.BASE_COIN_DROP_PER_KILL  # 코인 획득 시 점수
 
     def __init__(self, pos: Tuple[float, float], screen_height: int):
 
@@ -2555,7 +2934,9 @@ class CoinGem:
         size_ratio = config.IMAGE_SIZE_RATIOS["COINGEM"]
         image_size = int(screen_height * size_ratio)
 
-        self.image = AssetManager.get_image(config.COIN_GEM_IMAGE_PATH, (image_size, image_size))
+        self.image = AssetManager.get_image(
+            config.COIN_GEM_IMAGE_PATH, (image_size, image_size)
+        )
         self.image_rect = self.image.get_rect(center=(self.pos.x, self.pos.y))
 
         hitbox_size = int(image_size * config.GEM_HITBOX_RATIO)
@@ -2567,7 +2948,7 @@ class CoinGem:
         자석 효과가 있으면 플레이어에게 끌어당깁니다.
         """
         # 자석 효과 확인 (player에 has_coin_magnet 속성이 있다면)
-        has_coin_magnet = getattr(player, 'has_coin_magnet', False)
+        has_coin_magnet = getattr(player, "has_coin_magnet", False)
 
         if not self.collected and has_coin_magnet:
             # 플레이어와의 거리 계산
@@ -2591,8 +2972,8 @@ class CoinGem:
         """젬 수집 효과 적용 (점수 증가)"""
         if not self.collected:
             # 영구 코인과 레벨업 점수 모두 증가
-            game_data['score'] += self.COIN_AMOUNT
-            game_data['uncollected_score'] += self.COIN_AMOUNT
+            game_data["score"] += self.COIN_AMOUNT
+            game_data["uncollected_score"] += self.COIN_AMOUNT
             self.collected = True
             return True
         return False
@@ -2604,11 +2985,17 @@ class CoinGem:
             perspective_scale = self._calculate_perspective_scale(screen.get_height())
 
             # 원근감 적용된 이미지
-            if config.PERSPECTIVE_ENABLED and config.PERSPECTIVE_APPLY_TO_GEMS and perspective_scale != 1.0:
+            if (
+                config.PERSPECTIVE_ENABLED
+                and config.PERSPECTIVE_APPLY_TO_GEMS
+                and perspective_scale != 1.0
+            ):
                 scaled_image = pygame.transform.scale(
                     self.image,
-                    (int(self.image.get_width() * perspective_scale),
-                     int(self.image.get_height() * perspective_scale))
+                    (
+                        int(self.image.get_width() * perspective_scale),
+                        int(self.image.get_height() * perspective_scale),
+                    ),
                 )
                 scaled_rect = scaled_image.get_rect(center=self.image_rect.center)
                 screen.blit(scaled_image, scaled_rect)
@@ -2625,14 +3012,16 @@ class CoinGem:
         depth_ratio = max(0.0, min(1.0, depth_ratio))
 
         # 스케일 계산
-        scale = config.PERSPECTIVE_SCALE_MIN + (depth_ratio * (config.PERSPECTIVE_SCALE_MAX - config.PERSPECTIVE_SCALE_MIN))
+        scale = config.PERSPECTIVE_SCALE_MIN + (
+            depth_ratio * (config.PERSPECTIVE_SCALE_MAX - config.PERSPECTIVE_SCALE_MIN)
+        )
         return scale
 
 
 class HealItem:
     """체력 회복 아이템 클래스"""
 
-    HEAL_AMOUNT = config.HEAL_AMOUNT # 회복량
+    HEAL_AMOUNT = config.HEAL_AMOUNT  # 회복량
 
     def __init__(self, pos: Tuple[float, float], screen_height: int):
 
@@ -2646,7 +3035,9 @@ class HealItem:
         size_ratio = config.IMAGE_SIZE_RATIOS["GEMHP"]
         image_size = int(screen_height * size_ratio)
 
-        self.image = AssetManager.get_image(config.GEM_HP_IMAGE_PATH, (image_size, image_size))
+        self.image = AssetManager.get_image(
+            config.GEM_HP_IMAGE_PATH, (image_size, image_size)
+        )
         self.image_rect = self.image.get_rect(center=(self.pos.x, self.pos.y))
 
         hitbox_size = int(image_size * config.GEM_HITBOX_RATIO)
@@ -2658,7 +3049,7 @@ class HealItem:
         자석 효과가 있으면 플레이어에게 끌어당깁니다.
         """
         # 자석 효과 확인 (player에 has_coin_magnet 속성이 있다면)
-        has_coin_magnet = getattr(player, 'has_coin_magnet', False)
+        has_coin_magnet = getattr(player, "has_coin_magnet", False)
 
         if not self.collected and has_coin_magnet:
             # 플레이어와의 거리 계산
@@ -2697,10 +3088,17 @@ class HealItem:
 # 6. 보스 클래스
 # =========================================================
 
+
 class Boss(Enemy):
     """보스 적 클래스 - Enemy를 상속받되 크기와 체력이 훨씬 큼"""
 
-    def __init__(self, pos: pygame.math.Vector2, screen_height: int, boss_name: str = "Boss", wave_number: int = 5):
+    def __init__(
+        self,
+        pos: pygame.math.Vector2,
+        screen_height: int,
+        boss_name: str = "Boss",
+        wave_number: int = 5,
+    ):
         # Enemy 초기화를 호출하되, 이미지 크기를 재설정하기 위해 super() 호출 전에 준비
 
         # 1. 위치 및 이동
@@ -2735,7 +3133,9 @@ class Boss(Enemy):
 
         self.color = (255, 50, 50)  # 보스 색상 (빨간색)
         self.size = image_size // 2  # 사망 효과용 크기 저장 (반지름)
-        self.image = AssetManager.get_image(config.ENEMY_SHIP_IMAGE_PATH, (image_size, image_size))
+        self.image = AssetManager.get_image(
+            config.ENEMY_SHIP_IMAGE_PATH, (image_size, image_size)
+        )
         self.image_rect = self.image.get_rect(center=(self.pos.x, self.pos.y))
 
         hitbox_size = int(image_size * config.ENEMY_HITBOX_RATIO)
@@ -2753,7 +3153,10 @@ class Boss(Enemy):
         self.is_burning = False
         # Burn 이미지를 10% 작게 표시
         burn_size = int(image_size * 0.9)
-        burn_image = AssetManager.get_image("assets/images/characters/enemies/enemy_ship_burn.png", (burn_size, burn_size))
+        burn_image = AssetManager.get_image(
+            "assets/images/characters/enemies/enemy_ship_burn.png",
+            (burn_size, burn_size),
+        )
         self.burn_image = burn_image  # 보스는 색상 tint 없이 원본 사용
 
         # 6. 속성 스킬 상태 이펙트 (보스는 영향받지 않지만 속성은 필요)
@@ -2791,7 +3194,14 @@ class Boss(Enemy):
         self.last_burn_attack_time = 0.0
         self.burn_projectiles = []  # 발사된 burn 발사체 리스트
 
-    def update(self, player_pos: pygame.math.Vector2, dt: float, other_enemies: list = None, screen_size: tuple = None, current_time: float = 0.0):
+    def update(
+        self,
+        player_pos: pygame.math.Vector2,
+        dt: float,
+        other_enemies: list = None,
+        screen_size: tuple = None,
+        current_time: float = 0.0,
+    ):
         """보스의 상태와 패턴을 업데이트합니다."""
         if not self.is_alive:
             return
@@ -2804,22 +3214,36 @@ class Boss(Enemy):
             self.current_phase = 1
 
         # Berserk 모드 체크 (HP 25% 이하)
-        if hp_ratio <= config.BOSS_PATTERN_SETTINGS["BERSERK"]["hp_threshold"] and not self.is_berserk:
+        if (
+            hp_ratio <= config.BOSS_PATTERN_SETTINGS["BERSERK"]["hp_threshold"]
+            and not self.is_berserk
+        ):
             self.is_berserk = True
-            self.speed = self.base_speed * config.BOSS_PATTERN_SETTINGS["BERSERK"]["speed_mult"]
-            self.damage = config.ENEMY_ATTACK_DAMAGE * config.BOSS_PATTERN_SETTINGS["BERSERK"]["damage_mult"]
+            self.speed = (
+                self.base_speed * config.BOSS_PATTERN_SETTINGS["BERSERK"]["speed_mult"]
+            )
+            self.damage = (
+                config.ENEMY_ATTACK_DAMAGE
+                * config.BOSS_PATTERN_SETTINGS["BERSERK"]["damage_mult"]
+            )
 
         # 패턴 타이머 업데이트
         self.pattern_timer += dt
 
         # 소환 패턴 (쿨다운 체크)
-        if current_time - self.last_summon_time >= config.BOSS_PATTERN_SETTINGS["SUMMON_MINIONS"]["summon_cooldown"]:
+        if (
+            current_time - self.last_summon_time
+            >= config.BOSS_PATTERN_SETTINGS["SUMMON_MINIONS"]["summon_cooldown"]
+        ):
             if random.random() < 0.3:  # 30% 확률로 소환 시도
                 self._summon_minions(other_enemies)
                 self.last_summon_time = current_time
 
         # 돌진 패턴 (쿨다운 체크)
-        if current_time - self.last_charge_time >= config.BOSS_PATTERN_SETTINGS["CHARGE_ATTACK"]["cooldown"]:
+        if (
+            current_time - self.last_charge_time
+            >= config.BOSS_PATTERN_SETTINGS["CHARGE_ATTACK"]["cooldown"]
+        ):
             if random.random() < 0.4:  # 40% 확률로 돌진 시도
                 self._start_charge(player_pos)
                 self.last_charge_time = current_time
@@ -2857,18 +3281,27 @@ class Boss(Enemy):
         if enemy_list is None:
             return
 
-        summon_count = config.BOSS_PATTERN_SETTINGS["SUMMON_MINIONS"]["summon_count"].get(self.wave_number, 2)
-        minion_hp_ratio = config.BOSS_PATTERN_SETTINGS["SUMMON_MINIONS"]["minion_hp_ratio"]
+        summon_count = config.BOSS_PATTERN_SETTINGS["SUMMON_MINIONS"][
+            "summon_count"
+        ].get(self.wave_number, 2)
+        minion_hp_ratio = config.BOSS_PATTERN_SETTINGS["SUMMON_MINIONS"][
+            "minion_hp_ratio"
+        ]
 
         for i in range(summon_count):
             # 보스 주변에 랜덤 위치 생성
             offset_x = random.uniform(-100, 100)
             offset_y = random.uniform(-100, 100)
-            spawn_pos = pygame.math.Vector2(self.pos.x + offset_x, self.pos.y + offset_y)
+            spawn_pos = pygame.math.Vector2(
+                self.pos.x + offset_x, self.pos.y + offset_y
+            )
 
             # 미니언 생성 (NORMAL 타입)
             from objects import Enemy  # 순환 참조 방지
-            minion = Enemy(spawn_pos, self.image_rect.height * 10, 1.0, "NORMAL")  # screen_height 근사값
+
+            minion = Enemy(
+                spawn_pos, self.image_rect.height * 10, 1.0, "NORMAL"
+            )  # screen_height 근사값
             minion.hp = self.max_hp * minion_hp_ratio
             minion.max_hp = minion.hp
 
@@ -2912,13 +3345,18 @@ class Boss(Enemy):
 
     def _update_charge(self, dt: float):
         """돌진 공격 업데이트."""
-        charge_duration = config.BOSS_PATTERN_SETTINGS["CHARGE_ATTACK"]["charge_duration"]
+        charge_duration = config.BOSS_PATTERN_SETTINGS["CHARGE_ATTACK"][
+            "charge_duration"
+        ]
 
         if self.pattern_timer >= charge_duration:
             self.is_charging = False
             return
 
-        charge_speed = self.base_speed * config.BOSS_PATTERN_SETTINGS["CHARGE_ATTACK"]["charge_speed_mult"]
+        charge_speed = (
+            self.base_speed
+            * config.BOSS_PATTERN_SETTINGS["CHARGE_ATTACK"]["charge_speed_mult"]
+        )
         self.pos += self.charge_direction * charge_speed * dt
 
         # 위치 및 hitbox 업데이트
@@ -2957,12 +3395,16 @@ class Boss(Enemy):
         elif self.is_flashing:
             # 피격 시 - 히트 플래시 (붉은색 가미)
             flash_surface = self.original_image.copy()
-            flash_surface.fill(config.HIT_FLASH_COLOR, special_flags=pygame.BLEND_RGB_ADD)
+            flash_surface.fill(
+                config.HIT_FLASH_COLOR, special_flags=pygame.BLEND_RGB_ADD
+            )
             self.image = flash_surface
         elif self.is_frozen:
             # 동결 상태 - 흰색-푸른색 가미
             freeze_surface = self.original_image.copy()
-            freeze_surface.fill(config.FREEZE_FLASH_COLOR, special_flags=pygame.BLEND_RGB_ADD)
+            freeze_surface.fill(
+                config.FREEZE_FLASH_COLOR, special_flags=pygame.BLEND_RGB_ADD
+            )
             self.image = freeze_surface
 
         # 크로마틱 어버레이션 효과 (RGB 분리) - 투명도 유지
@@ -2982,7 +3424,7 @@ class Boss(Enemy):
             red_array[:, :, 2] = 0
 
             # 알파 채널 유지하면서 전체 투명도 조정
-            red_alpha[:] = (red_alpha[:] * 0.6).astype('uint8')  # 60% 투명도
+            red_alpha[:] = (red_alpha[:] * 0.6).astype("uint8")  # 60% 투명도
             del red_array, red_alpha  # 배열 잠금 해제
             screen.blit(red_surface, (self.image_rect.x - offset, self.image_rect.y))
 
@@ -2996,14 +3438,16 @@ class Boss(Enemy):
             blue_array[:, :, 1] = 0
 
             # 알파 채널 유지하면서 전체 투명도 조정
-            blue_alpha[:] = (blue_alpha[:] * 0.6).astype('uint8')  # 60% 투명도
+            blue_alpha[:] = (blue_alpha[:] * 0.6).astype("uint8")  # 60% 투명도
             del blue_array, blue_alpha  # 배열 잠금 해제
             screen.blit(blue_surface, (self.image_rect.x + offset, self.image_rect.y))
 
         # 원본 이미지 (중앙)
         screen.blit(self.image, self.image_rect)
 
-    def _draw_glow_effect(self, screen: pygame.Surface, color: tuple, intensity: int = 2, layers: int = 2):
+    def _draw_glow_effect(
+        self, screen: pygame.Surface, color: tuple, intensity: int = 2, layers: int = 2
+    ):
         """이미지 윤곽선 기반 광선 효과 (Glow Effect) - Boss용"""
         # 보스는 크로마틱 어버레이션이 있어 광선 효과 단순화
         for layer in range(layers, 0, -1):
@@ -3020,6 +3464,7 @@ class Boss(Enemy):
 # 6.5. 보스 Burn 발사체 클래스 (Boss Burn Projectile)
 # =========================================================
 
+
 class BurnProjectile:
     """보스가 발사하는 Burn 발사체 클래스 - 플레이어와 충돌 시 데미지"""
 
@@ -3030,7 +3475,11 @@ class BurnProjectile:
             direction: 발사 방향 (정규화된 벡터)
         """
         self.pos = pygame.math.Vector2(pos)
-        self.direction = direction.normalize() if direction.length_squared() > 0 else pygame.math.Vector2(1, 0)
+        self.direction = (
+            direction.normalize()
+            if direction.length_squared() > 0
+            else pygame.math.Vector2(1, 0)
+        )
 
         # 설정값 로드
         burn_settings = config.BOSS_PATTERN_SETTINGS["BURN_ATTACK"]
@@ -3043,11 +3492,18 @@ class BurnProjectile:
         # 이미지 로드
         image_size = burn_settings["projectile_size"]
         try:
-            self.image = AssetManager.get_image(config.ENEMY_SHIP_BURN_IMAGE_PATH, (image_size, image_size))
+            self.image = AssetManager.get_image(
+                config.ENEMY_SHIP_BURN_IMAGE_PATH, (image_size, image_size)
+            )
         except Exception:
             # 이미지 로드 실패 시 기본 서피스 생성
             self.image = pygame.Surface((image_size, image_size), pygame.SRCALPHA)
-            pygame.draw.circle(self.image, (255, 100, 50), (image_size // 2, image_size // 2), image_size // 2)
+            pygame.draw.circle(
+                self.image,
+                (255, 100, 50),
+                (image_size // 2, image_size // 2),
+                image_size // 2,
+            )
 
         self.image_rect = self.image.get_rect(center=(int(self.pos.x), int(self.pos.y)))
 
@@ -3077,8 +3533,12 @@ class BurnProjectile:
         # 화면 밖으로 나가면 제거
         if screen_size:
             margin = 100
-            if (self.pos.x < -margin or self.pos.x > screen_size[0] + margin or
-                self.pos.y < -margin or self.pos.y > screen_size[1] + margin):
+            if (
+                self.pos.x < -margin
+                or self.pos.x > screen_size[0] + margin
+                or self.pos.y < -margin
+                or self.pos.y > screen_size[1] + margin
+            ):
                 self.is_alive = False
 
     def draw(self, screen: pygame.Surface):
@@ -3098,7 +3558,7 @@ class BurnProjectile:
         if not self.is_alive:
             return False
         # Player 클래스는 is_dead 속성 사용 (is_alive가 아님)
-        if hasattr(player, 'is_dead') and player.is_dead:
+        if hasattr(player, "is_dead") and player.is_dead:
             return False
 
         return self.hitbox.colliderect(player.hitbox)
@@ -3108,11 +3568,19 @@ class BurnProjectile:
 # 7. 시각 효과 클래스들 (Visual Effects)
 # =========================================================
 
+
 class Particle:
     """파티클 효과 클래스 - 폭발, 충돌 등에 사용"""
 
-    def __init__(self, pos: Tuple[float, float], velocity: pygame.math.Vector2,
-                 color: Tuple[int, int, int], size: int, lifetime: float, gravity: bool = True):
+    def __init__(
+        self,
+        pos: Tuple[float, float],
+        velocity: pygame.math.Vector2,
+        color: Tuple[int, int, int],
+        size: int,
+        lifetime: float,
+        gravity: bool = True,
+    ):
         self.pos = pygame.math.Vector2(pos)
         self.velocity = velocity
         self.color = color
@@ -3154,16 +3622,27 @@ class Particle:
         # 반투명 서피스 생성
         surf = pygame.Surface((current_size * 2, current_size * 2), pygame.SRCALPHA)
         color_with_alpha = self.color + (alpha,)
-        pygame.draw.circle(surf, color_with_alpha, (current_size, current_size), current_size)
+        pygame.draw.circle(
+            surf, color_with_alpha, (current_size, current_size), current_size
+        )
 
-        screen.blit(surf, (int(self.pos.x - current_size), int(self.pos.y - current_size)))
+        screen.blit(
+            surf, (int(self.pos.x - current_size), int(self.pos.y - current_size))
+        )
 
 
 class Shockwave:
     """충격파 효과 - 중심에서 확장되는 원형 링 (지연 시간 지원)"""
 
-    def __init__(self, center: Tuple[float, float], max_radius: float,
-                 duration: float, color: Tuple[int, int, int], width: int = 3, delay: float = 0.0):
+    def __init__(
+        self,
+        center: Tuple[float, float],
+        max_radius: float,
+        duration: float,
+        color: Tuple[int, int, int],
+        width: int = 3,
+        delay: float = 0.0,
+    ):
         self.center = pygame.math.Vector2(center)
         self.max_radius = max_radius
         self.duration = duration
@@ -3197,15 +3676,24 @@ class Shockwave:
         size = current_radius * 2 + 10
         surf = pygame.Surface((size, size), pygame.SRCALPHA)
         color_with_alpha = self.color + (alpha,)
-        pygame.draw.circle(surf, color_with_alpha, (size // 2, size // 2), current_radius, self.width)
+        pygame.draw.circle(
+            surf, color_with_alpha, (size // 2, size // 2), current_radius, self.width
+        )
 
-        screen.blit(surf, (int(self.center.x - size // 2), int(self.center.y - size // 2)))
+        screen.blit(
+            surf, (int(self.center.x - size // 2), int(self.center.y - size // 2))
+        )
 
 
 class ScreenFlash:
     """화면 플래시 효과 - 전체 화면에 색상 오버레이"""
 
-    def __init__(self, screen_size: Tuple[int, int], color: Tuple[int, int, int] = (255, 255, 255), duration: float = 0.3):
+    def __init__(
+        self,
+        screen_size: Tuple[int, int],
+        color: Tuple[int, int, int] = (255, 255, 255),
+        duration: float = 0.3,
+    ):
         self.screen_size = screen_size
         self.color = color
         self.duration = duration
@@ -3240,16 +3728,22 @@ class WaveTransitionEffect:
     """웨이브 전환 효과 - 화면 어두워짐과 동시에 이미지가 중앙에서 서서히 등장 (외곽 페이드 적용)"""
 
     # 페이즈 상수
-    PHASE_DARKEN = 0      # 화면 어두워지면서 이미지 등장
+    PHASE_DARKEN = 0  # 화면 어두워지면서 이미지 등장
     PHASE_SHOW_IMAGE = 1  # 이미지 유지
-    PHASE_BRIGHTEN = 2    # 화면 밝아지면서 이미지 사라짐
-    PHASE_DONE = 3        # 완료
+    PHASE_BRIGHTEN = 2  # 화면 밝아지면서 이미지 사라짐
+    PHASE_DONE = 3  # 완료
 
-    def __init__(self, screen_size: Tuple[int, int], image_path: str = None,
-                 darken_duration: float = 3.5, image_duration: float = 2.0, brighten_duration: float = 3.0):
+    def __init__(
+        self,
+        screen_size: Tuple[int, int],
+        image_path: str = None,
+        darken_duration: float = 3.5,
+        image_duration: float = 2.0,
+        brighten_duration: float = 3.0,
+    ):
         self.screen_size = screen_size
         self.darken_duration = darken_duration  # 아주 느리게: 3.5초
-        self.image_duration = image_duration    # 유지: 2초
+        self.image_duration = image_duration  # 유지: 2초
         self.brighten_duration = brighten_duration  # 아주 느리게: 3초
         self.total_duration = darken_duration + image_duration + brighten_duration
 
@@ -3264,14 +3758,19 @@ class WaveTransitionEffect:
         if image_path:
             try:
                 from pathlib import Path
+
                 path = Path(image_path)
                 if path.exists():
                     loaded_img = pygame.image.load(str(path)).convert_alpha()
                     # 화면 크기에 맞게 스케일 (비율 유지, 85% 크기 - 더 크게)
                     img_w, img_h = loaded_img.get_size()
-                    scale = min(screen_size[0] * 0.85 / img_w, screen_size[1] * 0.85 / img_h)
+                    scale = min(
+                        screen_size[0] * 0.85 / img_w, screen_size[1] * 0.85 / img_h
+                    )
                     new_size = (int(img_w * scale), int(img_h * scale))
-                    self.original_image = pygame.transform.smoothscale(loaded_img, new_size)
+                    self.original_image = pygame.transform.smoothscale(
+                        loaded_img, new_size
+                    )
                     # 외곽 페이드 마스크 적용
                     self.image = self._apply_edge_fade(self.original_image)
                     print(f"INFO: Loaded wave transition image: {path}")
@@ -3346,7 +3845,7 @@ class WaveTransitionEffect:
         if self.phase == self.PHASE_DARKEN:
             # 점점 어두워짐 (0 → 180) - easing 적용
             progress = self.age / self.darken_duration
-            eased_progress = progress ** 0.7  # ease-out
+            eased_progress = progress**0.7  # ease-out
             alpha = int(180 * eased_progress)
         elif self.phase == self.PHASE_SHOW_IMAGE:
             alpha = 180
@@ -3371,7 +3870,7 @@ class WaveTransitionEffect:
             if self.phase == self.PHASE_DARKEN:
                 # 어두워지면서 동시에 이미지가 천천히 등장
                 progress = self.age / self.darken_duration
-                eased_progress = progress ** 0.5  # 더 천천히 시작
+                eased_progress = progress**0.5  # 더 천천히 시작
                 img_alpha = int(255 * eased_progress)
                 # 스케일: 0.6 → 1.0 (더 크게 시작)
                 scale_factor = 0.6 + 0.4 * eased_progress
@@ -3384,7 +3883,7 @@ class WaveTransitionEffect:
                 # 밝아지면서 이미지 천천히 사라짐
                 brighten_age = self.age - self.darken_duration - self.image_duration
                 progress = brighten_age / self.brighten_duration
-                eased_progress = progress ** 2  # 천천히 사라짐
+                eased_progress = progress**2  # 천천히 사라짐
                 img_alpha = int(255 * (1 - eased_progress))
                 scale_factor = 1.0
 
@@ -3397,14 +3896,18 @@ class WaveTransitionEffect:
                     new_w = int(orig_w * scale_factor)
                     new_h = int(orig_h * scale_factor)
                     if new_w > 0 and new_h > 0:
-                        scaled_img = pygame.transform.smoothscale(self.image, (new_w, new_h))
+                        scaled_img = pygame.transform.smoothscale(
+                            self.image, (new_w, new_h)
+                        )
                     else:
                         scaled_img = self.image
                 else:
                     scaled_img = self.image
 
                 # 이미지 중앙 배치
-                img_rect = scaled_img.get_rect(center=(self.screen_size[0] // 2, self.screen_size[1] // 2))
+                img_rect = scaled_img.get_rect(
+                    center=(self.screen_size[0] // 2, self.screen_size[1] // 2)
+                )
                 img_copy = scaled_img.copy()
                 img_copy.set_alpha(img_alpha)
                 screen.blit(img_copy, img_rect)
@@ -3413,15 +3916,21 @@ class WaveTransitionEffect:
 class PlayerVictoryAnimation:
     """플레이어 승리 애니메이션 - 화면 외곽을 시계방향으로 회전 후 하단 중앙으로 이동"""
 
-    PHASE_ORBIT = 0       # 화면 외곽 시계방향 회전
-    PHASE_MOVE_DOWN = 1   # 하단 중앙으로 이동
-    PHASE_DONE = 2        # 완료
+    PHASE_ORBIT = 0  # 화면 외곽 시계방향 회전
+    PHASE_MOVE_DOWN = 1  # 하단 중앙으로 이동
+    PHASE_DONE = 2  # 완료
 
-    def __init__(self, player, screen_size: Tuple[int, int], orbit_duration: float = 3.5, move_duration: float = 2.0):
+    def __init__(
+        self,
+        player,
+        screen_size: Tuple[int, int],
+        orbit_duration: float = 3.5,
+        move_duration: float = 2.0,
+    ):
         self.player = player
         self.screen_size = screen_size
         self.orbit_duration = orbit_duration  # 회전 시간: 3.5초 (느리게)
-        self.move_duration = move_duration    # 이동 시간: 2.0초
+        self.move_duration = move_duration  # 이동 시간: 2.0초
 
         self.age = 0.0
         self.is_alive = True
@@ -3473,7 +3982,9 @@ class PlayerVictoryAnimation:
                 self.player.pos.y = new_y
             else:
                 # 회전 완료 → 이동 페이즈로 전환
-                self.orbit_end_pos = pygame.math.Vector2(self.player.pos.x, self.player.pos.y)
+                self.orbit_end_pos = pygame.math.Vector2(
+                    self.player.pos.x, self.player.pos.y
+                )
                 self.phase = self.PHASE_MOVE_DOWN
                 self.age = 0.0  # 시간 리셋
 
@@ -3485,8 +3996,14 @@ class PlayerVictoryAnimation:
                 eased = 1 - ((1 - progress) ** 2)
 
                 # 선형 보간
-                self.player.pos.x = self.orbit_end_pos.x + (self.target_pos.x - self.orbit_end_pos.x) * eased
-                self.player.pos.y = self.orbit_end_pos.y + (self.target_pos.y - self.orbit_end_pos.y) * eased
+                self.player.pos.x = (
+                    self.orbit_end_pos.x
+                    + (self.target_pos.x - self.orbit_end_pos.x) * eased
+                )
+                self.player.pos.y = (
+                    self.orbit_end_pos.y
+                    + (self.target_pos.y - self.orbit_end_pos.y) * eased
+                )
             else:
                 # 완료
                 self.player.pos.x = self.target_pos.x
@@ -3499,9 +4016,125 @@ class PlayerVictoryAnimation:
 
         # 플레이어 rect 업데이트
         if self.player.image_rect:
-            self.player.image_rect.center = (int(self.player.pos.x), int(self.player.pos.y))
+            self.player.image_rect.center = (
+                int(self.player.pos.x),
+                int(self.player.pos.y),
+            )
         if self.player.hitbox:
             self.player.hitbox.center = (int(self.player.pos.x), int(self.player.pos.y))
+
+
+class WaveClearFireworksEffect:
+    """웨이브 클리어 축하 불꽃놀이 효과 - 화면 하단에서 fireworks 이미지 표시"""
+
+    def __init__(self, screen_size: Tuple[int, int], duration: float = 3.0):
+        """
+        Args:
+            screen_size: 화면 크기
+            duration: 효과 지속 시간 (초)
+        """
+        self.screen_size = screen_size
+        self.duration = duration
+        self.age = 0.0
+        self.is_alive = True
+
+        # fireworks 이미지 로드
+        self.fireworks_image = None
+        try:
+            import config
+
+            if config.WAVE_CLEAR_FIREWORKS_PATH.exists():
+                img = pygame.image.load(
+                    str(config.WAVE_CLEAR_FIREWORKS_PATH)
+                ).convert_alpha()
+                # 화면 중앙에 표시하기 위해 적절한 크기로 조정
+                # 원본 크기를 유지하되, 화면보다 크면 화면에 맞춤
+                original_width, original_height = img.get_size()
+
+                # 화면 크기의 60%로 제한
+                max_width = int(screen_size[0] * 0.6)
+                max_height = int(screen_size[1] * 0.6)
+
+                # 비율 유지하면서 크기 조정
+                aspect_ratio = original_height / original_width
+                if original_width > max_width:
+                    target_width = max_width
+                    target_height = int(target_width * aspect_ratio)
+                else:
+                    target_width = original_width
+                    target_height = original_height
+
+                if target_height > max_height:
+                    target_height = max_height
+                    target_width = int(target_height / aspect_ratio)
+
+                self.fireworks_image = pygame.transform.smoothscale(
+                    img, (target_width, target_height)
+                )
+                print(
+                    f"INFO: Fireworks image loaded: {target_width}x{target_height} (original: {original_width}x{original_height})"
+                )
+            else:
+                print(
+                    f"WARNING: Fireworks image not found at {config.WAVE_CLEAR_FIREWORKS_PATH}"
+                )
+        except Exception as e:
+            print(f"ERROR: Failed to load fireworks image: {e}")
+            self.fireworks_image = None
+
+        # 이미지 위치 (화면 중앙 하단)
+        if self.fireworks_image:
+            self.image_x = (screen_size[0] - self.fireworks_image.get_width()) // 2
+            # 화면 하단에서 50px 위에 배치
+            self.image_y = screen_size[1] - self.fireworks_image.get_height() - 50
+            print(
+                f"INFO: Fireworks position: ({self.image_x}, {self.image_y}), size: {self.fireworks_image.get_size()}, screen: {screen_size}"
+            )
+
+    def update(self, dt: float):
+        """효과 업데이트"""
+        if not self.is_alive:
+            return
+
+        self.age += dt
+
+        # 지속 시간 경과 시 종료
+        if self.age >= self.duration:
+            self.is_alive = False
+
+    def draw(self, screen: pygame.Surface):
+        """효과 그리기"""
+        if not self.is_alive:
+            print(
+                f"DEBUG: Fireworks not alive (age={self.age:.2f}, duration={self.duration})"
+            )
+            return
+
+        if not self.fireworks_image:
+            print("DEBUG: Fireworks image is None")
+            return
+
+        # 페이드 인/아웃 효과
+        if self.age < 0.5:
+            # 페이드 인 (0.5초)
+            alpha = int(255 * (self.age / 0.5))
+        elif self.age > self.duration - 0.5:
+            # 페이드 아웃 (마지막 0.5초)
+            alpha = int(255 * ((self.duration - self.age) / 0.5))
+        else:
+            # 완전 불투명
+            alpha = 255
+
+        # 알파 적용하여 그리기
+        temp_surface = self.fireworks_image.copy()
+        temp_surface.set_alpha(alpha)
+        screen.blit(temp_surface, (self.image_x, self.image_y))
+
+        # 첫 프레임에만 디버그 출력
+        if self.age < 0.1:
+            print(
+                f"DEBUG: Drawing fireworks at ({self.image_x}, {self.image_y}) with alpha={alpha}"
+            )
 
 
 class ScreenShake:
@@ -3509,7 +4142,7 @@ class ScreenShake:
 
     def __init__(self):
         self.intensity = 0.0  # 현재 떨림 강도 (픽셀)
-        self.duration = 0     # 남은 지속 시간 (프레임)
+        self.duration = 0  # 남은 지속 시간 (프레임)
         self.offset = pygame.math.Vector2(0, 0)  # 현재 적용할 오프셋
 
     def start_shake(self, intensity: float, duration_frames: int):
@@ -3542,8 +4175,15 @@ class ScreenShake:
 class DynamicTextEffect:
     """진동, 색상 변화, 페이드 아웃 기능을 가진 동적 텍스트"""
 
-    def __init__(self, text: str, size: int, color: Tuple[int, int, int],
-                 pos: Tuple[float, float], duration_frames: int, shake_intensity: int = 3):
+    def __init__(
+        self,
+        text: str,
+        size: int,
+        color: Tuple[int, int, int],
+        pos: Tuple[float, float],
+        duration_frames: int,
+        shake_intensity: int = 3,
+    ):
         self.text = text
         self.pos = pygame.math.Vector2(pos)
         self.base_color = color
@@ -3587,7 +4227,9 @@ class DynamicTextEffect:
         # 투명도 (Fade Out)
         alpha = 255
         if self.frames_passed > self.duration * 0.6:
-            fade_progress = (self.frames_passed - self.duration * 0.6) / (self.duration * 0.4)
+            fade_progress = (self.frames_passed - self.duration * 0.6) / (
+                self.duration * 0.4
+            )
             alpha = 255 - int(255 * fade_progress)
             alpha = max(0, alpha)
 
@@ -3601,8 +4243,13 @@ class DynamicTextEffect:
 class ReviveTextEffect:
     """부활 텍스트 이펙트 - 화면 중앙에 부활 메시지 표시 (페이드 인/아웃)"""
 
-    def __init__(self, text: str, screen_size: Tuple[int, int],
-                 color: Tuple[int, int, int] = (255, 215, 0), duration: float = 2.0):
+    def __init__(
+        self,
+        text: str,
+        screen_size: Tuple[int, int],
+        color: Tuple[int, int, int] = (255, 215, 0),
+        duration: float = 2.0,
+    ):
         self.text = text
         self.screen_size = screen_size
         self.color = color
@@ -3640,7 +4287,9 @@ class ReviveTextEffect:
         text_surface.set_alpha(alpha)
 
         # 화면 중앙에 배치
-        text_rect = text_surface.get_rect(center=(self.screen_size[0] // 2, self.screen_size[1] // 2 - 50))
+        text_rect = text_surface.get_rect(
+            center=(self.screen_size[0] // 2, self.screen_size[1] // 2 - 50)
+        )
         screen.blit(text_surface, text_rect)
 
 
@@ -3684,8 +4333,15 @@ class TimeSlowEffect:
 class ParallaxLayer:
     """배경 패럴랙스 레이어 - 별 배경 (반짝임 효과 포함)"""
 
-    def __init__(self, screen_size: Tuple[int, int], star_count: int,
-                 speed_factor: float, star_size: int, color: Tuple[int, int, int], twinkle: bool = False):
+    def __init__(
+        self,
+        screen_size: Tuple[int, int],
+        star_count: int,
+        speed_factor: float,
+        star_size: int,
+        color: Tuple[int, int, int],
+        twinkle: bool = False,
+    ):
         self.screen_width, self.screen_height = screen_size
         self.speed_factor = speed_factor
         self.base_speed_factor = speed_factor  # 기본 속도 저장
@@ -3698,15 +4354,22 @@ class ParallaxLayer:
         for _ in range(star_count):
             x = random.randint(0, self.screen_width)
             y = random.randint(0, self.screen_height)
-            self.stars.append({
-                'pos': pygame.math.Vector2(x, y),
-                'brightness': 1.0,  # 현재 밝기 (0.0 ~ 1.5)
-                'twinkle_timer': 0.0,  # 반짝임 타이머
-                'twinkle_duration': 0.0,  # 반짝임 지속 시간
-                'is_twinkling': False,  # 반짝이고 있는지
-            })
+            self.stars.append(
+                {
+                    "pos": pygame.math.Vector2(x, y),
+                    "brightness": 1.0,  # 현재 밝기 (0.0 ~ 1.5)
+                    "twinkle_timer": 0.0,  # 반짝임 타이머
+                    "twinkle_duration": 0.0,  # 반짝임 지속 시간
+                    "is_twinkling": False,  # 반짝이고 있는지
+                }
+            )
 
-    def update(self, dt: float, player_velocity: pygame.math.Vector2 = None, speed_multiplier: float = 1.0):
+    def update(
+        self,
+        dt: float,
+        player_velocity: pygame.math.Vector2 = None,
+        speed_multiplier: float = 1.0,
+    ):
         """레이어 업데이트 - 플레이어 속도에 반응 + 반짝임"""
         # 속도 배율 적용
         current_speed_factor = self.base_speed_factor * speed_multiplier
@@ -3715,16 +4378,16 @@ class ParallaxLayer:
             # 기본 스크롤
             scroll_speed = 50 * current_speed_factor * dt
             for star_data in self.stars:
-                star_data['pos'].y += scroll_speed
+                star_data["pos"].y += scroll_speed
         else:
             # 플레이어 움직임에 반응
             for star_data in self.stars:
-                star_data['pos'].x -= player_velocity.x * current_speed_factor * dt
-                star_data['pos'].y -= player_velocity.y * current_speed_factor * dt
+                star_data["pos"].x -= player_velocity.x * current_speed_factor * dt
+                star_data["pos"].y -= player_velocity.y * current_speed_factor * dt
 
         # 화면 밖으로 나간 별 재배치
         for star_data in self.stars:
-            star = star_data['pos']
+            star = star_data["pos"]
             if star.y > self.screen_height:
                 star.y = 0
                 star.x = random.randint(0, self.screen_width)
@@ -3742,39 +4405,51 @@ class ParallaxLayer:
         # 반짝임 효과 업데이트
         if self.twinkle_enabled and config.STAR_TWINKLE_SETTINGS["enabled"]:
             for star_data in self.stars:
-                if star_data['is_twinkling']:
+                if star_data["is_twinkling"]:
                     # 반짝임 진행
-                    star_data['twinkle_timer'] += dt
-                    progress = star_data['twinkle_timer'] / star_data['twinkle_duration']
+                    star_data["twinkle_timer"] += dt
+                    progress = (
+                        star_data["twinkle_timer"] / star_data["twinkle_duration"]
+                    )
 
                     if progress >= 1.0:
                         # 반짝임 종료
-                        star_data['is_twinkling'] = False
-                        star_data['brightness'] = 1.0
+                        star_data["is_twinkling"] = False
+                        star_data["brightness"] = 1.0
                     else:
                         # 사인파로 밝기 변화
                         import math
-                        brightness_range = config.STAR_TWINKLE_SETTINGS["brightness_range"]
-                        star_data['brightness'] = 1.0 + (brightness_range[1] - 1.0) * math.sin(progress * math.pi * 2)
+
+                        brightness_range = config.STAR_TWINKLE_SETTINGS[
+                            "brightness_range"
+                        ]
+                        star_data["brightness"] = 1.0 + (
+                            brightness_range[1] - 1.0
+                        ) * math.sin(progress * math.pi * 2)
                 else:
                     # 반짝임 시작 확률
                     if random.random() < config.STAR_TWINKLE_SETTINGS["twinkle_chance"]:
-                        star_data['is_twinkling'] = True
-                        star_data['twinkle_timer'] = 0.0
-                        duration_range = config.STAR_TWINKLE_SETTINGS["twinkle_duration"]
-                        star_data['twinkle_duration'] = random.uniform(duration_range[0], duration_range[1])
+                        star_data["is_twinkling"] = True
+                        star_data["twinkle_timer"] = 0.0
+                        duration_range = config.STAR_TWINKLE_SETTINGS[
+                            "twinkle_duration"
+                        ]
+                        star_data["twinkle_duration"] = random.uniform(
+                            duration_range[0], duration_range[1]
+                        )
 
     def draw(self, screen: pygame.Surface):
         """레이어 그리기 (반짝임 효과 적용)"""
         for star_data in self.stars:
-            star = star_data['pos']
-            brightness = star_data['brightness']
+            star = star_data["pos"]
+            brightness = star_data["brightness"]
 
             # 밝기에 따라 색상 조정
             adjusted_color = tuple(min(255, int(c * brightness)) for c in self.color)
 
-            pygame.draw.circle(screen, adjusted_color,
-                             (int(star.x), int(star.y)), self.star_size)
+            pygame.draw.circle(
+                screen, adjusted_color, (int(star.x), int(star.y)), self.star_size
+            )
 
 
 class SpawnEffect:
@@ -3821,7 +4496,9 @@ class SpawnEffect:
                 color = (100 + i * 50, 50 + i * 30, 255, alpha)
                 surf = pygame.Surface((radius * 2 + 5, radius * 2 + 5), pygame.SRCALPHA)
                 pygame.draw.circle(surf, color, (radius + 2, radius + 2), radius, 2)
-                screen.blit(surf, (int(self.pos.x - radius - 2), int(self.pos.y - radius - 2)))
+                screen.blit(
+                    surf, (int(self.pos.x - radius - 2), int(self.pos.y - radius - 2))
+                )
 
 
 class Meteor:
@@ -3836,17 +4513,28 @@ class Meteor:
         self.is_alive = True
 
         # 이미지 로드 (처음 한 번만, use_image가 True일 때만)
-        if Meteor._head_image is None and config.METEOR_SETTINGS.get("use_image", False):
+        if Meteor._head_image is None and config.METEOR_SETTINGS.get(
+            "use_image", False
+        ):
             try:
                 # config에서 정의된 경로 사용
-                if config.METEOR_HEAD_IMAGE_PATH.exists() and config.METEOR_TRAIL_IMAGE_PATH.exists():
+                if (
+                    config.METEOR_HEAD_IMAGE_PATH.exists()
+                    and config.METEOR_TRAIL_IMAGE_PATH.exists()
+                ):
                     # display가 초기화된 경우에만 convert_alpha 사용
                     if pygame.display.get_surface():
-                        head_img = pygame.image.load(str(config.METEOR_HEAD_IMAGE_PATH)).convert_alpha()
-                        trail_img = pygame.image.load(str(config.METEOR_TRAIL_IMAGE_PATH)).convert_alpha()
+                        head_img = pygame.image.load(
+                            str(config.METEOR_HEAD_IMAGE_PATH)
+                        ).convert_alpha()
+                        trail_img = pygame.image.load(
+                            str(config.METEOR_TRAIL_IMAGE_PATH)
+                        ).convert_alpha()
                     else:
                         head_img = pygame.image.load(str(config.METEOR_HEAD_IMAGE_PATH))
-                        trail_img = pygame.image.load(str(config.METEOR_TRAIL_IMAGE_PATH))
+                        trail_img = pygame.image.load(
+                            str(config.METEOR_TRAIL_IMAGE_PATH)
+                        )
 
                     # 크기 조정 (설정에 맞춰)
                     head_scale = config.METEOR_SETTINGS.get("head_scale", 1.5)
@@ -3858,11 +4546,19 @@ class Meteor:
                     trail_w = int(trail_img.get_width() * trail_scale)
                     trail_h = int(trail_img.get_height() * trail_scale)
 
-                    Meteor._head_image = pygame.transform.smoothscale(head_img, (head_w, head_h))
-                    Meteor._trail_image = pygame.transform.smoothscale(trail_img, (trail_w, trail_h))
-                    print(f"INFO: Meteor images loaded successfully (head: {head_w}x{head_h}, trail: {trail_w}x{trail_h})")
+                    Meteor._head_image = pygame.transform.smoothscale(
+                        head_img, (head_w, head_h)
+                    )
+                    Meteor._trail_image = pygame.transform.smoothscale(
+                        trail_img, (trail_w, trail_h)
+                    )
+                    print(
+                        f"INFO: Meteor images loaded successfully (head: {head_w}x{head_h}, trail: {trail_w}x{trail_h})"
+                    )
                 else:
-                    print(f"WARNING: Meteor image files not found at {config.METEOR_HEAD_IMAGE_PATH}")
+                    print(
+                        f"WARNING: Meteor image files not found at {config.METEOR_HEAD_IMAGE_PATH}"
+                    )
                     Meteor._head_image = None
                     Meteor._trail_image = None
             except Exception as e:
@@ -3883,16 +4579,21 @@ class Meteor:
             angle = random.uniform(30, 60)  # 아래쪽 각도
         else:
             # 좌측에서 시작
-            self.pos = pygame.math.Vector2(-20, random.randint(0, self.screen_height // 2))
+            self.pos = pygame.math.Vector2(
+                -20, random.randint(0, self.screen_height // 2)
+            )
             angle = random.uniform(20, 45)  # 우하향 각도
 
         # 방향 벡터
         import math
+
         self.angle_degrees = angle
-        self.velocity = pygame.math.Vector2(
-            math.cos(math.radians(angle)),
-            math.sin(math.radians(angle))
-        ).normalize() * self.speed
+        self.velocity = (
+            pygame.math.Vector2(
+                math.cos(math.radians(angle)), math.sin(math.radians(angle))
+            ).normalize()
+            * self.speed
+        )
 
         # 트레일 위치 저장
         self.trail_positions = []
@@ -3911,8 +4612,7 @@ class Meteor:
         self.pos += self.velocity * dt
 
         # 화면 밖으로 나가면 제거
-        if (self.pos.x > self.screen_width + 50 or
-            self.pos.y > self.screen_height + 50):
+        if self.pos.x > self.screen_width + 50 or self.pos.y > self.screen_height + 50:
             self.is_alive = False
 
     def draw(self, screen: pygame.Surface):
@@ -3922,32 +4622,46 @@ class Meteor:
 
         # 이미지가 로드되었고 use_image가 True인 경우에만 이미지 사용
         use_image = config.METEOR_SETTINGS.get("use_image", False)
-        if use_image and Meteor._head_image is not None and Meteor._trail_image is not None:
+        if (
+            use_image
+            and Meteor._head_image is not None
+            and Meteor._trail_image is not None
+        ):
             import math
 
             # 트레일 그리기 (뒤에서 앞으로, 점점 투명하게)
             if len(self.trail_positions) > 1:
-                for i, trail_pos in enumerate(self.trail_positions[:-1]):  # 마지막 위치 제외
+                for i, trail_pos in enumerate(
+                    self.trail_positions[:-1]
+                ):  # 마지막 위치 제외
                     alpha = int(255 * (i + 1) / len(self.trail_positions))
                     scale = (i + 1) / len(self.trail_positions)
 
                     # 트레일 이미지 회전 및 크기 조정
-                    rotated_trail = pygame.transform.rotate(Meteor._trail_image, -self.angle_degrees)
+                    rotated_trail = pygame.transform.rotate(
+                        Meteor._trail_image, -self.angle_degrees
+                    )
                     scaled_trail = pygame.transform.scale(
                         rotated_trail,
-                        (int(rotated_trail.get_width() * scale),
-                         int(rotated_trail.get_height() * scale))
+                        (
+                            int(rotated_trail.get_width() * scale),
+                            int(rotated_trail.get_height() * scale),
+                        ),
                     )
 
                     # 알파 적용
                     scaled_trail.set_alpha(alpha)
 
                     # 트레일 그리기
-                    rect = scaled_trail.get_rect(center=(int(trail_pos.x), int(trail_pos.y)))
+                    rect = scaled_trail.get_rect(
+                        center=(int(trail_pos.x), int(trail_pos.y))
+                    )
                     screen.blit(scaled_trail, rect)
 
             # 혜성 본체 그리기 (회전 적용)
-            rotated_head = pygame.transform.rotate(Meteor._head_image, -self.angle_degrees)
+            rotated_head = pygame.transform.rotate(
+                Meteor._head_image, -self.angle_degrees
+            )
             rect = rotated_head.get_rect(center=(int(self.pos.x), int(self.pos.y)))
             screen.blit(rotated_head, rect)
 
@@ -3961,11 +4675,15 @@ class Meteor:
                 # 투명도를 가진 서페이스 생성
                 trail_surf = pygame.Surface((size * 2, size * 2), pygame.SRCALPHA)
                 pygame.draw.circle(trail_surf, (*self.color, alpha), (size, size), size)
-                screen.blit(trail_surf, (int(trail_pos.x - size), int(trail_pos.y - size)))
+                screen.blit(
+                    trail_surf, (int(trail_pos.x - size), int(trail_pos.y - size))
+                )
 
             # 유성 본체 그리기 (밝게)
             head_color = tuple(min(255, c + 50) for c in self.color)
-            pygame.draw.circle(screen, head_color, (int(self.pos.x), int(self.pos.y)), self.size)
+            pygame.draw.circle(
+                screen, head_color, (int(self.pos.x), int(self.pos.y)), self.size
+            )
 
 
 class NebulaParticle:
@@ -3979,7 +4697,7 @@ class NebulaParticle:
         settings = config.NEBULA_SETTINGS
         self.pos = pygame.math.Vector2(
             random.randint(-100, self.screen_width + 100),
-            random.randint(-100, self.screen_height + 100)
+            random.randint(-100, self.screen_height + 100),
         )
         self.speed = random.uniform(*settings["speed"])
         self.size = random.randint(*settings["size"])
@@ -3993,11 +4711,14 @@ class NebulaParticle:
 
         # 이동 방향 (천천히 아래로)
         import math
+
         angle = random.uniform(70, 110)  # 대부분 아래 방향
-        self.velocity = pygame.math.Vector2(
-            math.cos(math.radians(angle)),
-            math.sin(math.radians(angle))
-        ).normalize() * self.speed
+        self.velocity = (
+            pygame.math.Vector2(
+                math.cos(math.radians(angle)), math.sin(math.radians(angle))
+            ).normalize()
+            * self.speed
+        )
 
     def update(self, dt: float):
         """성운 파티클 업데이트"""
@@ -4009,6 +4730,7 @@ class NebulaParticle:
 
         # 펄스 효과 (밝기 변화)
         import math
+
         self.pulse_timer += self.pulse_speed * dt
         pulse_factor = 0.7 + 0.3 * math.sin(self.pulse_timer)  # 0.7 ~ 1.0
         self.current_alpha = int(self.base_alpha * pulse_factor)
@@ -4040,17 +4762,32 @@ class NebulaParticle:
             layer_alpha = int(self.current_alpha * i / layers)
 
             # 투명도를 가진 서페이스 생성
-            nebula_surf = pygame.Surface((layer_size * 2, layer_size * 2), pygame.SRCALPHA)
-            pygame.draw.circle(nebula_surf, (*self.color, layer_alpha),
-                             (layer_size, layer_size), layer_size)
-            screen.blit(nebula_surf, (int(self.pos.x - layer_size), int(self.pos.y - layer_size)))
+            nebula_surf = pygame.Surface(
+                (layer_size * 2, layer_size * 2), pygame.SRCALPHA
+            )
+            pygame.draw.circle(
+                nebula_surf,
+                (*self.color, layer_alpha),
+                (layer_size, layer_size),
+                layer_size,
+            )
+            screen.blit(
+                nebula_surf,
+                (int(self.pos.x - layer_size), int(self.pos.y - layer_size)),
+            )
 
 
 class BackgroundTransition:
     """배경 전환 효과 클래스 - 웨이브 시작 시 배경 이미지 전환"""
 
-    def __init__(self, old_bg: pygame.Surface, new_bg: pygame.Surface,
-                 screen_size: Tuple[int, int], effect_type: str, duration: float):
+    def __init__(
+        self,
+        old_bg: pygame.Surface,
+        new_bg: pygame.Surface,
+        screen_size: Tuple[int, int],
+        effect_type: str,
+        duration: float,
+    ):
         """
         old_bg: 이전 배경 이미지
         new_bg: 새 배경 이미지
@@ -4246,10 +4983,14 @@ class BackgroundTransition:
             # 다운스케일
             small_width = max(1, self.screen_width // pixel_size)
             small_height = max(1, self.screen_height // pixel_size)
-            small_surf = pygame.transform.scale(self.old_bg, (small_width, small_height))
+            small_surf = pygame.transform.scale(
+                self.old_bg, (small_width, small_height)
+            )
 
             # 업스케일 (픽셀화 효과)
-            pixelated = pygame.transform.scale(small_surf, (self.screen_width, self.screen_height))
+            pixelated = pygame.transform.scale(
+                small_surf, (self.screen_width, self.screen_height)
+            )
             screen.blit(pixelated, (0, 0))
         # 후반부: 새 배경 역픽셀화
         else:
@@ -4259,9 +5000,13 @@ class BackgroundTransition:
 
             small_width = max(1, self.screen_width // pixel_size)
             small_height = max(1, self.screen_height // pixel_size)
-            small_surf = pygame.transform.scale(self.new_bg, (small_width, small_height))
+            small_surf = pygame.transform.scale(
+                self.new_bg, (small_width, small_height)
+            )
 
-            pixelated = pygame.transform.scale(small_surf, (self.screen_width, self.screen_height))
+            pixelated = pygame.transform.scale(
+                small_surf, (self.screen_width, self.screen_height)
+            )
             screen.blit(pixelated, (0, 0))
 
     def _draw_shake_fade(self, screen: pygame.Surface, progress: float):
@@ -4329,6 +5074,7 @@ class BackgroundTransition:
 # StaticField (정전기장) - 속성 스킬
 # =========================================================
 
+
 class StaticField:
     """적 사망 시 생성되는 정전기장 (Static Field 스킬)"""
 
@@ -4336,7 +5082,13 @@ class StaticField:
     _image_loaded = False
     _original_image = None
 
-    def __init__(self, pos: Tuple[float, float], radius: float, duration: float, damage_per_sec: float):
+    def __init__(
+        self,
+        pos: Tuple[float, float],
+        radius: float,
+        duration: float,
+        damage_per_sec: float,
+    ):
         self.pos = pygame.math.Vector2(pos)
         self.radius = radius
         self.duration = duration
@@ -4351,7 +5103,9 @@ class StaticField:
         # 이미지를 반경에 맞게 스케일링
         if StaticField._original_image is not None:
             size = int(self.radius * 2)
-            self.image = pygame.transform.scale(StaticField._original_image, (size, size))
+            self.image = pygame.transform.scale(
+                StaticField._original_image, (size, size)
+            )
         else:
             self.image = None
 
@@ -4359,12 +5113,19 @@ class StaticField:
     def _load_image(cls):
         """Static Field 이미지 로드"""
         import config
+
         try:
             if config.STATIC_FIELD_IMAGE_PATH.exists():
-                cls._original_image = pygame.image.load(str(config.STATIC_FIELD_IMAGE_PATH)).convert_alpha()
-                print(f"INFO: Static Field image loaded from {config.STATIC_FIELD_IMAGE_PATH}")
+                cls._original_image = pygame.image.load(
+                    str(config.STATIC_FIELD_IMAGE_PATH)
+                ).convert_alpha()
+                print(
+                    f"INFO: Static Field image loaded from {config.STATIC_FIELD_IMAGE_PATH}"
+                )
             else:
-                print(f"WARNING: Static Field image not found at {config.STATIC_FIELD_IMAGE_PATH}")
+                print(
+                    f"WARNING: Static Field image not found at {config.STATIC_FIELD_IMAGE_PATH}"
+                )
                 cls._original_image = None
         except Exception as e:
             print(f"ERROR: Failed to load Static Field image: {e}")
@@ -4401,9 +5162,22 @@ class StaticField:
                 screen.blit(temp_image, rect)
             else:
                 # 이미지가 없으면 기본 원형으로 그리기 (폴백)
-                circle_surf = pygame.Surface((self.radius * 2, self.radius * 2), pygame.SRCALPHA)
-                pygame.draw.circle(circle_surf, (150, 150, 255, alpha), (self.radius, self.radius), self.radius)
-                pygame.draw.circle(circle_surf, (100, 200, 255, min(255, alpha + 50)), (self.radius, self.radius), self.radius, 2)
+                circle_surf = pygame.Surface(
+                    (self.radius * 2, self.radius * 2), pygame.SRCALPHA
+                )
+                pygame.draw.circle(
+                    circle_surf,
+                    (150, 150, 255, alpha),
+                    (self.radius, self.radius),
+                    self.radius,
+                )
+                pygame.draw.circle(
+                    circle_surf,
+                    (100, 200, 255, min(255, alpha + 50)),
+                    (self.radius, self.radius),
+                    self.radius,
+                    2,
+                )
                 rect = circle_surf.get_rect(center=(int(self.pos.x), int(self.pos.y)))
                 screen.blit(circle_surf, rect)
 
@@ -4411,6 +5185,7 @@ class StaticField:
 # =========================================================
 # 11. 동료 유닛 클래스 (Companion System)
 # =========================================================
+
 
 class Turret:
     """고정 설치형 자동 포탑"""
@@ -4455,7 +5230,9 @@ class Turret:
                 original_image = pygame.image.load(str(image_path)).convert_alpha()
                 # 터렛 크기에 맞게 스케일링 (size * 2 정도)
                 target_size = self.size * 2
-                self.image = pygame.transform.scale(original_image, (target_size, target_size))
+                self.image = pygame.transform.scale(
+                    original_image, (target_size, target_size)
+                )
                 Turret._image_cache = self.image
                 print(f"INFO: Turret image loaded from {image_path}")
             except Exception as e:
@@ -4482,7 +5259,7 @@ class Turret:
         # 범위 내 가장 가까운 적 찾기
         if self.shoot_timer <= 0:
             closest_enemy = None
-            closest_distance = float('inf')
+            closest_distance = float("inf")
 
             for enemy in enemies:
                 if enemy.is_alive:
@@ -4502,6 +5279,7 @@ class Turret:
 
                 # 회전 각도 업데이트 (시각 효과용)
                 import math
+
                 self.rotation_angle = math.atan2(direction.y, direction.x)
 
                 self.shoot_timer = self.shoot_cooldown
@@ -4518,26 +5296,44 @@ class Turret:
             # 이미지 회전 (발사 방향에 맞춤)
             angle_degrees = -math.degrees(self.rotation_angle)
             rotated_image = pygame.transform.rotate(self.image, angle_degrees)
-            image_rect = rotated_image.get_rect(center=(int(self.pos.x), int(self.pos.y)))
+            image_rect = rotated_image.get_rect(
+                center=(int(self.pos.x), int(self.pos.y))
+            )
             screen.blit(rotated_image, image_rect)
         else:
             # 기본 도형 (이미지 없을 때)
             base_color = (100, 100, 255)
-            pygame.draw.circle(screen, base_color, (int(self.pos.x), int(self.pos.y)), self.size)
+            pygame.draw.circle(
+                screen, base_color, (int(self.pos.x), int(self.pos.y)), self.size
+            )
 
             # 포신 (회전하는 선)
             barrel_length = self.size + 10
             barrel_end_x = self.pos.x + math.cos(self.rotation_angle) * barrel_length
             barrel_end_y = self.pos.y + math.sin(self.rotation_angle) * barrel_length
-            pygame.draw.line(screen, (200, 200, 255),
-                            (int(self.pos.x), int(self.pos.y)),
-                            (int(barrel_end_x), int(barrel_end_y)), 4)
+            pygame.draw.line(
+                screen,
+                (200, 200, 255),
+                (int(self.pos.x), int(self.pos.y)),
+                (int(barrel_end_x), int(barrel_end_y)),
+                4,
+            )
 
         # 사거리 표시 (반투명 원)
-        range_surf = pygame.Surface((self.shoot_range * 2, self.shoot_range * 2), pygame.SRCALPHA)
-        pygame.draw.circle(range_surf, (100, 100, 255, 30),
-                          (self.shoot_range, self.shoot_range), self.shoot_range, 1)
-        screen.blit(range_surf, (int(self.pos.x - self.shoot_range), int(self.pos.y - self.shoot_range)))
+        range_surf = pygame.Surface(
+            (self.shoot_range * 2, self.shoot_range * 2), pygame.SRCALPHA
+        )
+        pygame.draw.circle(
+            range_surf,
+            (100, 100, 255, 30),
+            (self.shoot_range, self.shoot_range),
+            self.shoot_range,
+            1,
+        )
+        screen.blit(
+            range_surf,
+            (int(self.pos.x - self.shoot_range), int(self.pos.y - self.shoot_range)),
+        )
 
         # 남은 시간 표시
         remaining_time = self.duration - self.age
@@ -4571,15 +5367,18 @@ class Drone:
         if drone_image_path.exists():
             self.image = pygame.image.load(str(drone_image_path)).convert_alpha()
             # 드론 크기를 50% 더 크게 스케일링 (기존 * 2 -> * 3)
-            self.image = pygame.transform.scale(self.image, (int(self.size * 3), int(self.size * 3)))
+            self.image = pygame.transform.scale(
+                self.image, (int(self.size * 3), int(self.size * 3))
+            )
         else:
             self.image = None
 
         # 위치 초기화 (원형 궤도)
         import math
+
         self.pos = pygame.math.Vector2(
             player.pos.x + math.cos(orbit_angle) * self.orbit_radius,
-            player.pos.y + math.sin(orbit_angle) * self.orbit_radius
+            player.pos.y + math.sin(orbit_angle) * self.orbit_radius,
         )
         self.trail_glow_intensity = 0.0  # 글로우 효과 강도
         self.trail_pulse_phase = 0.0  # 펄스 애니메이션 위상
@@ -4608,7 +5407,7 @@ class Drone:
         # 범위 내 가장 가까운 적 찾기
         if self.shoot_timer <= 0:
             closest_enemy = None
-            closest_distance = float('inf')
+            closest_distance = float("inf")
 
             for enemy in enemies:
                 if enemy.is_alive:
@@ -4645,6 +5444,7 @@ class Drone:
         else:
             # 이미지가 없으면 기본 육각형 그리기
             import math
+
             points = []
             for i in range(6):
                 angle = math.pi / 3 * i
@@ -4656,7 +5456,9 @@ class Drone:
             pygame.draw.polygon(screen, (255, 255, 150), points, 2)
 
             # 중심점
-            pygame.draw.circle(screen, (255, 255, 200), (int(self.pos.x), int(self.pos.y)), 4)
+            pygame.draw.circle(
+                screen, (255, 255, 200), (int(self.pos.x), int(self.pos.y)), 4
+            )
 
     def _draw_ellipse_orbit(self, screen: pygame.Surface):
         """플레이어 주변을 둘러싸는 원형 궤도 효과 그리기"""
@@ -4682,10 +5484,17 @@ class Drone:
             glow_size = orbit_diameter + glow_expand * 2
 
             if glow_size > 0:
-                glow_surf = pygame.Surface((glow_size + 10, glow_size + 10), pygame.SRCALPHA)
+                glow_surf = pygame.Surface(
+                    (glow_size + 10, glow_size + 10), pygame.SRCALPHA
+                )
                 glow_rect = pygame.Rect(5, 5, glow_size, glow_size)
-                pygame.draw.ellipse(glow_surf, (*glow_color, glow_alpha), glow_rect, max(1, 4 - i))
-                screen.blit(glow_surf, (center_x - glow_size // 2 - 5, center_y - glow_size // 2 - 5))
+                pygame.draw.ellipse(
+                    glow_surf, (*glow_color, glow_alpha), glow_rect, max(1, 4 - i)
+                )
+                screen.blit(
+                    glow_surf,
+                    (center_x - glow_size // 2 - 5, center_y - glow_size // 2 - 5),
+                )
 
         # 메인 원형 궤도 (점선 효과로 에너지 흐름 표현)
         num_segments = 36  # 원을 구성하는 세그먼트 수
@@ -4694,23 +5503,36 @@ class Drone:
 
         points = []
         for i in range(num_segments + 1):
-            angle = (2 * math.pi * i / num_segments)
+            angle = 2 * math.pi * i / num_segments
             x = center_x + math.cos(angle) * self.orbit_radius
             y = center_y + math.sin(angle) * self.orbit_radius
             points.append((x, y))
 
         # 회전하는 밝은 구간 효과 (드론 위치 기준)
-        drone_segment = int((self.orbit_angle / (2 * math.pi)) * num_segments) % num_segments
+        drone_segment = (
+            int((self.orbit_angle / (2 * math.pi)) * num_segments) % num_segments
+        )
 
         for i in range(num_segments):
             # 드론 위치로부터의 거리에 따른 밝기 계산
-            segment_dist = min(abs(i - drone_segment), num_segments - abs(i - drone_segment))
+            segment_dist = min(
+                abs(i - drone_segment), num_segments - abs(i - drone_segment)
+            )
             brightness = max(0, 1.0 - segment_dist / (num_segments / 3))
 
             # 색상 보간
-            r = int(trail_color_base[0] + (trail_color_bright[0] - trail_color_base[0]) * brightness)
-            g = int(trail_color_base[1] + (trail_color_bright[1] - trail_color_base[1]) * brightness)
-            b = int(trail_color_base[2] + (trail_color_bright[2] - trail_color_base[2]) * brightness)
+            r = int(
+                trail_color_base[0]
+                + (trail_color_bright[0] - trail_color_base[0]) * brightness
+            )
+            g = int(
+                trail_color_base[1]
+                + (trail_color_bright[1] - trail_color_base[1]) * brightness
+            )
+            b = int(
+                trail_color_base[2]
+                + (trail_color_bright[2] - trail_color_base[2]) * brightness
+            )
 
             # 선 굵기 (드론 근처가 더 두꺼움)
             line_width = 1 + int(brightness * 2)
@@ -4724,26 +5546,50 @@ class Drone:
                 end_pos = (int(points[i + 1][0]), int(points[i + 1][1]))
 
                 # 투명한 선 그리기
-                line_surf = pygame.Surface((abs(end_pos[0] - start_pos[0]) + 10,
-                                           abs(end_pos[1] - start_pos[1]) + 10), pygame.SRCALPHA)
+                line_surf = pygame.Surface(
+                    (
+                        abs(end_pos[0] - start_pos[0]) + 10,
+                        abs(end_pos[1] - start_pos[1]) + 10,
+                    ),
+                    pygame.SRCALPHA,
+                )
                 local_start = (5, 5)
-                local_end = (end_pos[0] - start_pos[0] + 5, end_pos[1] - start_pos[1] + 5)
+                local_end = (
+                    end_pos[0] - start_pos[0] + 5,
+                    end_pos[1] - start_pos[1] + 5,
+                )
 
-                pygame.draw.line(line_surf, (r, g, b, alpha), local_start, local_end, line_width)
-                screen.blit(line_surf, (min(start_pos[0], end_pos[0]) - 5,
-                                       min(start_pos[1], end_pos[1]) - 5))
+                pygame.draw.line(
+                    line_surf, (r, g, b, alpha), local_start, local_end, line_width
+                )
+                screen.blit(
+                    line_surf,
+                    (
+                        min(start_pos[0], end_pos[0]) - 5,
+                        min(start_pos[1], end_pos[1]) - 5,
+                    ),
+                )
 
         # 드론 현재 위치에 밝은 마커 (에너지 노드)
         marker_size = 4 + int(glow_intensity * 2)
-        pygame.draw.circle(screen, trail_color_bright, (int(self.pos.x), int(self.pos.y)), marker_size)
-        pygame.draw.circle(screen, (255, 255, 255), (int(self.pos.x), int(self.pos.y)), marker_size - 2)
+        pygame.draw.circle(
+            screen, trail_color_bright, (int(self.pos.x), int(self.pos.y)), marker_size
+        )
+        pygame.draw.circle(
+            screen, (255, 255, 255), (int(self.pos.x), int(self.pos.y)), marker_size - 2
+        )
 
 
 class ShatterFragment:
     """적 사망 시 생성되는 이미지 파편"""
 
-    def __init__(self, image_piece: pygame.Surface, pos: pygame.math.Vector2,
-                 velocity: pygame.math.Vector2, rotation_speed: float):
+    def __init__(
+        self,
+        image_piece: pygame.Surface,
+        pos: pygame.math.Vector2,
+        velocity: pygame.math.Vector2,
+        rotation_speed: float,
+    ):
         """파편 초기화
 
         Args:
@@ -4802,7 +5648,13 @@ class ShatterFragment:
 class BurstParticle:
     """파티클 폭발용 개별 파티클"""
 
-    def __init__(self, pos: pygame.math.Vector2, velocity: pygame.math.Vector2, color: tuple, size: float):
+    def __init__(
+        self,
+        pos: pygame.math.Vector2,
+        velocity: pygame.math.Vector2,
+        color: tuple,
+        size: float,
+    ):
         self.pos = pos.copy()
         self.velocity = velocity.copy()
         self.color = color
@@ -4834,7 +5686,9 @@ class BurstParticle:
 
         surf = pygame.Surface((int(self.size * 2), int(self.size * 2)), pygame.SRCALPHA)
         color_with_alpha = (*self.color[:3], self.alpha)
-        pygame.draw.circle(surf, color_with_alpha, (int(self.size), int(self.size)), int(self.size))
+        pygame.draw.circle(
+            surf, color_with_alpha, (int(self.size), int(self.size)), int(self.size)
+        )
         screen.blit(surf, (int(self.pos.x - self.size), int(self.pos.y - self.size)))
 
 
@@ -4854,6 +5708,7 @@ class DissolveEffect:
         self.pixels = []
 
         import random
+
         # 픽셀 좌표를 무작위 순서로 저장
         for y in range(self.height):
             for x in range(self.width):
@@ -4927,24 +5782,32 @@ class FadeEffect:
             # Phase 1: 확대 (0 → expand_scale)
             expand_progress = self.lifetime / self.expand_duration
             # ease-out 효과로 부드러운 확대
-            scale = 1.0 + (self.expand_scale - 1.0) * (1.0 - (1.0 - expand_progress) ** 2)
+            scale = 1.0 + (self.expand_scale - 1.0) * (
+                1.0 - (1.0 - expand_progress) ** 2
+            )
         else:
             # Phase 2: 축소 (expand_scale → 0)
-            shrink_progress = (self.lifetime - self.expand_duration) / (self.max_lifetime - self.expand_duration)
+            shrink_progress = (self.lifetime - self.expand_duration) / (
+                self.max_lifetime - self.expand_duration
+            )
             # ease-in 효과로 가속되는 축소
-            scale = self.expand_scale * (1.0 - shrink_progress ** 0.8)
+            scale = self.expand_scale * (1.0 - shrink_progress**0.8)
 
         new_width = max(1, int(self.original_size[0] * scale))
         new_height = max(1, int(self.original_size[1] * scale))
 
         # 이미지 스케일링
-        scaled_image = pygame.transform.scale(self.original_image, (new_width, new_height))
+        scaled_image = pygame.transform.scale(
+            self.original_image, (new_width, new_height)
+        )
 
         # 투명도 적용 (확대 중에는 100%, 축소 중에 페이드아웃)
         if self.lifetime < self.expand_duration:
             alpha = 255
         else:
-            shrink_progress = (self.lifetime - self.expand_duration) / (self.max_lifetime - self.expand_duration)
+            shrink_progress = (self.lifetime - self.expand_duration) / (
+                self.max_lifetime - self.expand_duration
+            )
             alpha = int(255 * (1.0 - shrink_progress))
         scaled_image.set_alpha(alpha)
 
@@ -4977,7 +5840,9 @@ class ImplodeEffect:
 
         # 확대 중에는 회전 없음, 축소 시작 후 가속 회전
         if self.lifetime >= self.expand_duration:
-            shrink_progress = (self.lifetime - self.expand_duration) / (self.max_lifetime - self.expand_duration)
+            shrink_progress = (self.lifetime - self.expand_duration) / (
+                self.max_lifetime - self.expand_duration
+            )
             # 축소하면서 점점 빨라지는 회전
             rotation_speed = 720 * (1.0 + shrink_progress * 2)  # 720 → 2160 deg/s
             self.rotation += rotation_speed * dt
@@ -4994,10 +5859,14 @@ class ImplodeEffect:
             # Phase 1: 확대 (폭발 직전 팽창)
             expand_progress = self.lifetime / self.expand_duration
             # ease-out 효과로 부드러운 확대
-            scale = 1.0 + (self.expand_scale - 1.0) * (1.0 - (1.0 - expand_progress) ** 2)
+            scale = 1.0 + (self.expand_scale - 1.0) * (
+                1.0 - (1.0 - expand_progress) ** 2
+            )
         else:
             # Phase 2: 급격한 축소 (빨려들어감)
-            shrink_progress = (self.lifetime - self.expand_duration) / (self.max_lifetime - self.expand_duration)
+            shrink_progress = (self.lifetime - self.expand_duration) / (
+                self.max_lifetime - self.expand_duration
+            )
             # ease-in 효과로 가속되는 축소
             scale = self.expand_scale * (1.0 - shrink_progress) ** 2
 
@@ -5005,15 +5874,19 @@ class ImplodeEffect:
         new_height = max(1, int(self.original_size[1] * scale))
 
         # 이미지 스케일링 및 회전
-        scaled_image = pygame.transform.scale(self.original_image, (new_width, new_height))
+        scaled_image = pygame.transform.scale(
+            self.original_image, (new_width, new_height)
+        )
         rotated_image = pygame.transform.rotate(scaled_image, self.rotation)
 
         # 투명도 적용 (확대 중에는 100%, 축소 끝에 급격히 사라짐)
         if self.lifetime < self.expand_duration:
             alpha = 255
         else:
-            shrink_progress = (self.lifetime - self.expand_duration) / (self.max_lifetime - self.expand_duration)
-            alpha = int(255 * (1.0 - shrink_progress ** 3))
+            shrink_progress = (self.lifetime - self.expand_duration) / (
+                self.max_lifetime - self.expand_duration
+            )
+            alpha = int(255 * (1.0 - shrink_progress**3))
         rotated_image.set_alpha(alpha)
 
         # 그리기
@@ -5051,19 +5924,23 @@ class VortexEffect:
             angle = (i / particle_count) * math.pi * 4  # 2바퀴 나선
             distance = random.uniform(30, 80)
             speed = random.uniform(80, 150)
-            color = random.choice([
-                (100, 150, 255),  # 파란색
-                (150, 100, 255),  # 보라색
-                (200, 150, 255),  # 연보라색
-            ])
-            self.spiral_particles.append({
-                'angle': angle,
-                'distance': distance,
-                'speed': speed,
-                'color': color,
-                'size': random.uniform(2, 5),
-                'alpha': 255
-            })
+            color = random.choice(
+                [
+                    (100, 150, 255),  # 파란색
+                    (150, 100, 255),  # 보라색
+                    (200, 150, 255),  # 연보라색
+                ]
+            )
+            self.spiral_particles.append(
+                {
+                    "angle": angle,
+                    "distance": distance,
+                    "speed": speed,
+                    "color": color,
+                    "size": random.uniform(2, 5),
+                    "alpha": 255,
+                }
+            )
 
     def update(self, dt: float):
         if not self.is_alive:
@@ -5076,15 +5953,17 @@ class VortexEffect:
             self.rotation += 180 * dt  # 느린 회전
         else:
             # 점점 빨라지는 회전 (가속)
-            shrink_progress = (self.lifetime - self.expand_duration) / (self.max_lifetime - self.expand_duration)
+            shrink_progress = (self.lifetime - self.expand_duration) / (
+                self.max_lifetime - self.expand_duration
+            )
             acceleration = 1.0 + shrink_progress * 3
             self.rotation += 720 * dt * acceleration
 
         # 파티클 업데이트 (중심으로 수렴)
         for p in self.spiral_particles:
-            p['angle'] += dt * 5  # 나선 회전
-            p['distance'] = max(0, p['distance'] - p['speed'] * dt)
-            p['alpha'] = max(0, p['alpha'] - 200 * dt)
+            p["angle"] += dt * 5  # 나선 회전
+            p["distance"] = max(0, p["distance"] - p["speed"] * dt)
+            p["alpha"] = max(0, p["alpha"] - 200 * dt)
 
         if self.lifetime >= self.max_lifetime:
             self.is_alive = False
@@ -5099,47 +5978,66 @@ class VortexEffect:
 
         # 나선 파티클 그리기 (뒤에)
         for p in self.spiral_particles:
-            if p['alpha'] > 0 and p['distance'] > 0:
-                px = self.pos.x + math.cos(p['angle']) * p['distance']
-                py = self.pos.y + math.sin(p['angle']) * p['distance']
-                color_with_alpha = (*p['color'], int(p['alpha']))
-                surf = pygame.Surface((int(p['size'] * 2), int(p['size'] * 2)), pygame.SRCALPHA)
-                pygame.draw.circle(surf, color_with_alpha, (int(p['size']), int(p['size'])), int(p['size']))
-                screen.blit(surf, (int(px - p['size']), int(py - p['size'])))
+            if p["alpha"] > 0 and p["distance"] > 0:
+                px = self.pos.x + math.cos(p["angle"]) * p["distance"]
+                py = self.pos.y + math.sin(p["angle"]) * p["distance"]
+                color_with_alpha = (*p["color"], int(p["alpha"]))
+                surf = pygame.Surface(
+                    (int(p["size"] * 2), int(p["size"] * 2)), pygame.SRCALPHA
+                )
+                pygame.draw.circle(
+                    surf,
+                    color_with_alpha,
+                    (int(p["size"]), int(p["size"])),
+                    int(p["size"]),
+                )
+                screen.blit(surf, (int(px - p["size"]), int(py - p["size"])))
 
         # 확대→축소 애니메이션
         if self.lifetime < self.expand_duration:
             # Phase 1: 확대
             expand_progress = self.lifetime / self.expand_duration
-            scale = 1.0 + (self.expand_scale - 1.0) * (1.0 - (1.0 - expand_progress) ** 2)
+            scale = 1.0 + (self.expand_scale - 1.0) * (
+                1.0 - (1.0 - expand_progress) ** 2
+            )
         else:
             # Phase 2: 급격한 축소 (빨려들어감)
-            shrink_progress = (self.lifetime - self.expand_duration) / (self.max_lifetime - self.expand_duration)
+            shrink_progress = (self.lifetime - self.expand_duration) / (
+                self.max_lifetime - self.expand_duration
+            )
             scale = self.expand_scale * (1.0 - shrink_progress) ** 1.5
 
         new_width = max(1, int(self.original_size[0] * scale))
         new_height = max(1, int(self.original_size[1] * scale))
 
         # 이미지 스케일링 및 회전
-        scaled_image = pygame.transform.scale(self.original_image, (new_width, new_height))
+        scaled_image = pygame.transform.scale(
+            self.original_image, (new_width, new_height)
+        )
         rotated_image = pygame.transform.rotate(scaled_image, self.rotation)
 
         # 투명도 + 색조 변화 (파란색으로)
         if self.lifetime < self.expand_duration:
             alpha = 255
         else:
-            shrink_progress = (self.lifetime - self.expand_duration) / (self.max_lifetime - self.expand_duration)
-            alpha = int(255 * (1.0 - shrink_progress ** 2))
+            shrink_progress = (self.lifetime - self.expand_duration) / (
+                self.max_lifetime - self.expand_duration
+            )
+            alpha = int(255 * (1.0 - shrink_progress**2))
         rotated_image.set_alpha(alpha)
 
         # 파란색 오버레이 (차원 균열 느낌) - 축소 시작 후에만
         if self.lifetime >= self.expand_duration:
-            shrink_progress = (self.lifetime - self.expand_duration) / (self.max_lifetime - self.expand_duration)
+            shrink_progress = (self.lifetime - self.expand_duration) / (
+                self.max_lifetime - self.expand_duration
+            )
             if shrink_progress > 0.2:
                 tint_surf = pygame.Surface(rotated_image.get_size(), pygame.SRCALPHA)
                 tint_alpha = int(100 * (shrink_progress - 0.2) / 0.8)
                 tint_surf.fill((100, 150, 255, tint_alpha))
-                rotated_image.blit(tint_surf, (0, 0), special_flags=pygame.BLEND_RGBA_ADD)
+                rotated_image.blit(
+                    tint_surf, (0, 0), special_flags=pygame.BLEND_RGBA_ADD
+                )
 
         # 그리기
         rect = rotated_image.get_rect(center=(int(self.pos.x), int(self.pos.y)))
@@ -5150,10 +6048,19 @@ class VortexEffect:
             flash_alpha = int(200 * (progress - 0.85) / 0.15)
             flash_size = int(30 * (1.0 - (progress - 0.85) / 0.15))
             if flash_size > 0:
-                flash_surf = pygame.Surface((flash_size * 2, flash_size * 2), pygame.SRCALPHA)
-                pygame.draw.circle(flash_surf, (200, 220, 255, flash_alpha),
-                                 (flash_size, flash_size), flash_size)
-                screen.blit(flash_surf, (int(self.pos.x - flash_size), int(self.pos.y - flash_size)))
+                flash_surf = pygame.Surface(
+                    (flash_size * 2, flash_size * 2), pygame.SRCALPHA
+                )
+                pygame.draw.circle(
+                    flash_surf,
+                    (200, 220, 255, flash_alpha),
+                    (flash_size, flash_size),
+                    flash_size,
+                )
+                screen.blit(
+                    flash_surf,
+                    (int(self.pos.x - flash_size), int(self.pos.y - flash_size)),
+                )
 
 
 class PixelateEffect:
@@ -5169,12 +6076,12 @@ class PixelateEffect:
 
         # 픽셀 블록 리스트 (분해 후)
         self.pixel_blocks = []
-        self.phase = 'pixelate'  # 'pixelate' -> 'scatter'
+        self.phase = "pixelate"  # 'pixelate' -> 'scatter'
         self.scatter_started = False
 
         # 타이밍 설정 (2배 연장)
         self.pixelate_duration = 0.8  # 픽셀화 단계 시간
-        self.scatter_duration = 1.2   # 분해 단계 시간
+        self.scatter_duration = 1.2  # 분해 단계 시간
 
     def _create_pixel_blocks(self, block_size: int = 8):
         """픽셀 블록 생성 (분해용)"""
@@ -5203,26 +6110,29 @@ class PixelateEffect:
                 offset_x = x - width / 2 + block_w / 2
                 offset_y = y - height / 2 + block_h / 2
                 block_pos = pygame.math.Vector2(
-                    self.pos.x + offset_x,
-                    self.pos.y + offset_y
+                    self.pos.x + offset_x, self.pos.y + offset_y
                 )
 
                 # 랜덤 속도 (아래로 떨어짐 + 좌우 흩어짐)
-                angle = random.uniform(-math.pi / 3, math.pi / 3) - math.pi / 2  # 위쪽 반원
+                angle = (
+                    random.uniform(-math.pi / 3, math.pi / 3) - math.pi / 2
+                )  # 위쪽 반원
                 speed = random.uniform(50, 150)
                 velocity = pygame.math.Vector2(
                     math.cos(angle) * speed * 0.5,
-                    random.uniform(30, 100)  # 아래로 떨어짐
+                    random.uniform(30, 100),  # 아래로 떨어짐
                 )
 
-                self.pixel_blocks.append({
-                    'image': block_surf,
-                    'pos': block_pos,
-                    'velocity': velocity,
-                    'alpha': 255,
-                    'blink_timer': random.uniform(0, 0.5),  # 깜빡임 타이머
-                    'gravity': random.uniform(150, 250)
-                })
+                self.pixel_blocks.append(
+                    {
+                        "image": block_surf,
+                        "pos": block_pos,
+                        "velocity": velocity,
+                        "alpha": 255,
+                        "blink_timer": random.uniform(0, 0.5),  # 깜빡임 타이머
+                        "gravity": random.uniform(150, 250),
+                    }
+                )
 
     def update(self, dt: float):
         if not self.is_alive:
@@ -5231,27 +6141,29 @@ class PixelateEffect:
         self.lifetime += dt
 
         # 페이즈 전환 (pixelate_duration 후 분해 시작)
-        if self.phase == 'pixelate' and self.lifetime >= self.pixelate_duration:
-            self.phase = 'scatter'
+        if self.phase == "pixelate" and self.lifetime >= self.pixelate_duration:
+            self.phase = "scatter"
             if not self.scatter_started:
                 self._create_pixel_blocks(block_size=8)
                 self.scatter_started = True
 
         # 분해 페이즈: 블록 업데이트
-        if self.phase == 'scatter':
+        if self.phase == "scatter":
             for block in self.pixel_blocks:
                 # 중력 적용
-                block['velocity'].y += block['gravity'] * dt
-                block['pos'] += block['velocity'] * dt
+                block["velocity"].y += block["gravity"] * dt
+                block["pos"] += block["velocity"] * dt
 
                 # 깜빡임
-                block['blink_timer'] -= dt
-                if block['blink_timer'] <= 0:
-                    block['blink_timer'] = random.uniform(0.05, 0.15)
+                block["blink_timer"] -= dt
+                if block["blink_timer"] <= 0:
+                    block["blink_timer"] = random.uniform(0.05, 0.15)
 
                 # 페이드아웃
-                scatter_progress = (self.lifetime - self.pixelate_duration) / self.scatter_duration
-                block['alpha'] = max(0, int(255 * (1.0 - scatter_progress)))
+                scatter_progress = (
+                    self.lifetime - self.pixelate_duration
+                ) / self.scatter_duration
+                block["alpha"] = max(0, int(255 * (1.0 - scatter_progress)))
 
         if self.lifetime >= self.max_lifetime:
             self.is_alive = False
@@ -5262,7 +6174,7 @@ class PixelateEffect:
 
         progress = min(self.lifetime / self.max_lifetime, 1.0)
 
-        if self.phase == 'pixelate':
+        if self.phase == "pixelate":
             # 픽셀화 단계: 해상도 점점 낮아짐
             pixelate_progress = min(self.lifetime / self.pixelate_duration, 1.0)
 
@@ -5286,7 +6198,9 @@ class PixelateEffect:
                     glitch_surf = pygame.Surface(self.original_size, pygame.SRCALPHA)
                     glitch_surf.blit(pixelated, (glitch_offset, 0))
                     glitch_surf.set_alpha(50)
-                    pixelated.blit(glitch_surf, (0, 0), special_flags=pygame.BLEND_RGB_ADD)
+                    pixelated.blit(
+                        glitch_surf, (0, 0), special_flags=pygame.BLEND_RGB_ADD
+                    )
 
             # 그리기
             rect = pixelated.get_rect(center=(int(self.pos.x), int(self.pos.y)))
@@ -5295,18 +6209,21 @@ class PixelateEffect:
         else:
             # 분해 단계: 블록들이 흩어짐
             import random
+
             for block in self.pixel_blocks:
-                if block['alpha'] <= 0:
+                if block["alpha"] <= 0:
                     continue
 
                 # 깜빡임 효과
-                if block['blink_timer'] < 0.03:
+                if block["blink_timer"] < 0.03:
                     continue  # 깜빡임 중 안 보임
 
-                block_img = block['image'].copy()
-                block_img.set_alpha(block['alpha'])
+                block_img = block["image"].copy()
+                block_img.set_alpha(block["alpha"])
 
-                rect = block_img.get_rect(center=(int(block['pos'].x), int(block['pos'].y)))
+                rect = block_img.get_rect(
+                    center=(int(block["pos"].x), int(block["pos"].y))
+                )
                 screen.blit(block_img, rect)
 
 
@@ -5333,22 +6250,26 @@ class DeathEffectManager:
             "fade": True,
             "implode": True,
             "vortex": True,
-            "pixelate": True
+            "pixelate": True,
         }
 
         # 적 유형별 죽음 효과 매핑
         self.enemy_type_effects = {
-            "NORMAL": "shatter",        # 일반: 파편화
-            "TANK": "implode",          # 탱크: 내파 (무거운 느낌)
-            "RUNNER": "fade",           # 러너: 빠른 페이드 (빠른 적)
-            "SUMMONER": "vortex",       # 소환사: 소용돌이 (마법적 느낌)
-            "SHIELDED": "dissolve",     # 보호막: 디졸브 (보호막 소멸)
-            "KAMIKAZE": "particle_burst", # 카미카제: 폭발 파티클
-            "RESPAWNED": "pixelate",    # 리스폰: 픽셀화 (디지털 글리치)
+            "NORMAL": "shatter",  # 일반: 파편화
+            "TANK": "implode",  # 탱크: 내파 (무거운 느낌)
+            "RUNNER": "fade",  # 러너: 빠른 페이드 (빠른 적)
+            "SUMMONER": "vortex",  # 소환사: 소용돌이 (마법적 느낌)
+            "SHIELDED": "dissolve",  # 보호막: 디졸브 (보호막 소멸)
+            "KAMIKAZE": "particle_burst",  # 카미카제: 폭발 파티클
+            "RESPAWNED": "pixelate",  # 리스폰: 픽셀화 (디지털 글리치)
         }
 
-    def create_shatter_effect(self, enemy_image: pygame.Surface, enemy_pos: pygame.math.Vector2,
-                             grid_size: int = 4):
+    def create_shatter_effect(
+        self,
+        enemy_image: pygame.Surface,
+        enemy_pos: pygame.math.Vector2,
+        grid_size: int = 4,
+    ):
         """이미지 파편화 효과 생성
 
         Args:
@@ -5371,16 +6292,16 @@ class DeathEffectManager:
         for row in range(grid_size):
             for col in range(grid_size):
                 # 이미지 조각 추출
-                piece_rect = pygame.Rect(col * piece_width, row * piece_height,
-                                        piece_width, piece_height)
+                piece_rect = pygame.Rect(
+                    col * piece_width, row * piece_height, piece_width, piece_height
+                )
                 piece = enemy_image.subsurface(piece_rect).copy()
 
                 # 파편 시작 위치 (적 중심 기준)
                 offset_x = (col - grid_size / 2 + 0.5) * piece_width
                 offset_y = (row - grid_size / 2 + 0.5) * piece_height
                 frag_pos = pygame.math.Vector2(
-                    enemy_pos.x + offset_x,
-                    enemy_pos.y + offset_y
+                    enemy_pos.x + offset_x, enemy_pos.y + offset_y
                 )
 
                 # 폭발 방향 (중심에서 바깥으로)
@@ -5388,7 +6309,8 @@ class DeathEffectManager:
                 speed = random.uniform(150, 300)  # 속도 무작위
                 velocity = pygame.math.Vector2(
                     math.cos(angle) * speed,
-                    math.sin(angle) * speed - random.uniform(50, 150)  # 위쪽으로 약간 튀어오름
+                    math.sin(angle) * speed
+                    - random.uniform(50, 150),  # 위쪽으로 약간 튀어오름
                 )
 
                 # 회전 속도 무작위
@@ -5398,7 +6320,9 @@ class DeathEffectManager:
                 fragment = ShatterFragment(piece, frag_pos, velocity, rotation_speed)
                 self.fragments.append(fragment)
 
-    def create_particle_burst(self, pos: pygame.math.Vector2, color: tuple, count: int = 30):
+    def create_particle_burst(
+        self, pos: pygame.math.Vector2, color: tuple, count: int = 30
+    ):
         """파티클 폭발 효과 생성
 
         Args:
@@ -5414,34 +6338,44 @@ class DeathEffectManager:
             speed = random.uniform(100, 250)
             velocity = pygame.math.Vector2(
                 math.cos(angle) * speed,
-                math.sin(angle) * speed - random.uniform(0, 100)
+                math.sin(angle) * speed - random.uniform(0, 100),
             )
             size = random.uniform(2, 5)
 
             particle = BurstParticle(pos.copy(), velocity, color, size)
             self.particles.append(particle)
 
-    def create_dissolve_effect(self, enemy_image: pygame.Surface, enemy_pos: pygame.math.Vector2):
+    def create_dissolve_effect(
+        self, enemy_image: pygame.Surface, enemy_pos: pygame.math.Vector2
+    ):
         """디졸브 효과 생성"""
         effect = DissolveEffect(enemy_image, enemy_pos)
         self.dissolve_effects.append(effect)
 
-    def create_fade_effect(self, enemy_image: pygame.Surface, enemy_pos: pygame.math.Vector2):
+    def create_fade_effect(
+        self, enemy_image: pygame.Surface, enemy_pos: pygame.math.Vector2
+    ):
         """페이드 효과 생성"""
         effect = FadeEffect(enemy_image, enemy_pos)
         self.fade_effects.append(effect)
 
-    def create_implode_effect(self, enemy_image: pygame.Surface, enemy_pos: pygame.math.Vector2):
+    def create_implode_effect(
+        self, enemy_image: pygame.Surface, enemy_pos: pygame.math.Vector2
+    ):
         """내파 효과 생성"""
         effect = ImplodeEffect(enemy_image, enemy_pos)
         self.implode_effects.append(effect)
 
-    def create_vortex_effect(self, enemy_image: pygame.Surface, enemy_pos: pygame.math.Vector2):
+    def create_vortex_effect(
+        self, enemy_image: pygame.Surface, enemy_pos: pygame.math.Vector2
+    ):
         """소용돌이 효과 생성"""
         effect = VortexEffect(enemy_image, enemy_pos)
         self.vortex_effects.append(effect)
 
-    def create_pixelate_effect(self, enemy_image: pygame.Surface, enemy_pos: pygame.math.Vector2):
+    def create_pixelate_effect(
+        self, enemy_image: pygame.Surface, enemy_pos: pygame.math.Vector2
+    ):
         """픽셀화 효과 생성"""
         effect = PixelateEffect(enemy_image, enemy_pos)
         self.pixelate_effects.append(effect)
@@ -5520,41 +6454,61 @@ class DeathEffectManager:
             enemy: 사망한 Enemy 객체
         """
         # 적 이미지 생성
-        if hasattr(enemy, 'image') and enemy.image:
+        if hasattr(enemy, "image") and enemy.image:
             enemy_image = enemy.image
         else:
             # 임시 이미지 생성 (적 크기에 맞춤)
-            enemy_image = pygame.Surface((int(enemy.size * 2), int(enemy.size * 2)), pygame.SRCALPHA)
-            pygame.draw.circle(enemy_image, enemy.color,
-                             (int(enemy.size), int(enemy.size)), int(enemy.size))
+            enemy_image = pygame.Surface(
+                (int(enemy.size * 2), int(enemy.size * 2)), pygame.SRCALPHA
+            )
+            pygame.draw.circle(
+                enemy_image,
+                enemy.color,
+                (int(enemy.size), int(enemy.size)),
+                int(enemy.size),
+            )
 
         # 사망 효과용 확대 이미지 생성 (1.3배 확대로 폭발감 연출)
         death_scale = 1.3
-        if hasattr(enemy, 'is_boss') and enemy.is_boss:
+        if hasattr(enemy, "is_boss") and enemy.is_boss:
             death_scale = 1.5  # 보스는 더 크게 확대
 
         scaled_width = int(enemy_image.get_width() * death_scale)
         scaled_height = int(enemy_image.get_height() * death_scale)
-        scaled_image = pygame.transform.smoothscale(enemy_image, (scaled_width, scaled_height))
+        scaled_image = pygame.transform.smoothscale(
+            enemy_image, (scaled_width, scaled_height)
+        )
 
         # 적 유형에 따라 효과 선택
-        enemy_type = getattr(enemy, 'enemy_type', 'NORMAL')
+        enemy_type = getattr(enemy, "enemy_type", "NORMAL")
         effect_name = self.enemy_type_effects.get(enemy_type, self.current_effect)
 
         # 보스는 항상 shatter (큰 파편 효과)
-        if hasattr(enemy, 'is_boss') and enemy.is_boss:
+        if hasattr(enemy, "is_boss") and enemy.is_boss:
             effect_name = "shatter"
 
         # 선택된 효과 발동 (확대된 이미지 사용)
-        self._apply_effect(effect_name, scaled_image, enemy.pos, getattr(enemy, 'color', (255, 100, 100)))
+        self._apply_effect(
+            effect_name,
+            scaled_image,
+            enemy.pos,
+            getattr(enemy, "color", (255, 100, 100)),
+        )
 
-    def _apply_effect(self, effect_name: str, enemy_image: pygame.Surface,
-                     enemy_pos: pygame.math.Vector2, enemy_color: tuple):
+    def _apply_effect(
+        self,
+        effect_name: str,
+        enemy_image: pygame.Surface,
+        enemy_pos: pygame.math.Vector2,
+        enemy_color: tuple,
+    ):
         """실제 효과 적용"""
         if effect_name == "shatter" and self.enabled_effects.get("shatter", True):
             self.create_shatter_effect(enemy_image, enemy_pos)
 
-        elif effect_name == "particle_burst" and self.enabled_effects.get("particle_burst", True):
+        elif effect_name == "particle_burst" and self.enabled_effects.get(
+            "particle_burst", True
+        ):
             self.create_particle_burst(enemy_pos, enemy_color, count=40)
 
         elif effect_name == "dissolve" and self.enabled_effects.get("dissolve", True):
@@ -5608,13 +6562,19 @@ class StoryBriefingEffect:
     - ESC로 스킵 가능
     """
 
-    PHASE_FADEIN = 0       # 배경 페이드인
-    PHASE_DIALOGUE = 1     # 대사 진행 중
-    PHASE_FADEOUT = 2      # 페이드아웃
-    PHASE_DONE = 3         # 완료
+    PHASE_FADEIN = 0  # 배경 페이드인
+    PHASE_DIALOGUE = 1  # 대사 진행 중
+    PHASE_FADEOUT = 2  # 페이드아웃
+    PHASE_DONE = 3  # 완료
 
-    def __init__(self, screen_size: tuple, dialogue_data: list,
-                 background_path: str = None, title: str = "", location: str = ""):
+    def __init__(
+        self,
+        screen_size: tuple,
+        dialogue_data: list,
+        background_path: str = None,
+        title: str = "",
+        location: str = "",
+    ):
         """
         Args:
             screen_size: 화면 크기 (width, height)
@@ -5706,6 +6666,7 @@ class StoryBriefingEffect:
         # config_story_dialogue에서 경로 가져오기
         try:
             from mode_configs.config_story_dialogue import CHARACTER_PORTRAITS
+
             path = CHARACTER_PORTRAITS.get(speaker)
         except ImportError:
             path = None
@@ -5718,8 +6679,10 @@ class StoryBriefingEffect:
             portrait_paths = [
                 Path("assets/story_mode/portraits") / f"portrait_{filename}.png",
                 Path("assets/story_mode/portraits") / f"portrait_{filename}.jpg",
-                Path("assets/data/episodes/shared/portraits") / f"portrait_{filename}.png",
-                Path("assets/data/episodes/shared/portraits") / f"portrait_{filename}.jpg",
+                Path("assets/data/episodes/shared/portraits")
+                / f"portrait_{filename}.png",
+                Path("assets/data/episodes/shared/portraits")
+                / f"portrait_{filename}.jpg",
             ]
 
             for p in portrait_paths:
@@ -5868,7 +6831,9 @@ class StoryBriefingEffect:
             small_font = self.fonts.get("small") or font
             loc_surf = small_font.render(self.location, True, (180, 180, 180))
             loc_surf.set_alpha(alpha)
-            loc_rect = loc_surf.get_rect(midtop=(self.screen_size[0] // 2, title_rect.bottom + 10))
+            loc_rect = loc_surf.get_rect(
+                midtop=(self.screen_size[0] // 2, title_rect.bottom + 10)
+            )
             screen.blit(loc_surf, loc_rect)
 
     def _draw_dialogue_box(self, screen: pygame.Surface, alpha: int):
@@ -5884,16 +6849,24 @@ class StoryBriefingEffect:
         box_width = (self.screen_size[0] - 100) // 2
         box_x = (self.screen_size[0] - box_width) // 2
         box_rect = pygame.Rect(
-            box_x,
-            self.screen_size[1] - box_height - 40,
-            box_width,
-            box_height
+            box_x, self.screen_size[1] - box_height - 40, box_width, box_height
         )
 
         # 박스 배경
         box_surf = pygame.Surface((box_rect.width, box_rect.height), pygame.SRCALPHA)
-        pygame.draw.rect(box_surf, (20, 20, 40, 220), (0, 0, box_rect.width, box_rect.height), border_radius=10)
-        pygame.draw.rect(box_surf, (100, 100, 150, 200), (0, 0, box_rect.width, box_rect.height), 2, border_radius=10)
+        pygame.draw.rect(
+            box_surf,
+            (20, 20, 40, 220),
+            (0, 0, box_rect.width, box_rect.height),
+            border_radius=10,
+        )
+        pygame.draw.rect(
+            box_surf,
+            (100, 100, 150, 200),
+            (0, 0, box_rect.width, box_rect.height),
+            2,
+            border_radius=10,
+        )
         box_surf.set_alpha(alpha)
         screen.blit(box_surf, box_rect.topleft)
 
@@ -5962,10 +6935,18 @@ class StoryBriefingEffect:
 
         # 클릭 대기 표시
         if self.waiting_for_click:
-            indicator_text = "Click to continue..." if self.current_dialogue_index < len(self.dialogue_data) - 1 else "Click to finish..."
+            indicator_text = (
+                "Click to continue..."
+                if self.current_dialogue_index < len(self.dialogue_data) - 1
+                else "Click to finish..."
+            )
             ind_surf = small_font.render(indicator_text, True, (150, 150, 150))
-            ind_surf.set_alpha(int(alpha * (0.5 + 0.5 * math.sin(pygame.time.get_ticks() / 300))))
-            ind_rect = ind_surf.get_rect(bottomright=(box_rect.right - 20, box_rect.bottom - 15))
+            ind_surf.set_alpha(
+                int(alpha * (0.5 + 0.5 * math.sin(pygame.time.get_ticks() / 300)))
+            )
+            ind_rect = ind_surf.get_rect(
+                bottomright=(box_rect.right - 20, box_rect.bottom - 15)
+            )
             screen.blit(ind_surf, ind_rect)
 
 
@@ -5984,19 +6965,26 @@ class PolaroidMemoryEffect:
     - 프레임(흰 테두리)은 코드로 자동 생성
     """
 
-    PHASE_FADEIN = 0       # 배경 페이드인
-    PHASE_PHOTOS = 1       # 사진 등장
-    PHASE_DISPLAY = 2      # 사진 표시 (대기)
-    PHASE_DIALOGUE = 3     # 대사 표시
-    PHASE_FINAL_ZOOM = 4   # 최종 사진 확대 (memory_survive)
-    PHASE_FADEOUT = 5      # 페이드아웃
-    PHASE_DONE = 6         # 완료
+    PHASE_FADEIN = 0  # 배경 페이드인
+    PHASE_PHOTOS = 1  # 사진 등장
+    PHASE_DISPLAY = 2  # 사진 표시 (대기)
+    PHASE_DIALOGUE = 3  # 대사 표시
+    PHASE_FINAL_ZOOM = 4  # 최종 사진 확대 (memory_survive)
+    PHASE_FADEOUT = 5  # 페이드아웃
+    PHASE_DONE = 6  # 완료
 
-    def __init__(self, screen_size: tuple, photo_paths: list,
-                 background_path: str = None, dialogue_after: list = None,
-                 dialogue_per_photo: list = None,
-                 sound_manager=None, special_effects: dict = None,
-                 scene_id: str = "memory_scene_01"):
+    def __init__(
+        self,
+        screen_size: tuple,
+        photo_paths: list,
+        background_path: str = None,
+        dialogue_after: list = None,
+        dialogue_per_photo: list = None,
+        sound_manager=None,
+        special_effects: dict = None,
+        scene_id: str = "memory_scene_01",
+        voice_system=None,
+    ):
         """
         Args:
             screen_size: 화면 크기
@@ -6007,24 +6995,30 @@ class PolaroidMemoryEffect:
             sound_manager: 효과음 재생용
             special_effects: 특수 효과 설정 (파일명: {effect: "flicker"/"fullscreen_fadeout", ...})
             scene_id: 메모리 씬 식별자 (리플레이용)
+            voice_system: 음성 시스템 (VoiceSystem 인스턴스)
         """
         self.screen_size = screen_size
         self.photo_paths = photo_paths
         self.background_path = background_path  # 리플레이용 저장
         self.dialogue_after = dialogue_after or []
-        self.dialogue_per_photo = dialogue_per_photo or []  # 각 폴라로이드에 대응하는 대화
+        self.dialogue_per_photo = (
+            dialogue_per_photo or []
+        )  # 각 폴라로이드에 대응하는 대화
         self.sound_manager = sound_manager
         self.special_effects = special_effects or {}
         self.scene_id = scene_id  # 메모리 씬 ID
+        self.voice_system = voice_system  # 음성 시스템
 
         self.is_alive = True
         self.phase = self.PHASE_FADEIN
         self.phase_timer = 0.0
 
-        # 타이밍 (조금 빠르게 조정 - 기존 대비 약 15% 단축)
+        # 타이밍 (빠르게 조정)
         self.fadein_duration = 1.8
         self.photo_interval = 4.3  # 사진 완전 등장 후 대기 시간 (대화 읽을 시간 포함)
-        self.photo_animation_speed = 0.12  # 사진 날아오는 속도
+        self.photo_animation_speed = (
+            0.20  # 사진 날아오는 속도 (0.12 → 0.20, 약 67% 증가)
+        )
         self.display_duration = 2.5  # 전체 사진 표시 후 대기 시간
         self.fadeout_duration = 1.8
         self.fade_alpha = 0.0
@@ -6099,15 +7093,15 @@ class PolaroidMemoryEffect:
         # 자연스럽게 흩어진 위치 (테이블 위에 던져놓은 느낌)
         # 흰 테두리가 살짝 겹치는 정도로 배치 - 9장 사진용
         base_positions = [
-            (-320, -160),   # 좌상단 - 1번
-            (80, -200),     # 중상단 (약간 치우침) - 2번
-            (350, -80),     # 우측 - 3번
-            (-250, 100),    # 좌하단 - 4번
-            (30, 120),      # 중앙 아래 - 5번
-            (320, 200),     # 우하단 - 6번
-            (-380, 20),     # 좌측 중앙 - 7번
-            (-150, -50),    # 중앙 좌측 (memory_ufo용) - 8번
-            (0, 0),         # 정중앙 (memory_survive용 - 확대될 사진) - 9번
+            (-320, -160),  # 좌상단 - 1번
+            (80, -200),  # 중상단 (약간 치우침) - 2번
+            (350, -80),  # 우측 - 3번
+            (-250, 100),  # 좌하단 - 4번
+            (30, 120),  # 중앙 아래 - 5번
+            (320, 200),  # 우하단 - 6번
+            (-380, 20),  # 좌측 중앙 - 7번
+            (-150, -50),  # 중앙 좌측 (memory_ufo용) - 8번
+            (0, 0),  # 정중앙 (memory_survive용 - 확대될 사진) - 9번
         ]
 
         positions = []
@@ -6124,14 +7118,14 @@ class PolaroidMemoryEffect:
 
         # 다양한 진입 방향 정의 (외부에서 날아오기) - 9개
         entry_directions = [
-            ("left", -400, 0),      # 왼쪽에서 - 1번
-            ("right", 400, 0),      # 오른쪽에서 - 2번
-            ("top", 0, -400),       # 위에서 - 3번
-            ("bottom", 0, 400),     # 아래에서 - 4번
-            ("top_left", -300, -300),   # 좌상단에서 - 5번
+            ("left", -400, 0),  # 왼쪽에서 - 1번
+            ("right", 400, 0),  # 오른쪽에서 - 2번
+            ("top", 0, -400),  # 위에서 - 3번
+            ("bottom", 0, 400),  # 아래에서 - 4번
+            ("top_left", -300, -300),  # 좌상단에서 - 5번
             ("bottom_right", 300, 300),  # 우하단에서 - 6번
             ("left_bottom", -350, 200),  # 좌측 아래에서 - 7번
-            ("top_right", 300, -300),   # 우상단에서 (memory_ufo용) - 8번
+            ("top_right", 300, -300),  # 우상단에서 (memory_ufo용) - 8번
             ("bottom_left", -300, 300),  # 좌하단에서 (memory_survive용) - 9번
         ]
 
@@ -6144,7 +7138,9 @@ class PolaroidMemoryEffect:
             try:
                 photo_img = pygame.image.load(path).convert_alpha()
                 # 크기 조정
-                photo_img = pygame.transform.smoothscale(photo_img, (photo_size, photo_size))
+                photo_img = pygame.transform.smoothscale(
+                    photo_img, (photo_size, photo_size)
+                )
             except Exception as e:
                 print(f"WARNING: Failed to load polaroid: {path} - {e}")
                 # 플레이스홀더 생성
@@ -6159,7 +7155,9 @@ class PolaroidMemoryEffect:
             target_x, target_y = positions[i]
 
             # 진입 방향 선택 (다양하게)
-            direction_name, offset_x, offset_y = entry_directions[i % len(entry_directions)]
+            direction_name, offset_x, offset_y = entry_directions[
+                i % len(entry_directions)
+            ]
 
             # 시작 위치 (화면 외부)
             start_x = target_x + offset_x
@@ -6180,28 +7178,33 @@ class PolaroidMemoryEffect:
             if effect_type in ["fullscreen_fadeout", "flicker_then_zoom"]:
                 self.zoom_photo_indices.append(i)
 
-            self.polaroids.append({
-                'image': rotated,
-                'original_image': framed,  # 원본 보관 (스케일 조정용)
-                'photo_image': photo_img,  # 원본 사진 (확대용)
-                'pos': [start_x, start_y],  # 현재 위치 (리스트로 변경 - 수정 가능)
-                'target_pos': (target_x, target_y),  # 목표 위치
-                'start_pos': (start_x, start_y),  # 시작 위치
-                'angle': angle,
-                'target_angle': angle + random.uniform(-3, 3),  # 최종 각도 (살짝 변화)
-                'alpha': 0,  # 처음엔 투명
-                'target_alpha': 255,
-                'scale': 0.5,  # 처음엔 작게
-                'target_scale': 1.0,
-                'direction': direction_name,
-                'animation_progress': 0.0,  # 0.0 ~ 1.0
-                'filename': filename,  # 파일명 (특수 효과용)
-                'effect_type': effect_type,  # 특수 효과 타입
-                'flicker_speed': effect_info.get("flicker_speed", 0.3),  # 점멸 속도
-                'flicker_phase': 0.0,  # 점멸 위상
-            })
+            self.polaroids.append(
+                {
+                    "image": rotated,
+                    "original_image": framed,  # 원본 보관 (스케일 조정용)
+                    "photo_image": photo_img,  # 원본 사진 (확대용)
+                    "pos": [start_x, start_y],  # 현재 위치 (리스트로 변경 - 수정 가능)
+                    "target_pos": (target_x, target_y),  # 목표 위치
+                    "start_pos": (start_x, start_y),  # 시작 위치
+                    "angle": angle,
+                    "target_angle": angle
+                    + random.uniform(-3, 3),  # 최종 각도 (살짝 변화)
+                    "alpha": 0,  # 처음엔 투명
+                    "target_alpha": 255,
+                    "scale": 0.5,  # 처음엔 작게
+                    "target_scale": 1.0,
+                    "direction": direction_name,
+                    "animation_progress": 0.0,  # 0.0 ~ 1.0
+                    "filename": filename,  # 파일명 (특수 효과용)
+                    "effect_type": effect_type,  # 특수 효과 타입
+                    "flicker_speed": effect_info.get("flicker_speed", 0.3),  # 점멸 속도
+                    "flicker_phase": 0.0,  # 점멸 위상
+                }
+            )
 
-    def _create_polaroid_frame(self, photo: pygame.Surface, photo_index: int = 0) -> pygame.Surface:
+    def _create_polaroid_frame(
+        self, photo: pygame.Surface, photo_index: int = 0
+    ) -> pygame.Surface:
         """폴라로이드 프레임 생성 - 낡고 빛바랜 효과"""
         import random
 
@@ -6242,7 +7245,12 @@ class PolaroidMemoryEffect:
         # 하단 가장자리
         for i in range(8):
             alpha = 25 - i * 3
-            pygame.draw.line(edge_overlay, (180, 170, 140, alpha), (0, frame_h - 1 - i), (frame_w, frame_h - 1 - i))
+            pygame.draw.line(
+                edge_overlay,
+                (180, 170, 140, alpha),
+                (0, frame_h - 1 - i),
+                (frame_w, frame_h - 1 - i),
+            )
         # 좌측 가장자리
         for i in range(6):
             alpha = 20 - i * 3
@@ -6250,7 +7258,12 @@ class PolaroidMemoryEffect:
         # 우측 가장자리
         for i in range(6):
             alpha = 20 - i * 3
-            pygame.draw.line(edge_overlay, (180, 170, 140, alpha), (frame_w - 1 - i, 0), (frame_w - 1 - i, frame_h))
+            pygame.draw.line(
+                edge_overlay,
+                (180, 170, 140, alpha),
+                (frame_w - 1 - i, 0),
+                (frame_w - 1 - i, frame_h),
+            )
         frame.blit(edge_overlay, (0, 0))
 
         # 외곽선 (낡은 갈색 톤)
@@ -6265,20 +7278,37 @@ class PolaroidMemoryEffect:
         frame.blit(vintage_photo, (border, border))
 
         # 사진 테두리 (약간 어두운 선)
-        pygame.draw.rect(frame, (210, 200, 180), (border - 1, border - 1, photo_w + 2, photo_h + 2), 1)
+        pygame.draw.rect(
+            frame,
+            (210, 200, 180),
+            (border - 1, border - 1, photo_w + 2, photo_h + 2),
+            1,
+        )
 
         # 모서리 들뜬 효과 - 2번째 사진(인덱스 1)에만 photo_flip_00.png 적용
         if photo_index == 1:
-            flip_overlay = self._load_flip_overlay(frame_w, frame_h, border, photo_w, photo_h,
-                                                    flip_file="photo_flip_00.png")
+            flip_overlay = self._load_flip_overlay(
+                frame_w,
+                frame_h,
+                border,
+                photo_w,
+                photo_h,
+                flip_file="photo_flip_00.png",
+            )
             if flip_overlay:
                 frame.blit(flip_overlay, (0, 0))
 
         return frame
 
-    def _load_flip_overlay(self, frame_w: int, frame_h: int,
-                              border: int = 18, photo_w: int = 260, photo_h: int = 260,
-                              flip_file: str = "photo_flip.png") -> pygame.Surface:
+    def _load_flip_overlay(
+        self,
+        frame_w: int,
+        frame_h: int,
+        border: int = 18,
+        photo_w: int = 260,
+        photo_h: int = 260,
+        flip_file: str = "photo_flip.png",
+    ) -> pygame.Surface:
         """모서리 들뜬 효과 이미지 로드 - 프레임(흰 테두리)에만 적용"""
         try:
             flip_path = f"assets/story_mode/polaroids/{flip_file}"
@@ -6292,7 +7322,11 @@ class PolaroidMemoryEffect:
                 transparent_rect = pygame.Surface((photo_w, photo_h), pygame.SRCALPHA)
                 transparent_rect.fill((0, 0, 0, 0))
                 # BLEND_RGBA_MIN: 알파값을 최소화하여 해당 영역을 투명하게
-                img.blit(transparent_rect, (border, border), special_flags=pygame.BLEND_RGBA_MIN)
+                img.blit(
+                    transparent_rect,
+                    (border, border),
+                    special_flags=pygame.BLEND_RGBA_MIN,
+                )
 
                 return img
         except Exception as e:
@@ -6346,24 +7380,58 @@ class PolaroidMemoryEffect:
                 self.photo_timer = 0.0
 
         elif self.phase == self.PHASE_PHOTOS:
-            # 사진 순차 등장 (한 사진이 완전히 등장한 후 대화 표시 + 인터벌 대기)
+            # 사진 순차 등장 (사진 출현 시작과 동시에 대화 표시)
             self.photo_timer += dt
 
             # 현재 사진이 완전히 등장했는지 확인
             current_photo_complete = False
             if self.visible_count > 0 and self.visible_count <= len(self.polaroids):
                 current_p = self.polaroids[self.visible_count - 1]
-                current_photo_complete = current_p['animation_progress'] >= 1.0
+                current_photo_complete = current_p["animation_progress"] >= 1.0
 
-            # 폴라로이드 등장 시 해당 대화 자동 표시
-            if current_photo_complete and not self.current_photo_dialogue_shown:
+            # 다음 사진 등장 조건 (대화 표시보다 먼저 체크)
+            if self.visible_count == 0:
+                # 첫 번째 사진은 바로 시작
+                if self.sound_manager:
+                    self.sound_manager.play_sfx("sfx_polaroid")
+                self.visible_count = 1
+                self.photo_timer = 0.0
+                self.current_photo_dialogue_shown = False  # 대화 준비
+            elif current_photo_complete and self.visible_count < len(self.polaroids):
+                # 현재 사진 완료 + 대화 읽을 시간 후 다음 사진
+                if self.photo_timer >= self.photo_interval:
+                    if self.sound_manager:
+                        self.sound_manager.play_sfx("sfx_polaroid")
+                    self.visible_count += 1
+                    self.photo_timer = 0.0  # 타이머 리셋
+                    self.current_photo_dialogue_shown = False  # 다음 대화 준비
+                    self.dialogue_text = ""  # 대화 초기화
+
+            # 폴라로이드 출현과 동시에 대화 자동 표시 (visible_count 증가 직후)
+            if self.visible_count > 0 and not self.current_photo_dialogue_shown:
                 photo_index = self.visible_count - 1
                 if photo_index < len(self.dialogue_per_photo):
-                    # 해당 폴라로이드의 대화 시작
+                    # 해당 폴라로이드의 대화 시작 (출현 시작 시점)
                     self.dialogue_text = ""
                     self.typing_progress = 0.0
                     self.current_photo_dialogue_shown = True
-                    self.photo_timer = 0.0  # 대화 표시 시작 시점부터 타이머
+                    # photo_timer는 이미 0.0으로 설정됨
+
+                    # 폴라로이드별 음성 재생
+                    dialogue = self.dialogue_per_photo[photo_index]
+                    speaker = dialogue.get("speaker", "")
+                    text = dialogue.get("text", "")
+                    print(
+                        f"DEBUG: Photo {photo_index + 1} - speaker={speaker}, text={text[:30] if text else 'None'}, voice_system={self.voice_system is not None}"
+                    )
+                    if self.voice_system and speaker and text:
+                        import re
+
+                        clean_text = re.sub(r"[▼◀▶]", "", text)
+                        self.voice_system.speak(speaker, clean_text)
+                        print(
+                            f"INFO: Playing voice for {speaker}: {clean_text[:30]}..."
+                        )
 
             # 대화 타이핑 효과 (PHASE_PHOTOS 중에도)
             if self.current_photo_dialogue_shown and self.visible_count > 0:
@@ -6377,30 +7445,14 @@ class PolaroidMemoryEffect:
                     else:
                         self.dialogue_text = full_text[:char_count]
 
-            # 다음 사진 등장 조건: 현재 사진 완료 + 대화 표시 완료 + 인터벌 경과
-            if self.visible_count == 0:
-                # 첫 번째 사진은 바로 시작
-                if self.sound_manager:
-                    self.sound_manager.play_sfx("sfx_polaroid")
-                self.visible_count = 1
-                self.photo_timer = 0.0
-                self.current_photo_dialogue_shown = False
-            elif current_photo_complete and self.visible_count < len(self.polaroids):
-                # 현재 사진 완료 + 대화 읽을 시간 후 다음 사진
-                if self.photo_timer >= self.photo_interval:
-                    if self.sound_manager:
-                        self.sound_manager.play_sfx("sfx_polaroid")
-                    self.visible_count += 1
-                    self.photo_timer = 0.0  # 타이머 리셋
-                    self.current_photo_dialogue_shown = False  # 다음 대화 준비
-                    self.dialogue_text = ""  # 대화 초기화
-
             # 사진 애니메이션 업데이트 (2배 확대 → 잠시 유지 → 원래 크기로 축소)
             for i, p in enumerate(self.polaroids):
                 if i < self.visible_count:
                     # 애니메이션 진행도 업데이트
-                    p['animation_progress'] = min(p['animation_progress'] + self.photo_animation_speed * dt, 1.0)
-                    progress = p['animation_progress']
+                    p["animation_progress"] = min(
+                        p["animation_progress"] + self.photo_animation_speed * dt, 1.0
+                    )
+                    progress = p["animation_progress"]
 
                     # 3단계 애니메이션: 등장(0~0.3) → 확대 유지(0.3~0.6) → 축소(0.6~1.0)
                     if progress < 0.3:
@@ -6409,61 +7461,66 @@ class PolaroidMemoryEffect:
                         eased = 1 - pow(1 - phase_progress, 3)  # ease-out-cubic
 
                         # 위치 보간 (시작 → 목표)
-                        start_x, start_y = p['start_pos']
-                        target_x, target_y = p['target_pos']
-                        p['pos'][0] = start_x + (target_x - start_x) * eased
-                        p['pos'][1] = start_y + (target_y - start_y) * eased
+                        start_x, start_y = p["start_pos"]
+                        target_x, target_y = p["target_pos"]
+                        p["pos"][0] = start_x + (target_x - start_x) * eased
+                        p["pos"][1] = start_y + (target_y - start_y) * eased
 
                         # 알파 증가
-                        p['alpha'] = min(int(255 * eased), p['target_alpha'])
+                        p["alpha"] = min(int(255 * eased), p["target_alpha"])
 
                         # 스케일: 0.5 → 2.0 (등장하면서 2배로 확대)
-                        p['scale'] = 0.5 + 1.5 * eased
+                        p["scale"] = 0.5 + 1.5 * eased
 
                     elif progress < 0.6:
                         # 2단계: 확대 상태 유지 (2배 크기로 잠시 보여줌)
-                        p['pos'][0], p['pos'][1] = p['target_pos']
-                        p['alpha'] = 255
-                        p['scale'] = 2.0
+                        p["pos"][0], p["pos"][1] = p["target_pos"]
+                        p["alpha"] = 255
+                        p["scale"] = 2.0
 
                     else:
                         # 3단계: 원래 크기로 축소 (2.0 → 1.0)
                         phase_progress = (progress - 0.6) / 0.4
                         eased = 1 - pow(1 - phase_progress, 2)  # ease-out-quad
 
-                        p['pos'][0], p['pos'][1] = p['target_pos']
-                        p['alpha'] = 255
+                        p["pos"][0], p["pos"][1] = p["target_pos"]
+                        p["alpha"] = 255
                         # 스케일: 2.0 → 1.0
-                        p['scale'] = 2.0 - 1.0 * eased
+                        p["scale"] = 2.0 - 1.0 * eased
 
                     # 점멸 효과 (flicker 또는 flicker_then_zoom) - 축소 완료 후에만 적용
-                    if p.get('effect_type') in ['flicker', 'flicker_then_zoom'] and p['animation_progress'] >= 0.95:
-                        p['flicker_phase'] += dt * (1.0 / p.get('flicker_speed', 0.3))
+                    if (
+                        p.get("effect_type") in ["flicker", "flicker_then_zoom"]
+                        and p["animation_progress"] >= 0.95
+                    ):
+                        p["flicker_phase"] += dt * (1.0 / p.get("flicker_speed", 0.3))
                         # 느린 점멸 (사인파로 부드럽게)
-                        flicker_val = 0.5 + 0.5 * math.sin(p['flicker_phase'] * math.pi)
-                        p['alpha'] = int(150 + 105 * flicker_val)  # 150~255 사이
+                        flicker_val = 0.5 + 0.5 * math.sin(p["flicker_phase"] * math.pi)
+                        p["alpha"] = int(150 + 105 * flicker_val)  # 150~255 사이
 
             # 모든 사진 등장 완료
             if self.visible_count >= len(self.polaroids):
-                all_complete = all(p['animation_progress'] >= 0.98 for p in self.polaroids)
+                all_complete = all(
+                    p["animation_progress"] >= 0.98 for p in self.polaroids
+                )
                 if all_complete:
                     # 최종 위치로 고정
                     for p in self.polaroids:
-                        p['pos'][0], p['pos'][1] = p['target_pos']
+                        p["pos"][0], p["pos"][1] = p["target_pos"]
                         # 점멸 효과 (flicker 또는 flicker_then_zoom)는 알파 유지
-                        if p.get('effect_type') not in ['flicker', 'flicker_then_zoom']:
-                            p['alpha'] = 255
-                        p['scale'] = 1.0
+                        if p.get("effect_type") not in ["flicker", "flicker_then_zoom"]:
+                            p["alpha"] = 255
+                        p["scale"] = 1.0
                     self.phase = self.PHASE_DISPLAY
                     self.phase_timer = 0.0
 
         elif self.phase == self.PHASE_DISPLAY:
             # 점멸 효과 업데이트 (DISPLAY 중에도 계속) - flicker_then_zoom도 포함
             for p in self.polaroids:
-                if p.get('effect_type') in ['flicker', 'flicker_then_zoom']:
-                    p['flicker_phase'] += dt * (1.0 / p.get('flicker_speed', 0.3))
-                    flicker_val = 0.5 + 0.5 * math.sin(p['flicker_phase'] * math.pi)
-                    p['alpha'] = int(150 + 105 * flicker_val)
+                if p.get("effect_type") in ["flicker", "flicker_then_zoom"]:
+                    p["flicker_phase"] += dt * (1.0 / p.get("flicker_speed", 0.3))
+                    flicker_val = 0.5 + 0.5 * math.sin(p["flicker_phase"] * math.pi)
+                    p["alpha"] = int(150 + 105 * flicker_val)
 
             # 잠시 표시
             if self.phase_timer >= self.display_duration:
@@ -6508,7 +7565,9 @@ class PolaroidMemoryEffect:
                 self.current_zoom_index += 1
                 if self.current_zoom_index < len(self.zoom_photo_indices):
                     # 다음 사진 확대 시작
-                    self.final_photo_index = self.zoom_photo_indices[self.current_zoom_index]
+                    self.final_photo_index = self.zoom_photo_indices[
+                        self.current_zoom_index
+                    ]
                     self.phase_timer = 0.0
                     self.final_zoom_scale = 1.0
                     self.final_zoom_alpha = 255
@@ -6527,7 +7586,9 @@ class PolaroidMemoryEffect:
             if not self.waiting_for_click:
                 self.typing_progress += self.typing_speed * dt
                 char_count = int(self.typing_progress)
-                full_text = self.dialogue_after[self.current_dialogue_index].get("text", "")
+                full_text = self.dialogue_after[self.current_dialogue_index].get(
+                    "text", ""
+                )
 
                 if char_count >= len(full_text):
                     self.dialogue_text = full_text
@@ -6541,7 +7602,7 @@ class PolaroidMemoryEffect:
 
             # 사진 페이드아웃
             for p in self.polaroids:
-                p['alpha'] = max(0, int(255 * (1.0 - progress)))
+                p["alpha"] = max(0, int(255 * (1.0 - progress)))
 
             if progress >= 1.0:
                 self.phase = self.PHASE_DONE
@@ -6550,13 +7611,14 @@ class PolaroidMemoryEffect:
                     self.on_complete()
 
     def _get_portrait(self, speaker: str) -> pygame.Surface:
-        """초상화 이미지 가져오기 (캐시 사용)"""
+        """초상화 이미지 가져오기 (캐시 사용) - render_dialogue_box가 크기 조정"""
         if speaker in self.portrait_cache:
             return self.portrait_cache[speaker]
 
         # config_story_dialogue에서 경로 가져오기
         try:
             from mode_configs.config_story_dialogue import CHARACTER_PORTRAITS
+
             path = CHARACTER_PORTRAITS.get(speaker)
         except ImportError:
             # 폴백: 기본 경로
@@ -6568,10 +7630,8 @@ class PolaroidMemoryEffect:
 
         if path:
             try:
+                # 원본 크기로 로드 (render_dialogue_box가 화자에 따라 크기 조정)
                 img = pygame.image.load(path).convert_alpha()
-                # 크기 조정 (150x150 정도)
-                target_size = (150, 150)
-                img = pygame.transform.smoothscale(img, target_size)
                 self.portrait_cache[speaker] = img
                 return img
             except Exception as e:
@@ -6580,11 +7640,22 @@ class PolaroidMemoryEffect:
         return None
 
     def _prepare_dialogue(self, index: int):
-        """대사 준비"""
+        """대사 준비 및 음성 재생"""
         if 0 <= index < len(self.dialogue_after):
             self.dialogue_text = ""
             self.typing_progress = 0.0
             self.waiting_for_click = False
+
+            # 음성 재생
+            dialogue = self.dialogue_after[index]
+            speaker = dialogue.get("speaker", "")
+            text = dialogue.get("text", "")
+            if self.voice_system and speaker and text:
+                # 특수 문자 제거 (음성 합성용)
+                import re
+
+                clean_text = re.sub(r"[▼◀▶]", "", text)
+                self.voice_system.speak(speaker, clean_text)
 
     def handle_click(self):
         """클릭 처리 - 폴라로이드 등장 중에는 클릭 무시 (자동 진행)"""
@@ -6629,7 +7700,9 @@ class PolaroidMemoryEffect:
 
         if self.phase == self.PHASE_DIALOGUE:
             # 리플레이 버튼 클릭 체크 (마지막 대사일 때)
-            is_last_dialogue = self.current_dialogue_index >= len(self.dialogue_after) - 1
+            is_last_dialogue = (
+                self.current_dialogue_index >= len(self.dialogue_after) - 1
+            )
             if is_last_dialogue and self.waiting_for_click and self.replay_button_rect:
                 mouse_pos = pygame.mouse.get_pos()
                 if self.replay_button_rect.collidepoint(mouse_pos):
@@ -6639,7 +7712,9 @@ class PolaroidMemoryEffect:
 
             if not self.waiting_for_click:
                 # 타이핑 스킵
-                full_text = self.dialogue_after[self.current_dialogue_index].get("text", "")
+                full_text = self.dialogue_after[self.current_dialogue_index].get(
+                    "text", ""
+                )
                 self.dialogue_text = full_text
                 self.waiting_for_click = True
             else:
@@ -6675,11 +7750,11 @@ class PolaroidMemoryEffect:
 
         # 폴라로이드 애니메이션 상태 리셋
         for p in self.polaroids:
-            p['animation_progress'] = 0.0
-            p['pos'][0], p['pos'][1] = p['start_pos']
-            p['alpha'] = 0
-            p['scale'] = 0.5
-            p['flicker_phase'] = 0.0
+            p["animation_progress"] = 0.0
+            p["pos"][0], p["pos"][1] = p["start_pos"]
+            p["alpha"] = 0
+            p["scale"] = 0.5
+            p["flicker_phase"] = 0.0
 
         # 줌 효과 리셋
         self.final_zoom_scale = 1.0
@@ -6726,7 +7801,7 @@ class PolaroidMemoryEffect:
         if self.phase == self.PHASE_FINAL_ZOOM and self.final_photo_index >= 0:
             final_p = self.polaroids[self.final_photo_index]
             # 원본 사진 이미지 사용 (프레임 없이)
-            photo_img = final_p.get('photo_image')
+            photo_img = final_p.get("photo_image")
             if photo_img:
                 # 확대 적용
                 zoom_w = int(photo_img.get_width() * self.final_zoom_scale)
@@ -6735,7 +7810,9 @@ class PolaroidMemoryEffect:
                     zoomed = pygame.transform.smoothscale(photo_img, (zoom_w, zoom_h))
                     zoomed.set_alpha(self.final_zoom_alpha)
                     # 화면 중앙에 배치
-                    rect = zoomed.get_rect(center=(self.screen_size[0] // 2, self.screen_size[1] // 2))
+                    rect = zoomed.get_rect(
+                        center=(self.screen_size[0] // 2, self.screen_size[1] // 2)
+                    )
                     screen.blit(zoomed, rect)
             return  # FINAL_ZOOM에서는 다른 사진 렌더링 안함
 
@@ -6743,129 +7820,66 @@ class PolaroidMemoryEffect:
         for i, p in enumerate(self.polaroids):
             if i >= self.visible_count and self.phase == self.PHASE_PHOTOS:
                 continue
-            if p['alpha'] <= 0:
+            if p["alpha"] <= 0:
                 continue
 
             # 스케일 적용
-            scaled_w = int(p['image'].get_width() * p['scale'])
-            scaled_h = int(p['image'].get_height() * p['scale'])
+            scaled_w = int(p["image"].get_width() * p["scale"])
+            scaled_h = int(p["image"].get_height() * p["scale"])
             if scaled_w > 0 and scaled_h > 0:
-                scaled = pygame.transform.smoothscale(p['image'], (scaled_w, scaled_h))
-                scaled.set_alpha(int(p['alpha']))
+                scaled = pygame.transform.smoothscale(p["image"], (scaled_w, scaled_h))
+                scaled.set_alpha(int(p["alpha"]))
 
-                rect = scaled.get_rect(center=p['pos'])
+                rect = scaled.get_rect(center=p["pos"])
                 screen.blit(scaled, rect)
 
         # 대사 (하단) - PHASE_PHOTOS에서도 폴라로이드별 대화 표시
-        if self.phase == self.PHASE_PHOTOS and self.dialogue_text and self.current_photo_dialogue_shown:
+        if (
+            self.phase == self.PHASE_PHOTOS
+            and self.dialogue_text
+            and self.current_photo_dialogue_shown
+        ):
             # 폴라로이드별 대화 표시
             self._draw_photo_dialogue(screen)
-        elif self.phase in [self.PHASE_DIALOGUE, self.PHASE_DISPLAY] and self.dialogue_text:
+        elif (
+            self.phase in [self.PHASE_DIALOGUE, self.PHASE_DISPLAY]
+            and self.dialogue_text
+        ):
             self._draw_dialogue(screen)
 
-        # 클릭 힌트 (PHASE_PHOTOS에서는 표시 안함 - 자동 진행)
-        if self.phase in [self.PHASE_DISPLAY, self.PHASE_DIALOGUE] and self.waiting_for_click:
-            self._draw_click_hint(screen)
-
     def _draw_dialogue(self, screen: pygame.Surface):
-        """대사 그리기 - 초상화 포함"""
-        font = self.fonts.get("medium") or self.fonts.get("small")
-        small_font = self.fonts.get("small") or font
-        if not font:
-            return
-
-        # 현재 대사 정보 가져오기
+        """대사 그리기 - 일반 에피소드 대화창 포맷 사용"""
         if self.current_dialogue_index >= len(self.dialogue_after):
             return
 
         current_dialogue = self.dialogue_after[self.current_dialogue_index]
         speaker = current_dialogue.get("speaker", "")
 
-        # config_story_dialogue에서 색상/이름 가져오기
-        try:
-            from mode_configs.config_story_dialogue import CHARACTER_COLORS, CHARACTER_NAMES
-            text_color = CHARACTER_COLORS.get(speaker, (255, 255, 255))
-            speaker_name = CHARACTER_NAMES.get(speaker, speaker)
-        except ImportError:
-            text_color = (255, 220, 150)
-            speaker_name = speaker
-
         # 초상화 가져오기
         portrait = self._get_portrait(speaker)
-        portrait_width = 150 if portrait else 0
 
-        # 대사 박스 (가로 1/2 크기, 중앙 정렬)
-        box_height = 120
-        box_width = (self.screen_size[0] - 160) // 2
-        box_x = (self.screen_size[0] - box_width) // 2
-        box_rect = pygame.Rect(
-            box_x,
-            self.screen_size[1] - box_height - 40,
-            box_width,
-            box_height
+        # render_dialogue_box 사용 (일반 에피소드와 동일한 포맷)
+        box_x, box_y, box_width, box_height = render_dialogue_box(
+            screen=screen,
+            screen_size=self.screen_size,
+            fonts=self.fonts,
+            dialogue=current_dialogue,
+            dialogue_text=self.dialogue_text,
+            typing_progress=len(self.dialogue_text),
+            waiting_for_click=self.waiting_for_click,
+            has_portrait=portrait is not None,
+            portrait=portrait,
         )
-
-        # 박스 배경
-        box_surf = pygame.Surface((box_rect.width, box_rect.height), pygame.SRCALPHA)
-        pygame.draw.rect(box_surf, (0, 0, 0, 200), (0, 0, box_rect.width, box_rect.height), border_radius=12)
-        pygame.draw.rect(box_surf, text_color + (100,), (0, 0, box_rect.width, box_rect.height), 2, border_radius=12)
-        screen.blit(box_surf, box_rect.topleft)
-
-        # 초상화 그리기
-        text_left_x = box_rect.left + 25
-        if portrait:
-            portrait_x = box_rect.left + 15
-            portrait_y = box_rect.top + (box_height - portrait_width) // 2
-            # 초상화 배경 (원형)
-            pygame.draw.circle(screen, (30, 30, 40),
-                             (portrait_x + portrait_width // 2, portrait_y + portrait_width // 2),
-                             portrait_width // 2 + 5)
-            pygame.draw.circle(screen, text_color,
-                             (portrait_x + portrait_width // 2, portrait_y + portrait_width // 2),
-                             portrait_width // 2 + 5, 2)
-            # 초상화 마스킹 (원형)
-            mask_surf = pygame.Surface((portrait_width, portrait_width), pygame.SRCALPHA)
-            pygame.draw.circle(mask_surf, (255, 255, 255, 255),
-                             (portrait_width // 2, portrait_width // 2), portrait_width // 2)
-            portrait_copy = portrait.copy()
-            portrait_copy.blit(mask_surf, (0, 0), special_flags=pygame.BLEND_RGBA_MIN)
-            screen.blit(portrait_copy, (portrait_x, portrait_y))
-            text_left_x = portrait_x + portrait_width + 20
-
-        # 화자 이름
-        if speaker_name:
-            name_surf = small_font.render(speaker_name, True, text_color)
-            screen.blit(name_surf, (text_left_x, box_rect.top + 15))
-
-        # 대사 텍스트 (여러 줄 처리)
-        text_y = box_rect.top + 45
-        max_width = box_rect.right - text_left_x - 30
-        words = self.dialogue_text.split()
-        lines = []
-        current_line = ""
-
-        for word in words:
-            test_line = current_line + (" " if current_line else "") + word
-            if small_font.size(test_line)[0] <= max_width:
-                current_line = test_line
-            else:
-                if current_line:
-                    lines.append(current_line)
-                current_line = word
-        if current_line:
-            lines.append(current_line)
-
-        # 텍스트 그리기
-        for i, line in enumerate(lines):
-            text_surf = small_font.render(line, True, (255, 255, 255))
-            screen.blit(text_surf, (text_left_x, text_y + i * 26))
 
         # 리플레이 버튼 (마지막 대사이고 클릭 대기 중일 때)
         is_last_dialogue = self.current_dialogue_index >= len(self.dialogue_after) - 1
         if is_last_dialogue and self.waiting_for_click:
+            box_rect = pygame.Rect(box_x, box_y, box_width, box_height)
             self._draw_replay_button(screen, box_rect)
 
-    def _draw_replay_button(self, screen: pygame.Surface, dialogue_box_rect: pygame.Rect):
+    def _draw_replay_button(
+        self, screen: pygame.Surface, dialogue_box_rect: pygame.Rect
+    ):
         """리플레이 버튼 그리기 - 대화 상자 내부 우측 하단"""
         font = self.fonts.get("small")
         if not font:
@@ -6885,7 +7899,9 @@ class PolaroidMemoryEffect:
         button_x = dialogue_box_rect.right - button_width - 15
         button_y = dialogue_box_rect.bottom - button_height - 10
 
-        self.replay_button_rect = pygame.Rect(button_x, button_y, button_width, button_height)
+        self.replay_button_rect = pygame.Rect(
+            button_x, button_y, button_width, button_height
+        )
 
         # 호버 체크
         mouse_pos = pygame.mouse.get_pos()
@@ -6903,8 +7919,16 @@ class PolaroidMemoryEffect:
 
         # 버튼 배경
         button_surf = pygame.Surface((button_width, button_height), pygame.SRCALPHA)
-        pygame.draw.rect(button_surf, bg_color, (0, 0, button_width, button_height), border_radius=6)
-        pygame.draw.rect(button_surf, border_color, (0, 0, button_width, button_height), 2, border_radius=6)
+        pygame.draw.rect(
+            button_surf, bg_color, (0, 0, button_width, button_height), border_radius=6
+        )
+        pygame.draw.rect(
+            button_surf,
+            border_color,
+            (0, 0, button_width, button_height),
+            2,
+            border_radius=6,
+        )
 
         # 아이콘 (재생 삼각형) + 텍스트
         icon_size = 10
@@ -6915,7 +7939,7 @@ class PolaroidMemoryEffect:
         icon_points = [
             (icon_x, icon_y - icon_size // 2),
             (icon_x, icon_y + icon_size // 2),
-            (icon_x + icon_size, icon_y)
+            (icon_x + icon_size, icon_y),
         ]
         pygame.draw.polygon(button_surf, text_color, icon_points)
 
@@ -6928,12 +7952,7 @@ class PolaroidMemoryEffect:
         screen.blit(button_surf, (button_x, button_y))
 
     def _draw_photo_dialogue(self, screen: pygame.Surface):
-        """폴라로이드별 대화 그리기 (PHASE_PHOTOS 중 자동 표시)"""
-        font = self.fonts.get("medium") or self.fonts.get("small")
-        small_font = self.fonts.get("small") or font
-        if not font:
-            return
-
+        """폴라로이드별 대화 그리기 (PHASE_PHOTOS 중 자동 표시) - 일반 에피소드 대화창 포맷 사용"""
         # 현재 폴라로이드 인덱스에 해당하는 대화 가져오기
         photo_index = self.visible_count - 1
         if photo_index < 0 or photo_index >= len(self.dialogue_per_photo):
@@ -6942,92 +7961,21 @@ class PolaroidMemoryEffect:
         current_dialogue = self.dialogue_per_photo[photo_index]
         speaker = current_dialogue.get("speaker", "")
 
-        # config_story_dialogue에서 색상/이름 가져오기
-        try:
-            from mode_configs.config_story_dialogue import CHARACTER_COLORS, CHARACTER_NAMES
-            text_color = CHARACTER_COLORS.get(speaker, (255, 255, 255))
-            speaker_name = CHARACTER_NAMES.get(speaker, speaker)
-        except ImportError:
-            text_color = (255, 220, 150)
-            speaker_name = speaker
-
         # 초상화 가져오기
         portrait = self._get_portrait(speaker)
-        portrait_width = 150 if portrait else 0
 
-        # 대사 박스 (하단, 가로 1/2 크기, 중앙 정렬)
-        box_height = 120
-        box_width = (self.screen_size[0] - 160) // 2
-        box_x = (self.screen_size[0] - box_width) // 2
-        box_rect = pygame.Rect(
-            box_x,
-            self.screen_size[1] - box_height - 40,
-            box_width,
-            box_height
+        # render_dialogue_box 사용 (일반 에피소드와 동일한 포맷)
+        render_dialogue_box(
+            screen=screen,
+            screen_size=self.screen_size,
+            fonts=self.fonts,
+            dialogue=current_dialogue,
+            dialogue_text=self.dialogue_text,
+            typing_progress=len(self.dialogue_text),
+            waiting_for_click=False,  # PHASE_PHOTOS에서는 자동 진행
+            has_portrait=portrait is not None,
+            portrait=portrait,
         )
-
-        # 박스 배경
-        box_surf = pygame.Surface((box_rect.width, box_rect.height), pygame.SRCALPHA)
-        pygame.draw.rect(box_surf, (0, 0, 0, 200), (0, 0, box_rect.width, box_rect.height), border_radius=12)
-        pygame.draw.rect(box_surf, text_color + (100,), (0, 0, box_rect.width, box_rect.height), 2, border_radius=12)
-        screen.blit(box_surf, box_rect.topleft)
-
-        # 초상화 그리기
-        text_left_x = box_rect.left + 25
-        if portrait:
-            portrait_x = box_rect.left + 15
-            portrait_y = box_rect.top + (box_height - portrait_width) // 2
-            # 초상화 배경 (원형)
-            pygame.draw.circle(screen, (30, 30, 40),
-                             (portrait_x + portrait_width // 2, portrait_y + portrait_width // 2),
-                             portrait_width // 2 + 5)
-            pygame.draw.circle(screen, text_color,
-                             (portrait_x + portrait_width // 2, portrait_y + portrait_width // 2),
-                             portrait_width // 2 + 5, 2)
-            screen.blit(portrait, (portrait_x, portrait_y))
-            text_left_x = portrait_x + portrait_width + 20
-
-        # 화자 이름
-        if speaker_name:
-            name_surf = font.render(speaker_name, True, text_color)
-            screen.blit(name_surf, (text_left_x, box_rect.top + 12))
-
-        # 대사 텍스트 (자동 줄바꿈)
-        text_y = box_rect.top + 45
-        max_width = box_rect.width - (text_left_x - box_rect.left) - 30
-
-        # 줄바꿈 처리
-        words = self.dialogue_text.split(' ')
-        lines = []
-        current_line = ""
-        for word in words:
-            test_line = current_line + (" " if current_line else "") + word
-            test_surf = small_font.render(test_line, True, (255, 255, 255))
-            if test_surf.get_width() <= max_width:
-                current_line = test_line
-            else:
-                if current_line:
-                    lines.append(current_line)
-                current_line = word
-        if current_line:
-            lines.append(current_line)
-
-        # 텍스트 그리기
-        for i, line in enumerate(lines):
-            text_surf = small_font.render(line, True, (255, 255, 255))
-            screen.blit(text_surf, (text_left_x, text_y + i * 26))
-
-    def _draw_click_hint(self, screen: pygame.Surface):
-        """클릭 힌트 그리기"""
-        font = self.fonts.get("small")
-        if not font:
-            return
-
-        alpha = int(128 + 127 * math.sin(pygame.time.get_ticks() / 300))
-        hint_surf = font.render("Click to continue...", True, (200, 200, 200))
-        hint_surf.set_alpha(alpha)
-        hint_rect = hint_surf.get_rect(midbottom=(self.screen_size[0] // 2, self.screen_size[1] - 20))
-        screen.blit(hint_surf, hint_rect)
 
 
 # =========================================================
@@ -7044,13 +7992,20 @@ class ShipEntranceEffect:
     4. 대화 완료 후 비행선이 전투 위치(화면 하단)로 이동
     """
 
-    PHASE_ENTRANCE = 0      # 화면 진입
-    PHASE_CIRCLING = 1      # 폐허 주변 선회 + 대화
-    PHASE_POSITIONING = 2   # 전투 위치로 이동
-    PHASE_DONE = 3          # 완료
+    PHASE_ENTRANCE = 0  # 화면 진입
+    PHASE_CIRCLING = 1  # 폐허 주변 선회 + 대화
+    PHASE_POSITIONING = 2  # 전투 위치로 이동
+    PHASE_DONE = 3  # 완료
 
-    def __init__(self, screen_size: tuple, player, dialogue_data: list,
-                 background_path: str = None, title: str = "", location: str = ""):
+    def __init__(
+        self,
+        screen_size: tuple,
+        player,
+        dialogue_data: list,
+        background_path: str = None,
+        title: str = "",
+        location: str = "",
+    ):
         """
         Args:
             screen_size: 화면 크기 (width, height)
@@ -7073,7 +8028,10 @@ class ShipEntranceEffect:
         # 진입 애니메이션
         self.entrance_duration = 2.5  # 진입 시간 (초)
         self.start_pos = (screen_size[0] // 2, -100)  # 화면 상단 밖
-        self.entrance_end_pos = (screen_size[0] // 2, screen_size[1] // 3)  # 선회 시작 위치
+        self.entrance_end_pos = (
+            screen_size[0] // 2,
+            screen_size[1] // 3,
+        )  # 선회 시작 위치
 
         # 선회 애니메이션
         self.orbit_center = (screen_size[0] // 2, screen_size[1] // 2 - 50)  # 폐허 중심
@@ -7154,6 +8112,7 @@ class ShipEntranceEffect:
 
         try:
             from mode_configs.config_story_dialogue import CHARACTER_PORTRAITS
+
             path = CHARACTER_PORTRAITS.get(speaker)
         except ImportError:
             portrait_paths = {
@@ -7194,8 +8153,14 @@ class ShipEntranceEffect:
 
             # 플레이어 위치 보간
             if self.player:
-                new_x = self.start_pos[0] + (self.entrance_end_pos[0] - self.start_pos[0]) * eased
-                new_y = self.start_pos[1] + (self.entrance_end_pos[1] - self.start_pos[1]) * eased
+                new_x = (
+                    self.start_pos[0]
+                    + (self.entrance_end_pos[0] - self.start_pos[0]) * eased
+                )
+                new_y = (
+                    self.start_pos[1]
+                    + (self.entrance_end_pos[1] - self.start_pos[1]) * eased
+                )
                 self.player.pos = pygame.math.Vector2(new_x, new_y)
 
             if progress >= 1.0:
@@ -7209,15 +8174,22 @@ class ShipEntranceEffect:
             self.orbit_angle += self.orbit_speed * dt
 
             # 타원 궤도 계산
-            orbit_x = self.orbit_center[0] + math.cos(self.orbit_angle) * self.orbit_radius_x
-            orbit_y = self.orbit_center[1] + math.sin(self.orbit_angle) * self.orbit_radius_y
+            orbit_x = (
+                self.orbit_center[0] + math.cos(self.orbit_angle) * self.orbit_radius_x
+            )
+            orbit_y = (
+                self.orbit_center[1] + math.sin(self.orbit_angle) * self.orbit_radius_y
+            )
 
             if self.player:
                 self.player.pos = pygame.math.Vector2(orbit_x, orbit_y)
 
             # 대화 시작 딜레이
             self.dialogue_timer += dt
-            if not self.dialogue_started and self.dialogue_timer >= self.dialogue_start_delay:
+            if (
+                not self.dialogue_started
+                and self.dialogue_timer >= self.dialogue_start_delay
+            ):
                 self.dialogue_started = True
 
             # 대화 진행
@@ -7236,8 +8208,14 @@ class ShipEntranceEffect:
 
             if self.player:
                 # 현재 선회 위치에서 전투 위치로
-                start_x = self.orbit_center[0] + math.cos(self.orbit_angle) * self.orbit_radius_x
-                start_y = self.orbit_center[1] + math.sin(self.orbit_angle) * self.orbit_radius_y
+                start_x = (
+                    self.orbit_center[0]
+                    + math.cos(self.orbit_angle) * self.orbit_radius_x
+                )
+                start_y = (
+                    self.orbit_center[1]
+                    + math.sin(self.orbit_angle) * self.orbit_radius_y
+                )
 
                 new_x = start_x + (self.battle_pos[0] - start_x) * eased
                 new_y = start_y + (self.battle_pos[1] - start_y) * eased
@@ -7320,7 +8298,9 @@ class ShipEntranceEffect:
         # 플레이어 그리기
         if self.player:
             # 플레이어 이미지 그리기
-            player_rect = self.player.image.get_rect(center=(int(self.player.pos.x), int(self.player.pos.y)))
+            player_rect = self.player.image.get_rect(
+                center=(int(self.player.pos.x), int(self.player.pos.y))
+            )
             screen.blit(self.player.image, player_rect)
 
         # 타이틀/위치 (진입 중에만)
@@ -7328,7 +8308,11 @@ class ShipEntranceEffect:
             self._draw_title(screen)
 
         # 대화 박스 (선회 중 대화 시작 후)
-        if self.phase == self.PHASE_CIRCLING and self.dialogue_started and self.dialogue_data:
+        if (
+            self.phase == self.PHASE_CIRCLING
+            and self.dialogue_started
+            and self.dialogue_data
+        ):
             if self.current_dialogue_index < len(self.dialogue_data):
                 self._draw_dialogue_box(screen)
 
@@ -7350,7 +8334,9 @@ class ShipEntranceEffect:
 
         title_surf = font.render(self.title, True, (255, 200, 100))
         title_surf.set_alpha(alpha)
-        title_rect = title_surf.get_rect(center=(self.screen_size[0] // 2, self.screen_size[1] // 6))
+        title_rect = title_surf.get_rect(
+            center=(self.screen_size[0] // 2, self.screen_size[1] // 6)
+        )
         screen.blit(title_surf, title_rect)
 
         if self.location:
@@ -7358,12 +8344,16 @@ class ShipEntranceEffect:
             if loc_font:
                 loc_surf = loc_font.render(self.location, True, (200, 200, 200))
                 loc_surf.set_alpha(alpha)
-                loc_rect = loc_surf.get_rect(center=(self.screen_size[0] // 2, self.screen_size[1] // 6 + 40))
+                loc_rect = loc_surf.get_rect(
+                    center=(self.screen_size[0] // 2, self.screen_size[1] // 6 + 40)
+                )
                 screen.blit(loc_surf, loc_rect)
 
     def _draw_dialogue_box(self, screen: pygame.Surface):
         """대화 박스 그리기"""
-        if not self.dialogue_data or self.current_dialogue_index >= len(self.dialogue_data):
+        if not self.dialogue_data or self.current_dialogue_index >= len(
+            self.dialogue_data
+        ):
             return
 
         dialogue = self.dialogue_data[self.current_dialogue_index]
@@ -7387,8 +8377,16 @@ class ShipEntranceEffect:
 
         # 박스 배경
         box_surf = pygame.Surface((box_width, box_height), pygame.SRCALPHA)
-        pygame.draw.rect(box_surf, (0, 0, 0, 200), (0, 0, box_width, box_height), border_radius=15)
-        pygame.draw.rect(box_surf, (100, 100, 120), (0, 0, box_width, box_height), width=2, border_radius=15)
+        pygame.draw.rect(
+            box_surf, (0, 0, 0, 200), (0, 0, box_width, box_height), border_radius=15
+        )
+        pygame.draw.rect(
+            box_surf,
+            (100, 100, 120),
+            (0, 0, box_width, box_height),
+            width=2,
+            border_radius=15,
+        )
         screen.blit(box_surf, (box_x, box_y))
 
         # 초상화 (좌측)
@@ -7399,6 +8397,7 @@ class ShipEntranceEffect:
         # 화자 이름
         try:
             from mode_configs.config_story_dialogue import CHARACTER_NAMES
+
             speaker_name = CHARACTER_NAMES.get(speaker, speaker)
         except ImportError:
             speaker_name = speaker
@@ -7417,7 +8416,7 @@ class ShipEntranceEffect:
         text_width = box_width - portrait_width - 60
 
         # 줄바꿈 처리
-        words = self.current_text.split(' ')
+        words = self.current_text.split(" ")
         lines = []
         current_line = ""
 
@@ -7446,7 +8445,9 @@ class ShipEntranceEffect:
         alpha = int(128 + 127 * math.sin(pygame.time.get_ticks() / 300))
         hint_surf = font.render("Click to continue...", True, (200, 200, 200))
         hint_surf.set_alpha(alpha)
-        hint_rect = hint_surf.get_rect(midbottom=(self.screen_size[0] // 2, self.screen_size[1] - 20))
+        hint_rect = hint_surf.get_rect(
+            midbottom=(self.screen_size[0] // 2, self.screen_size[1] - 20)
+        )
         screen.blit(hint_surf, hint_rect)
 
 
@@ -7454,11 +8455,13 @@ class ShipEntranceEffect:
 # 시각적 피드백 효과 클래스들
 # =========================================================
 
+
 class DamageFlash:
     """
     플레이어가 피격당했을 때 화면에 빨간색 플래시 효과를 표시하는 클래스.
     데미지 비율에 따라 플래시 강도가 조절됩니다.
     """
+
     def __init__(self, screen_size: Tuple[int, int]):
         self.screen_size = screen_size
         self.is_active = False
@@ -7529,6 +8532,7 @@ class LevelUpEffect:
     레벨업 시 화면에 표시되는 시각 효과 클래스.
     골드 색상 글로우, 상승 파티클, 레벨 텍스트를 표시합니다.
     """
+
     def __init__(self, screen_size: Tuple[int, int]):
         self.screen_size = screen_size
         self.is_active = False
@@ -7564,17 +8568,19 @@ class LevelUpEffect:
         self.particles = []
         for _ in range(30):
             particle = {
-                'x': random.randint(0, self.screen_size[0]),
-                'y': self.screen_size[1] + random.randint(0, 50),
-                'speed': random.uniform(100, 250),
-                'size': random.randint(3, 8),
-                'alpha': random.randint(150, 255),
-                'color': random.choice([
-                    (255, 215, 0),   # 골드
-                    (255, 200, 50),  # 밝은 골드
-                    (255, 180, 0),   # 오렌지 골드
-                    (255, 255, 150), # 밝은 노랑
-                ])
+                "x": random.randint(0, self.screen_size[0]),
+                "y": self.screen_size[1] + random.randint(0, 50),
+                "speed": random.uniform(100, 250),
+                "size": random.randint(3, 8),
+                "alpha": random.randint(150, 255),
+                "color": random.choice(
+                    [
+                        (255, 215, 0),  # 골드
+                        (255, 200, 50),  # 밝은 골드
+                        (255, 180, 0),  # 오렌지 골드
+                        (255, 255, 150),  # 밝은 노랑
+                    ]
+                ),
             }
             self.particles.append(particle)
 
@@ -7600,9 +8606,9 @@ class LevelUpEffect:
 
         # 파티클 업데이트 (위로 상승)
         for particle in self.particles:
-            particle['y'] -= particle['speed'] * dt
+            particle["y"] -= particle["speed"] * dt
             # 페이드 아웃
-            particle['alpha'] = max(0, particle['alpha'] - 80 * dt)
+            particle["alpha"] = max(0, particle["alpha"] - 80 * dt)
 
         return True
 
@@ -7623,14 +8629,14 @@ class LevelUpEffect:
 
         # 2. 파티클 렌더링
         for particle in self.particles:
-            if particle['alpha'] > 0 and 0 <= particle['y'] <= self.screen_size[1]:
-                alpha = int(particle['alpha'])
-                color = (*particle['color'][:3], alpha)
+            if particle["alpha"] > 0 and 0 <= particle["y"] <= self.screen_size[1]:
+                alpha = int(particle["alpha"])
+                color = (*particle["color"][:3], alpha)
                 pygame.draw.circle(
                     screen,
                     color,
-                    (int(particle['x']), int(particle['y'])),
-                    particle['size']
+                    (int(particle["x"]), int(particle["y"])),
+                    particle["size"],
                 )
 
         # 3. "LEVEL X!" 텍스트 (중앙 상단, 페이드 인/아웃)
@@ -7655,14 +8661,14 @@ class LevelUpEffect:
 # 2막 벙커 포신 연출 효과
 # =============================================================================
 
+
 class SmokeParticle:
     """포신 발사 후 연기 파티클"""
 
     def __init__(self, pos: Tuple[float, float]):
         self.pos = pygame.math.Vector2(pos)
         self.velocity = pygame.math.Vector2(
-            random.uniform(-30, 30),
-            random.uniform(-60, -30)
+            random.uniform(-30, 30), random.uniform(-60, -30)
         )
         self.size = random.uniform(20, 40)
         self.lifetime = random.uniform(1.5, 2.5)
@@ -7677,7 +8683,7 @@ class SmokeParticle:
 
         self.pos += self.velocity * dt
         self.velocity *= 0.97  # 감속
-        self.size += 20 * dt   # 확산
+        self.size += 20 * dt  # 확산
 
     def draw(self, screen: pygame.Surface):
         if not self.is_alive:
@@ -7687,16 +8693,24 @@ class SmokeParticle:
         alpha = int(60 * (1 - progress))
 
         surf = pygame.Surface((int(self.size * 2), int(self.size * 2)), pygame.SRCALPHA)
-        pygame.draw.circle(surf, (120, 110, 100, alpha),
-                          (int(self.size), int(self.size)), int(self.size))
+        pygame.draw.circle(
+            surf,
+            (120, 110, 100, alpha),
+            (int(self.size), int(self.size)),
+            int(self.size),
+        )
         screen.blit(surf, (int(self.pos.x - self.size), int(self.pos.y - self.size)))
 
 
 class CannonShell:
     """포신에서 발사되는 포탄"""
 
-    def __init__(self, start_pos: Tuple[float, float], target_pos: Tuple[float, float],
-                 screen_size: Tuple[int, int]):
+    def __init__(
+        self,
+        start_pos: Tuple[float, float],
+        target_pos: Tuple[float, float],
+        screen_size: Tuple[int, int],
+    ):
         self.pos = pygame.math.Vector2(start_pos)
         self.start_pos = pygame.math.Vector2(start_pos)
         self.target_pos = pygame.math.Vector2(target_pos)
@@ -7741,8 +8755,12 @@ class CannonShell:
 
         # 화면 밖 체크 (약간의 여유)
         margin = 50
-        if (self.pos.x < -margin or self.pos.x > self.screen_size[0] + margin or
-            self.pos.y < -margin or self.pos.y > self.screen_size[1] + margin):
+        if (
+            self.pos.x < -margin
+            or self.pos.x > self.screen_size[0] + margin
+            or self.pos.y < -margin
+            or self.pos.y > self.screen_size[1] + margin
+        ):
             self.is_alive = False
             return False
 
@@ -7775,27 +8793,42 @@ class CannonShell:
             g = int(180 * progress)
             b = int(50 * progress)
 
-            trail_surf = pygame.Surface((trail_size * 2, trail_size * 2), pygame.SRCALPHA)
-            pygame.draw.circle(trail_surf, (r, g, b, alpha),
-                             (trail_size, trail_size), trail_size)
-            screen.blit(trail_surf, (int(trail_pos.x - trail_size),
-                                    int(trail_pos.y - trail_size)))
+            trail_surf = pygame.Surface(
+                (trail_size * 2, trail_size * 2), pygame.SRCALPHA
+            )
+            pygame.draw.circle(
+                trail_surf, (r, g, b, alpha), (trail_size, trail_size), trail_size
+            )
+            screen.blit(
+                trail_surf,
+                (int(trail_pos.x - trail_size), int(trail_pos.y - trail_size)),
+            )
 
         if not self.is_alive:
             return
 
         # 글로우 효과
-        glow_surf = pygame.Surface((self.glow_size * 2, self.glow_size * 2), pygame.SRCALPHA)
-        pygame.draw.circle(glow_surf, (255, 200, 100, 100),
-                          (self.glow_size, self.glow_size), self.glow_size)
-        screen.blit(glow_surf, (int(self.pos.x - self.glow_size),
-                               int(self.pos.y - self.glow_size)))
+        glow_surf = pygame.Surface(
+            (self.glow_size * 2, self.glow_size * 2), pygame.SRCALPHA
+        )
+        pygame.draw.circle(
+            glow_surf,
+            (255, 200, 100, 100),
+            (self.glow_size, self.glow_size),
+            self.glow_size,
+        )
+        screen.blit(
+            glow_surf,
+            (int(self.pos.x - self.glow_size), int(self.pos.y - self.glow_size)),
+        )
 
         # 포탄 본체
-        pygame.draw.circle(screen, (255, 220, 150),
-                          (int(self.pos.x), int(self.pos.y)), self.size)
-        pygame.draw.circle(screen, (255, 255, 200),
-                          (int(self.pos.x), int(self.pos.y)), self.size // 2)
+        pygame.draw.circle(
+            screen, (255, 220, 150), (int(self.pos.x), int(self.pos.y)), self.size
+        )
+        pygame.draw.circle(
+            screen, (255, 255, 200), (int(self.pos.x), int(self.pos.y)), self.size // 2
+        )
 
 
 class BunkerCannonEffect:
@@ -7817,7 +8850,9 @@ class BunkerCannonEffect:
     STATE_FIRING = "firing"
     STATE_COOLDOWN = "cooldown"
 
-    def __init__(self, screen_size: Tuple[int, int], position: Tuple[float, float] = None):
+    def __init__(
+        self, screen_size: Tuple[int, int], position: Tuple[float, float] = None
+    ):
         """
         Args:
             screen_size: 화면 크기
@@ -7830,8 +8865,7 @@ class BunkerCannonEffect:
             self.base_pos = pygame.math.Vector2(position)
         else:
             self.base_pos = pygame.math.Vector2(
-                screen_size[0] * 0.85,
-                screen_size[1] * 0.75
+                screen_size[0] * 0.85, screen_size[1] * 0.75
             )
 
         # 포신 크기
@@ -7884,17 +8918,20 @@ class BunkerCannonEffect:
         """포신 비활성화"""
         self.is_active = False
 
-    def _select_target(self, player_pos: Optional[Tuple[float, float]],
-                       enemies: List = None) -> pygame.math.Vector2:
+    def _select_target(
+        self, player_pos: Optional[Tuple[float, float]], enemies: List = None
+    ) -> pygame.math.Vector2:
         """발사 대상 선택 - 가장 가까운 적 우선"""
         # 가장 가까운 적 찾기
         if enemies:
             closest_enemy = None
-            closest_dist = float('inf')
+            closest_dist = float("inf")
             for enemy in enemies:
-                if hasattr(enemy, 'is_alive') and enemy.is_alive:
-                    dist = ((enemy.pos.x - self.base_pos.x) ** 2 +
-                           (enemy.pos.y - self.base_pos.y) ** 2) ** 0.5
+                if hasattr(enemy, "is_alive") and enemy.is_alive:
+                    dist = (
+                        (enemy.pos.x - self.base_pos.x) ** 2
+                        + (enemy.pos.y - self.base_pos.y) ** 2
+                    ) ** 0.5
                     if dist < closest_dist:
                         closest_dist = dist
                         closest_enemy = enemy
@@ -7907,7 +8944,7 @@ class BunkerCannonEffect:
         self.fire_pattern = "random_area"
         return pygame.math.Vector2(
             random.uniform(self.screen_size[0] * 0.2, self.screen_size[0] * 0.8),
-            random.uniform(self.screen_size[1] * 0.1, self.screen_size[1] * 0.4)
+            random.uniform(self.screen_size[1] * 0.1, self.screen_size[1] * 0.4),
         )
 
     def _calculate_angle_to_target(self) -> float:
@@ -7923,11 +8960,15 @@ class BunkerCannonEffect:
         effective_length = self.barrel_length - self.recoil_offset
         return pygame.math.Vector2(
             self.base_pos.x + math.cos(self.current_angle) * effective_length,
-            self.base_pos.y + math.sin(self.current_angle) * effective_length
+            self.base_pos.y + math.sin(self.current_angle) * effective_length,
         )
 
-    def update(self, dt: float, player_pos: Optional[Tuple[float, float]] = None,
-               enemies: List = None):
+    def update(
+        self,
+        dt: float,
+        player_pos: Optional[Tuple[float, float]] = None,
+        enemies: List = None,
+    ):
         """상태 머신 업데이트"""
         if not self.is_active:
             return
@@ -8028,7 +9069,7 @@ class BunkerCannonEffect:
         shell = CannonShell(
             start_pos=(muzzle_pos.x, muzzle_pos.y),
             target_pos=(self.target_pos.x, self.target_pos.y),
-            screen_size=self.screen_size
+            screen_size=self.screen_size,
         )
         self.shells.append(shell)
 
@@ -8050,10 +9091,12 @@ class BunkerCannonEffect:
             particle.draw(screen)
 
         # 포신 베이스 (원형)
-        pygame.draw.circle(screen, (60, 55, 50),
-                          (int(self.base_pos.x), int(self.base_pos.y)), 25)
-        pygame.draw.circle(screen, (80, 75, 70),
-                          (int(self.base_pos.x), int(self.base_pos.y)), 20)
+        pygame.draw.circle(
+            screen, (60, 55, 50), (int(self.base_pos.x), int(self.base_pos.y)), 25
+        )
+        pygame.draw.circle(
+            screen, (80, 75, 70), (int(self.base_pos.x), int(self.base_pos.y)), 20
+        )
 
         # 포신 본체
         muzzle_pos = self._get_muzzle_position()
@@ -8062,14 +9105,17 @@ class BunkerCannonEffect:
 
         # 포신 하이라이트
         highlight_offset = pygame.math.Vector2(
-            -math.sin(self.current_angle) * 3,
-            math.cos(self.current_angle) * 3
+            -math.sin(self.current_angle) * 3, math.cos(self.current_angle) * 3
         )
         highlight_start = self.base_pos + highlight_offset
         highlight_end = muzzle_pos + highlight_offset
-        pygame.draw.line(screen, (90, 85, 80),
-                        (int(highlight_start.x), int(highlight_start.y)),
-                        (int(highlight_end.x), int(highlight_end.y)), 3)
+        pygame.draw.line(
+            screen,
+            (90, 85, 80),
+            (int(highlight_start.x), int(highlight_start.y)),
+            (int(highlight_end.x), int(highlight_end.y)),
+            3,
+        )
 
         # 충전 경고선
         if self.state == self.STATE_CHARGING and self.target_pos:
@@ -8083,8 +9129,7 @@ class BunkerCannonEffect:
         """포신 폴리곤 꼭지점 반환"""
         # 포신 방향 벡터
         direction = pygame.math.Vector2(
-            math.cos(self.current_angle),
-            math.sin(self.current_angle)
+            math.cos(self.current_angle), math.sin(self.current_angle)
         )
         # 수직 벡터
         perpendicular = pygame.math.Vector2(-direction.y, direction.x)
@@ -8096,8 +9141,16 @@ class BunkerCannonEffect:
         half_width = self.barrel_width / 2
         base_left = self.base_pos + perpendicular * half_width
         base_right = self.base_pos - perpendicular * half_width
-        tip_left = self.base_pos + direction * effective_length + perpendicular * (half_width * 0.7)
-        tip_right = self.base_pos + direction * effective_length - perpendicular * (half_width * 0.7)
+        tip_left = (
+            self.base_pos
+            + direction * effective_length
+            + perpendicular * (half_width * 0.7)
+        )
+        tip_right = (
+            self.base_pos
+            + direction * effective_length
+            - perpendicular * (half_width * 0.7)
+        )
 
         return [
             (int(base_left.x), int(base_left.y)),
@@ -8135,9 +9188,13 @@ class BunkerCannonEffect:
             end = muzzle_pos + direction * end_dist
 
             # 빨간색 경고선
-            pygame.draw.line(screen, (255, 80, 80),
-                           (int(start.x), int(start.y)),
-                           (int(end.x), int(end.y)), 2)
+            pygame.draw.line(
+                screen,
+                (255, 80, 80),
+                (int(start.x), int(start.y)),
+                (int(end.x), int(end.y)),
+                2,
+            )
 
             current_dist += dash_length + gap_length
 
@@ -8167,8 +9224,9 @@ class BunkerCannonEffect:
 
             surf = pygame.Surface((actual_size * 2, actual_size * 2), pygame.SRCALPHA)
             pygame.draw.circle(surf, color, (actual_size, actual_size), actual_size)
-            screen.blit(surf, (int(muzzle_pos.x - actual_size),
-                              int(muzzle_pos.y - actual_size)))
+            screen.blit(
+                surf, (int(muzzle_pos.x - actual_size), int(muzzle_pos.y - actual_size))
+            )
 
     def draw_foreground_layer(self, screen: pygame.Surface):
         """전경 레이어에 그릴 요소 (포탄)"""
@@ -8224,10 +9282,12 @@ class CombatMotionEffect:
 
     def _load_motion_images(self):
         """5단계 속도감 이미지 로드 (combat_motion_00~04)"""
-        extensions = ['jpg', 'png', 'png', 'png', 'png']
+        extensions = ["jpg", "png", "png", "png", "png"]
         try:
             for i in range(5):
-                img_path = Path(f"assets/images/effects/combat_motion_0{i}.{extensions[i]}")
+                img_path = Path(
+                    f"assets/images/effects/combat_motion_0{i}.{extensions[i]}"
+                )
                 if img_path.exists():
                     img = pygame.image.load(str(img_path)).convert()
                     scaled = pygame.transform.scale(img, self.screen_size)
@@ -8236,7 +9296,9 @@ class CombatMotionEffect:
                     print(f"WARNING: {img_path} not found")
 
             if len(self.motion_frames) > 0:
-                print(f"INFO: CombatMotionEffect loaded ({len(self.motion_frames)} frames)")
+                print(
+                    f"INFO: CombatMotionEffect loaded ({len(self.motion_frames)} frames)"
+                )
         except Exception as e:
             print(f"WARNING: Failed to load combat_motion images: {e}")
 
@@ -8262,7 +9324,9 @@ class CombatMotionEffect:
             self.player_move_time = 0.0
             self.prev_direction = None
 
-    def update_player_movement(self, is_moving: bool, dt: float, player_pos=None, move_direction=None):
+    def update_player_movement(
+        self, is_moving: bool, dt: float, player_pos=None, move_direction=None
+    ):
         """플레이어 이동 상태 추적
 
         Args:
@@ -8284,6 +9348,7 @@ class CombatMotionEffect:
                 # 방향 벡터 내적으로 방향 변화 감지
                 # 내적이 0.5 미만이면 45도 이상 방향 전환으로 간주
                 import math
+
                 dx, dy = move_direction
                 pdx, pdy = self.prev_direction
                 # 벡터 정규화
@@ -8381,7 +9446,7 @@ class CombatMotionEffect:
         else:
             # 감속: ease-in 커브로 부드럽게 감소
             decel_progress = (progress - 0.85) / 0.15
-            eased = decel_progress ** 2  # ease-in quad
+            eased = decel_progress**2  # ease-in quad
             self.frame_progress = 4.0 * (1 - eased)
 
         # 플래시 (빠르게 감소)
@@ -8405,7 +9470,7 @@ class CombatMotionEffect:
         if intro_progress < 0.5:
             # 초반 50%: 천천히 확대 (전체의 20%만 진행)
             t = intro_progress / 0.5
-            eased = 0.2 * (t ** 2)  # ease-in quad
+            eased = 0.2 * (t**2)  # ease-in quad
         else:
             # 후반 50%: 빠르게 확대 (나머지 80% 진행)
             t = (intro_progress - 0.5) / 0.5
@@ -8413,7 +9478,7 @@ class CombatMotionEffect:
 
         # 원형 마스크 반경: 작은 원 → 전체 화면을 덮을 만큼 확대
         # 대각선 길이를 기준으로 최대 반경 계산
-        max_radius = math.sqrt(sw ** 2 + sh ** 2)
+        max_radius = math.sqrt(sw**2 + sh**2)
         min_radius = 60  # 시작 반경 (더 큰 원으로 시작)
         current_radius = min_radius + (max_radius - min_radius) * eased
 
@@ -8425,8 +9490,9 @@ class CombatMotionEffect:
 
         # 원형 클리핑 영역에 속도감 이미지 그리기
         # 원 내부만 보이도록 마스크 적용
-        pygame.draw.circle(mask_surf, (255, 255, 255, 255),
-                          (int(px), int(py)), int(current_radius))
+        pygame.draw.circle(
+            mask_surf, (255, 255, 255, 255), (int(px), int(py)), int(current_radius)
+        )
 
         # 속도감 이미지를 마스크에 블릿 (BLEND_RGBA_MIN으로 마스크 적용)
         temp_surf = pygame.Surface(self.screen_size, pygame.SRCALPHA)
@@ -8442,19 +9508,25 @@ class CombatMotionEffect:
             edge_alpha = int(255 * (1 - eased * 0.8))
             edge_color = (200, 220, 255, edge_alpha)
             edge_thickness = max(4, int(12 * (1 - eased)))
-            pygame.draw.circle(screen, edge_color,
-                             (int(px), int(py)), int(current_radius), edge_thickness)
+            pygame.draw.circle(
+                screen,
+                edge_color,
+                (int(px), int(py)),
+                int(current_radius),
+                edge_thickness,
+            )
 
         # 방사형 속도선 제거됨
 
-    def _draw_warp_lines(self, screen: pygame.Surface, cx: int, cy: int,
-                          progress: float, alpha: int):
+    def _draw_warp_lines(
+        self, screen: pygame.Surface, cx: int, cy: int, progress: float, alpha: int
+    ):
         """워프 속도선 그리기 (원형 가장자리에서 바깥으로 뻗어나감)"""
         import math
 
         line_count = 16  # 방사선 개수 (32 → 16으로 축소)
         sw, sh = self.screen_size
-        max_radius = math.sqrt(sw ** 2 + sh ** 2)
+        max_radius = math.sqrt(sw**2 + sh**2)
 
         # 현재 원형 마스크 반경
         min_radius = 30
@@ -8480,9 +9552,13 @@ class CombatMotionEffect:
             color = (220, 235, 255, alpha)
             thickness = 2 + int(progress * 2)
 
-            pygame.draw.line(line_surf, color,
-                           (int(start_x), int(start_y)),
-                           (int(end_x), int(end_y)), thickness)
+            pygame.draw.line(
+                line_surf,
+                color,
+                (int(start_x), int(start_y)),
+                (int(end_x), int(end_y)),
+                thickness,
+            )
 
         screen.blit(line_surf, (0, 0))
 
@@ -8499,7 +9575,7 @@ class CombatMotionEffect:
             self._draw_zoom_warp(screen, intro_progress)
 
             # 플래시 오버레이 (워프 시작 시 강한 빛)
-            flash_alpha = int(200 * (1 - intro_progress ** 0.5))
+            flash_alpha = int(200 * (1 - intro_progress**0.5))
             if flash_alpha > 0:
                 flash_surf = pygame.Surface(self.screen_size, pygame.SRCALPHA)
                 flash_surf.fill((255, 255, 255, flash_alpha))
@@ -8566,20 +9642,26 @@ class ClassifiedDocumentEffect:
     """
 
     # 페이즈 정의
-    PHASE_ZOOM_IN = 0           # 배경 건물 중앙으로 클로즈업
-    PHASE_GATE_SEQUENCE = 1     # gate 이미지 시퀀스 (전체화면 전환)
-    PHASE_CABINET_SHOW = 2      # 캐비닛 등장
-    PHASE_DIALOGUE = 3          # 대화 + 문서 등장
-    PHASE_DOC_REVIEW = 4        # 모든 문서 즉각 정렬
-    PHASE_DOC_VIEW = 5          # 정렬 후 대기 - 클릭으로 문서 확대 보기
-    PHASE_ZOOM_OUT = 6          # 원래 배경으로 복귀
+    PHASE_ZOOM_IN = 0  # 배경 건물 중앙으로 클로즈업
+    PHASE_GATE_SEQUENCE = 1  # gate 이미지 시퀀스 (전체화면 전환)
+    PHASE_CABINET_SHOW = 2  # 캐비닛 등장
+    PHASE_DIALOGUE = 3  # 대화 + 문서 등장
+    PHASE_DOC_REVIEW = 4  # 모든 문서 즉각 정렬
+    PHASE_DOC_VIEW = 5  # 정렬 후 대기 - 클릭으로 문서 확대 보기
+    PHASE_ZOOM_OUT = 6  # 원래 배경으로 복귀
     PHASE_DONE = 7
 
-    def __init__(self, screen_size: tuple, document_paths: list,
-                 background_path: str = None, dialogue_after: list = None,
-                 sound_manager=None, special_effects: dict = None,
-                 scene_id: str = "document_scene",
-                 gate_image_paths: list = None):
+    def __init__(
+        self,
+        screen_size: tuple,
+        document_paths: list,
+        background_path: str = None,
+        dialogue_after: list = None,
+        sound_manager=None,
+        special_effects: dict = None,
+        scene_id: str = "document_scene",
+        gate_image_paths: list = None,
+    ):
         self.screen_size = screen_size
         self.document_paths = document_paths
         self.background_path = background_path
@@ -8600,19 +9682,19 @@ class ClassifiedDocumentEffect:
         ]
 
         # 타이밍 설정 (모든 등장 천천히)
-        self.zoom_in_duration = 4.5          # 클로즈업 시간 (더 느리게)
+        self.zoom_in_duration = 4.5  # 클로즈업 시간 (더 느리게)
         self.gate_transition_duration = 3.0  # 각 gate 이미지 전환 시간 (느리게)
-        self.gate_display_duration = 2.5     # 각 gate 이미지 표시 시간 (더 오래)
-        self.cabinet_show_duration = 2.0     # 캐비닛 등장 시간 (천천히)
-        self.doc_rise_duration = 1.5         # 문서 솟아오르는 시간 (천천히)
-        self.doc_review_duration = 0.15      # 각 문서 정렬 시간 (거의 즉각)
-        self.zoom_out_duration = 4.0         # 줌아웃 시간 (천천히)
+        self.gate_display_duration = 2.5  # 각 gate 이미지 표시 시간 (더 오래)
+        self.cabinet_show_duration = 2.0  # 캐비닛 등장 시간 (천천히)
+        self.doc_rise_duration = 1.5  # 문서 솟아오르는 시간 (천천히)
+        self.doc_review_duration = 0.15  # 각 문서 정렬 시간 (거의 즉각)
+        self.zoom_out_duration = 4.0  # 줌아웃 시간 (천천히)
 
         # 줌 효과
-        self.zoom_scale = 1.0                # 현재 줌 배율
-        self.zoom_target_scale = 3.0         # 목표 줌 배율 (더 깊이)
-        self.zoom_center_x = 0.5             # 줌 중심 X (건물 중앙)
-        self.zoom_center_y = 0.38            # 줌 중심 Y (건물 문 위치)
+        self.zoom_scale = 1.0  # 현재 줌 배율
+        self.zoom_target_scale = 3.0  # 목표 줌 배율 (더 깊이)
+        self.zoom_center_x = 0.5  # 줌 중심 X (건물 중앙)
+        self.zoom_center_y = 0.38  # 줌 중심 Y (건물 문 위치)
 
         # 배경
         self.background_original = None
@@ -8649,11 +9731,11 @@ class ClassifiedDocumentEffect:
         self.review_progress = 0.0
 
         # 문서 확대 보기 관련 (PHASE_DOC_VIEW)
-        self.viewing_doc_index = -1      # 현재 확대 보기 중인 문서 (-1이면 없음)
-        self.view_zoom_progress = 0.0    # 확대/축소 애니메이션 진행도
-        self.view_zoom_duration = 0.25   # 확대 애니메이션 시간 (빠르게)
-        self.view_state = "idle"         # "idle", "zoom_in", "viewing", "zoom_out"
-        self.doc_rects = []              # 각 문서의 클릭 영역
+        self.viewing_doc_index = -1  # 현재 확대 보기 중인 문서 (-1이면 없음)
+        self.view_zoom_progress = 0.0  # 확대/축소 애니메이션 진행도
+        self.view_zoom_duration = 0.25  # 확대 애니메이션 시간 (빠르게)
+        self.view_state = "idle"  # "idle", "zoom_in", "viewing", "zoom_out"
+        self.doc_rects = []  # 각 문서의 클릭 영역
 
         # 대사 관련
         self.current_dialogue_index = 0
@@ -8675,13 +9757,17 @@ class ClassifiedDocumentEffect:
         # 페이드 효과용
         self.fade_alpha = 0.0
 
-        print(f"INFO: ClassifiedDocumentEffect created with {len(self.document_paths)} documents, {len(self.gate_image_paths)} gate images")
+        print(
+            f"INFO: ClassifiedDocumentEffect created with {len(self.document_paths)} documents, {len(self.gate_image_paths)} gate images"
+        )
 
     def _load_background(self, path: str):
         """배경 이미지 로드"""
         try:
             img = pygame.image.load(path).convert()
-            self.background_original = pygame.transform.smoothscale(img, self.screen_size)
+            self.background_original = pygame.transform.smoothscale(
+                img, self.screen_size
+            )
             self.background = self.background_original.copy()
         except Exception as e:
             print(f"WARNING: Failed to load background: {path} - {e}")
@@ -8718,18 +9804,32 @@ class ClassifiedDocumentEffect:
             orig_w, orig_h = img.get_size()
             ratio = cabinet_height / orig_h
             cabinet_width = int(orig_w * ratio)
-            self.cabinet_image = pygame.transform.smoothscale(img, (cabinet_width, cabinet_height))
+            self.cabinet_image = pygame.transform.smoothscale(
+                img, (cabinet_width, cabinet_height)
+            )
         except Exception as e:
             print(f"WARNING: Failed to load cabinet: {cabinet_path} - {e}")
             cabinet_width = int(self.screen_size[0] * 0.35)
             cabinet_height = int(self.screen_size[1] * 0.55)
-            self.cabinet_image = pygame.Surface((cabinet_width, cabinet_height), pygame.SRCALPHA)
-            pygame.draw.rect(self.cabinet_image, (50, 55, 60), (0, 0, cabinet_width, cabinet_height))
-            pygame.draw.rect(self.cabinet_image, (80, 85, 90), (0, 0, cabinet_width, cabinet_height), 3)
+            self.cabinet_image = pygame.Surface(
+                (cabinet_width, cabinet_height), pygame.SRCALPHA
+            )
+            pygame.draw.rect(
+                self.cabinet_image, (50, 55, 60), (0, 0, cabinet_width, cabinet_height)
+            )
+            pygame.draw.rect(
+                self.cabinet_image,
+                (80, 85, 90),
+                (0, 0, cabinet_width, cabinet_height),
+                3,
+            )
             for i in range(3):
                 handle_y = 80 + i * (cabinet_height // 4)
-                pygame.draw.rect(self.cabinet_image, (100, 105, 110),
-                               (cabinet_width // 2 - 30, handle_y, 60, 15))
+                pygame.draw.rect(
+                    self.cabinet_image,
+                    (100, 105, 110),
+                    (cabinet_width // 2 - 30, handle_y, 60, 15),
+                )
 
     def _prepare_documents(self):
         """문서 이미지 준비 - 원본 비율 유지, 특정 문서만 높이 조정"""
@@ -8741,13 +9841,13 @@ class ClassifiedDocumentEffect:
 
         # 문서 1, 2만 높이 줄임 (파일명 기준)
         height_reduction = {
-            "doc_project_ark.png": 0.80,     # 문서 1: 높이 80%로 줄임
-            "doc_survivor_list.png": 0.80,   # 문서 2: 높이 80%로 줄임
+            "doc_project_ark.png": 0.80,  # 문서 1: 높이 80%로 줄임
+            "doc_survivor_list.png": 0.80,  # 문서 2: 높이 80%로 줄임
         }
 
         # 문서 4만 약간 확대
         scale_up = {
-            "doc_transmission.png": 1.05,    # 문서 4: 5% 확대
+            "doc_transmission.png": 1.05,  # 문서 4: 5% 확대
         }
 
         for i, path in enumerate(self.document_paths):
@@ -8778,16 +9878,18 @@ class ClassifiedDocumentEffect:
                 doc_img = pygame.Surface((max_width, max_height), pygame.SRCALPHA)
                 doc_img.fill((200, 190, 170))
 
-            self.documents.append({
-                'image': doc_img,
-                'filename': filename,
-                'y_offset': 0.0,
-                'alpha': 255,
-                'visible': False,
-                'scale': 1.0,
-                'pos_x': screen_w // 2,
-                'pos_y': screen_h // 2,
-            })
+            self.documents.append(
+                {
+                    "image": doc_img,
+                    "filename": filename,
+                    "y_offset": 0.0,
+                    "alpha": 255,
+                    "visible": False,
+                    "scale": 1.0,
+                    "pos_x": screen_w // 2,
+                    "pos_y": screen_h // 2,
+                }
+            )
 
         # 문서 최종 정렬 위치 계산 (가로로 나열)
         self._calculate_final_positions()
@@ -8806,11 +9908,13 @@ class ClassifiedDocumentEffect:
         start_x = screen_w * 0.1 + spacing
 
         for i in range(num_docs):
-            self.doc_final_positions.append({
-                'x': start_x + i * spacing,
-                'y': screen_h * 0.45,
-                'scale': 0.5  # 축소 비율
-            })
+            self.doc_final_positions.append(
+                {
+                    "x": start_x + i * spacing,
+                    "y": screen_h * 0.45,
+                    "scale": 0.5,  # 축소 비율
+                }
+            )
 
     def set_fonts(self, fonts: dict):
         """폰트 설정"""
@@ -8968,14 +10072,14 @@ class ClassifiedDocumentEffect:
             # visible 여부와 관계없이 모든 문서에 대해 rect 생성
             if i < len(self.doc_final_positions):
                 pos = self.doc_final_positions[i]
-                orig_w, orig_h = doc['image'].get_size()
-                scale = pos['scale']
+                orig_w, orig_h = doc["image"].get_size()
+                scale = pos["scale"]
                 w = int(orig_w * scale)
                 h = int(orig_h * scale)
-                rect = pygame.Rect(int(pos['x'] - w // 2), int(pos['y'] - h // 2), w, h)
+                rect = pygame.Rect(int(pos["x"] - w // 2), int(pos["y"] - h // 2), w, h)
                 self.doc_rects.append(rect)
                 # 문서를 visible로 설정 (정렬 후에는 모두 보여야 함)
-                doc['visible'] = True
+                doc["visible"] = True
 
     def _update_zoom_out(self, dt: float):
         """원래 배경으로 복귀"""
@@ -8986,12 +10090,14 @@ class ClassifiedDocumentEffect:
         else:
             eased = 1 - ((-2 * progress + 2) ** 2) / 2
 
-        self.zoom_scale = self.zoom_target_scale - (self.zoom_target_scale - 1.0) * eased
+        self.zoom_scale = (
+            self.zoom_target_scale - (self.zoom_target_scale - 1.0) * eased
+        )
         self.cabinet_y_offset = 1.0 - eased
 
         # 문서들 페이드 아웃
         for doc in self.documents:
-            doc['alpha'] = int(255 * (1.0 - eased))
+            doc["alpha"] = int(255 * (1.0 - eased))
 
         if progress >= 1.0:
             self.phase = self.PHASE_DONE
@@ -9003,12 +10109,14 @@ class ClassifiedDocumentEffect:
         """다음 문서와 대화 시작"""
         self.current_doc_index += 1
         if self.current_doc_index < len(self.documents):
-            self.documents[self.current_doc_index]['visible'] = True
+            self.documents[self.current_doc_index]["visible"] = True
             self.doc_rise_progress = 0.0
             self.doc_is_rising = True
 
         if self.current_dialogue_index < len(self.dialogue_after):
-            self.dialogue_text = self.dialogue_after[self.current_dialogue_index].get("text", "")
+            self.dialogue_text = self.dialogue_after[self.current_dialogue_index].get(
+                "text", ""
+            )
             self.typing_progress = 0.0
             self.waiting_for_click = False
 
@@ -9127,7 +10235,11 @@ class ClassifiedDocumentEffect:
         elif self.phase == self.PHASE_GATE_SEQUENCE:
             self._render_gate_sequence(screen)
 
-        elif self.phase in [self.PHASE_CABINET_SHOW, self.PHASE_DIALOGUE, self.PHASE_DOC_REVIEW]:
+        elif self.phase in [
+            self.PHASE_CABINET_SHOW,
+            self.PHASE_DIALOGUE,
+            self.PHASE_DOC_REVIEW,
+        ]:
             self._render_document_phase(screen)
 
         elif self.phase == self.PHASE_DOC_VIEW:
@@ -9135,6 +10247,10 @@ class ClassifiedDocumentEffect:
 
         elif self.phase == self.PHASE_ZOOM_OUT:
             self._render_zoom_out_phase(screen)
+
+        # 마우스 커서 렌더링 (문서 보기 페이즈에서만)
+        if self.phase == self.PHASE_DOC_VIEW:
+            self._render_cursor(screen)
 
     def _render_zoom_phase(self, screen: pygame.Surface):
         """줌인 페이즈 렌더링"""
@@ -9159,9 +10275,15 @@ class ClassifiedDocumentEffect:
 
         elif self.gate_state == "transition":
             # 크로스페이드 전환
-            current_img = self.gate_images[self.current_gate_index] if self.current_gate_index < len(self.gate_images) else None
+            current_img = (
+                self.gate_images[self.current_gate_index]
+                if self.current_gate_index < len(self.gate_images)
+                else None
+            )
             next_idx = self.current_gate_index + 1
-            next_img = self.gate_images[next_idx] if next_idx < len(self.gate_images) else None
+            next_img = (
+                self.gate_images[next_idx] if next_idx < len(self.gate_images) else None
+            )
 
             # ease-in-out 전환
             t = self.gate_transition_progress
@@ -9273,10 +10395,10 @@ class ClassifiedDocumentEffect:
         screen_w, screen_h = self.screen_size
 
         for i, doc in enumerate(self.documents):
-            if not doc['visible']:
+            if not doc["visible"]:
                 continue
 
-            img = doc['image']
+            img = doc["image"]
             img_w, img_h = img.get_size()
 
             base_x = screen_w // 2
@@ -9292,7 +10414,7 @@ class ClassifiedDocumentEffect:
                 angle = (1 - rise_eased) * 10
             else:
                 # 이전 문서들: 뒤로 쌓임
-                stack_offset = (self.current_doc_index - i)
+                stack_offset = self.current_doc_index - i
                 doc_y = base_y - stack_offset * 25
                 # 좌우로 약간 어긋나게
                 offset_x = (stack_offset % 2) * 30 - 15
@@ -9317,10 +10439,10 @@ class ClassifiedDocumentEffect:
         eased = 1.0 - (1.0 - t) ** 2  # ease-out
 
         for i, doc in enumerate(self.documents):
-            if not doc['visible']:
+            if not doc["visible"]:
                 continue
 
-            img = doc['image']
+            img = doc["image"]
             orig_w, orig_h = img.get_size()
 
             if i < len(self.doc_final_positions):
@@ -9332,9 +10454,9 @@ class ClassifiedDocumentEffect:
                 start_scale = 1.0
 
                 # 최종 위치
-                end_x = pos['x']
-                end_y = pos['y']
-                end_scale = pos['scale']
+                end_x = pos["x"]
+                end_y = pos["y"]
+                end_scale = pos["scale"]
 
                 # 보간
                 cur_x = start_x + (end_x - start_x) * eased
@@ -9373,12 +10495,12 @@ class ClassifiedDocumentEffect:
         # 정렬된 문서들 렌더링
         mouse_pos = pygame.mouse.get_pos()
         for i, doc in enumerate(self.documents):
-            if not doc['visible']:
+            if not doc["visible"]:
                 continue
             if i >= len(self.doc_final_positions):
                 continue
 
-            img = doc['image']
+            img = doc["image"]
             orig_w, orig_h = img.get_size()
             pos = self.doc_final_positions[i]
 
@@ -9389,8 +10511,8 @@ class ClassifiedDocumentEffect:
                 eased = 1.0 - (1.0 - t) ** 2  # ease-out
 
                 # 시작: 정렬 위치
-                start_x, start_y = pos['x'], pos['y']
-                start_scale = pos['scale']
+                start_x, start_y = pos["x"], pos["y"]
+                start_scale = pos["scale"]
 
                 # 끝: 화면 중앙, 거의 전체화면
                 end_x, end_y = screen_w // 2, screen_h // 2
@@ -9410,16 +10532,20 @@ class ClassifiedDocumentEffect:
                 if self.viewing_doc_index >= 0:
                     continue
 
-                scale = pos['scale']
+                scale = pos["scale"]
                 new_w = int(orig_w * scale)
                 new_h = int(orig_h * scale)
                 scaled_img = pygame.transform.smoothscale(img, (new_w, new_h))
-                rect = scaled_img.get_rect(center=(int(pos['x']), int(pos['y'])))
+                rect = scaled_img.get_rect(center=(int(pos["x"]), int(pos["y"])))
 
                 # 호버 효과
-                if i < len(self.doc_rects) and self.doc_rects[i].collidepoint(mouse_pos):
+                if i < len(self.doc_rects) and self.doc_rects[i].collidepoint(
+                    mouse_pos
+                ):
                     # 호버 시 밝게 + 테두리
-                    pygame.draw.rect(screen, (100, 120, 140), rect.inflate(8, 8), 3, border_radius=5)
+                    pygame.draw.rect(
+                        screen, (100, 120, 140), rect.inflate(8, 8), 3, border_radius=5
+                    )
                     scaled_img.set_alpha(255)
                 else:
                     scaled_img.set_alpha(220)
@@ -9432,7 +10558,11 @@ class ClassifiedDocumentEffect:
             hint_surf = self.fonts["small"].render(hint_text, True, (150, 160, 170))
             hint_rect = hint_surf.get_rect(center=(screen_w // 2, screen_h - 40))
             screen.blit(hint_surf, hint_rect)
-        elif self.viewing_doc_index >= 0 and self.view_state == "viewing" and "small" in self.fonts:
+        elif (
+            self.viewing_doc_index >= 0
+            and self.view_state == "viewing"
+            and "small" in self.fonts
+        ):
             hint_text = "클릭하여 닫기"
             hint_surf = self.fonts["small"].render(hint_text, True, (200, 210, 220))
             hint_rect = hint_surf.get_rect(center=(screen_w // 2, screen_h - 40))
@@ -9441,33 +10571,44 @@ class ClassifiedDocumentEffect:
     def _render_final_documents(self, screen: pygame.Surface, alpha: int):
         """최종 정렬된 문서들 렌더링 (페이드 아웃용)"""
         for i, doc in enumerate(self.documents):
-            if not doc['visible']:
+            if not doc["visible"]:
                 continue
 
-            img = doc['image']
+            img = doc["image"]
             orig_w, orig_h = img.get_size()
 
             if i < len(self.doc_final_positions):
                 pos = self.doc_final_positions[i]
-                scale = pos['scale']
+                scale = pos["scale"]
                 new_w = int(orig_w * scale)
                 new_h = int(orig_h * scale)
                 scaled_img = pygame.transform.smoothscale(img, (new_w, new_h))
                 scaled_img.set_alpha(alpha)
-                rect = scaled_img.get_rect(center=(int(pos['x']), int(pos['y'])))
+                rect = scaled_img.get_rect(center=(int(pos["x"]), int(pos["y"])))
                 screen.blit(scaled_img, rect)
 
     def _render_dialogue(self, screen: pygame.Surface):
         """대화 박스 렌더링 (초상화 포함)"""
-        if not self.dialogue_after or self.current_dialogue_index >= len(self.dialogue_after):
+        if not self.dialogue_after or self.current_dialogue_index >= len(
+            self.dialogue_after
+        ):
             return
         dialogue = self.dialogue_after[self.current_dialogue_index]
         speaker = dialogue.get("speaker", "")
         portrait = self._get_portrait(speaker) if speaker else None
-        render_dialogue_box(screen, self.screen_size, self.fonts, dialogue,
-                           self.dialogue_text, self.typing_progress, self.waiting_for_click,
-                           box_color=(20, 30, 40, 220), border_color=(80, 100, 80),
-                           has_portrait=(portrait is not None), portrait=portrait)
+        render_dialogue_box(
+            screen,
+            self.screen_size,
+            self.fonts,
+            dialogue,
+            self.dialogue_text,
+            self.typing_progress,
+            self.waiting_for_click,
+            box_color=(20, 30, 40, 220),
+            border_color=(80, 100, 80),
+            has_portrait=(portrait is not None),
+            portrait=portrait,
+        )
 
     def _get_portrait(self, speaker: str) -> pygame.Surface:
         """초상화 이미지 가져오기 (캐시 사용)"""
@@ -9476,6 +10617,7 @@ class ClassifiedDocumentEffect:
 
         try:
             from mode_configs.config_story_dialogue import CHARACTER_PORTRAITS
+
             path = CHARACTER_PORTRAITS.get(speaker)
         except ImportError:
             path = None
@@ -9504,6 +10646,45 @@ class ClassifiedDocumentEffect:
         hint_surf = self.fonts["small"].render(progress_text, True, (150, 150, 150))
         screen.blit(hint_surf, (50, 30))
 
+    def _render_cursor(self, screen: pygame.Surface):
+        """마우스 커서 렌더링 (문서 보기 페이즈에서 사용)"""
+        mouse_pos = pygame.mouse.get_pos()
+
+        # 커서 색상 (문서 위에 있으면 밝게)
+        cursor_color = (200, 200, 200)
+
+        # 문서 위에 호버 중인지 확인
+        is_hovering = False
+        if self.viewing_doc_index < 0:  # 확대 보기 중이 아닐 때만
+            for rect in self.doc_rects:
+                if rect.collidepoint(mouse_pos):
+                    cursor_color = (255, 255, 100)  # 노란색으로 강조
+                    is_hovering = True
+                    break
+
+        # 십자 커서 그리기
+        cursor_size = 12 if is_hovering else 10
+        line_width = 2
+
+        # 수평선
+        pygame.draw.line(
+            screen,
+            cursor_color,
+            (mouse_pos[0] - cursor_size, mouse_pos[1]),
+            (mouse_pos[0] + cursor_size, mouse_pos[1]),
+            line_width,
+        )
+        # 수직선
+        pygame.draw.line(
+            screen,
+            cursor_color,
+            (mouse_pos[0], mouse_pos[1] - cursor_size),
+            (mouse_pos[0], mouse_pos[1] + cursor_size),
+            line_width,
+        )
+        # 중앙 점
+        pygame.draw.circle(screen, cursor_color, mouse_pos, 2)
+
 
 # =========================================================
 # Act 3: 손상된 홀로그램 효과
@@ -9522,15 +10703,21 @@ class BurningRecordEffect:
     """
 
     PHASE_FADEIN = 0
-    PHASE_DISPLAY = 1         # 이미지 + 대화 동시 표시
-    PHASE_BURNING = 2         # 타들어가는 애니메이션
+    PHASE_DISPLAY = 1  # 이미지 + 대화 동시 표시
+    PHASE_BURNING = 2  # 타들어가는 애니메이션
     PHASE_FADEOUT = 3
     PHASE_DONE = 4
 
-    def __init__(self, screen_size: tuple, film_paths: list,
-                 background_path: str = None, dialogue_after: list = None,
-                 sound_manager=None, special_effects: dict = None,
-                 scene_id: str = "burning_scene"):
+    def __init__(
+        self,
+        screen_size: tuple,
+        film_paths: list,
+        background_path: str = None,
+        dialogue_after: list = None,
+        sound_manager=None,
+        special_effects: dict = None,
+        scene_id: str = "burning_scene",
+    ):
         self.screen_size = screen_size
         self.film_paths = film_paths
         self.background_path = background_path
@@ -9630,22 +10817,28 @@ class BurningRecordEffect:
                 # 중앙 크롭
                 crop_x = (new_w - self.img_width) // 2
                 crop_y = (new_h - self.img_height) // 2
-                cropped = pygame.Surface((self.img_width, self.img_height), pygame.SRCALPHA)
+                cropped = pygame.Surface(
+                    (self.img_width, self.img_height), pygame.SRCALPHA
+                )
                 cropped.blit(record_img, (-crop_x, -crop_y))
                 record_img = cropped
             except Exception as e:
                 print(f"WARNING: Failed to load record: {path} - {e}")
-                record_img = pygame.Surface((self.img_width, self.img_height), pygame.SRCALPHA)
+                record_img = pygame.Surface(
+                    (self.img_width, self.img_height), pygame.SRCALPHA
+                )
                 record_img.fill((80, 70, 60, 200))
 
             filename = Path(path).name
             effect_info = self.special_effects.get(filename, {})
 
-            self.records.append({
-                'image': record_img,
-                'filename': filename,
-                'effect': effect_info.get('effect', None),
-            })
+            self.records.append(
+                {
+                    "image": record_img,
+                    "filename": filename,
+                    "effect": effect_info.get("effect", None),
+                }
+            )
 
     def _setup_scatter_positions(self):
         """폴라로이드처럼 흩어진 배치 위치 설정"""
@@ -9664,13 +10857,15 @@ class BurningRecordEffect:
             # 약간의 회전 (-15 ~ +15도)
             rotation = random.uniform(-15, 15)
 
-            self.scatter_positions.append({
-                'x': x,
-                'y': y,
-                'rotation': rotation,
-                'offset_x': offset_x,
-                'offset_y': offset_y,
-            })
+            self.scatter_positions.append(
+                {
+                    "x": x,
+                    "y": y,
+                    "rotation": rotation,
+                    "offset_x": offset_x,
+                    "offset_y": offset_y,
+                }
+            )
 
     def _create_burn_mask(self):
         """타들어가는 마스크 생성 (가장자리부터 안쪽으로)"""
@@ -9684,7 +10879,9 @@ class BurningRecordEffect:
         if num_images == 0:
             self.dialogues_per_image = 0
         else:
-            self.dialogues_per_image = max(1, (num_dialogues + num_images - 1) // num_images)
+            self.dialogues_per_image = max(
+                1, (num_dialogues + num_images - 1) // num_images
+            )
 
     def set_fonts(self, fonts: dict):
         self.fonts = fonts
@@ -9744,17 +10941,17 @@ class BurningRecordEffect:
 
         # 파티클 이동 및 소멸
         for p in self.fire_particles[:]:
-            p['y'] -= p['speed'] * dt
-            p['life'] -= dt
-            p['x'] += random.uniform(-30, 30) * dt
-            if p['life'] <= 0:
+            p["y"] -= p["speed"] * dt
+            p["life"] -= dt
+            p["x"] += random.uniform(-30, 30) * dt
+            if p["life"] <= 0:
                 self.fire_particles.remove(p)
 
         for p in self.ember_particles[:]:
-            p['y'] -= p['speed'] * dt * 0.5
-            p['x'] += random.uniform(-50, 50) * dt
-            p['life'] -= dt
-            if p['life'] <= 0:
+            p["y"] -= p["speed"] * dt * 0.5
+            p["x"] += random.uniform(-50, 50) * dt
+            p["life"] -= dt
+            if p["life"] <= 0:
                 self.ember_particles.remove(p)
 
     def _spawn_fire_particles(self, count: int):
@@ -9763,53 +10960,61 @@ class BurningRecordEffect:
             return
 
         pos = self.scatter_positions[self.current_record_index]
-        img_x = pos['x']
-        img_y = pos['y']
+        img_x = pos["x"]
+        img_y = pos["y"]
 
         for _ in range(count):
             # 이미지 가장자리 근처에서 생성
-            edge = random.choice(['top', 'bottom', 'left', 'right'])
-            if edge == 'top':
+            edge = random.choice(["top", "bottom", "left", "right"])
+            if edge == "top":
                 x = img_x + random.randint(0, self.img_width)
                 y = img_y
-            elif edge == 'bottom':
+            elif edge == "bottom":
                 x = img_x + random.randint(0, self.img_width)
                 y = img_y + self.img_height
-            elif edge == 'left':
+            elif edge == "left":
                 x = img_x
                 y = img_y + random.randint(0, self.img_height)
             else:
                 x = img_x + self.img_width
                 y = img_y + random.randint(0, self.img_height)
 
-            self.fire_particles.append({
-                'x': x,
-                'y': y,
-                'speed': random.uniform(80, 200),
-                'size': random.randint(3, 12),
-                'life': random.uniform(0.5, 1.5),
-                'color': random.choice([
-                    (255, 200, 50),   # 밝은 노랑
-                    (255, 150, 30),   # 주황
-                    (255, 100, 20),   # 진한 주황
-                    (255, 60, 10),    # 빨강-주황
-                ])
-            })
+            self.fire_particles.append(
+                {
+                    "x": x,
+                    "y": y,
+                    "speed": random.uniform(80, 200),
+                    "size": random.randint(3, 12),
+                    "life": random.uniform(0.5, 1.5),
+                    "color": random.choice(
+                        [
+                            (255, 200, 50),  # 밝은 노랑
+                            (255, 150, 30),  # 주황
+                            (255, 100, 20),  # 진한 주황
+                            (255, 60, 10),  # 빨강-주황
+                        ]
+                    ),
+                }
+            )
 
             # 불씨도 생성
             if random.random() < 0.3:
-                self.ember_particles.append({
-                    'x': x + random.randint(-20, 20),
-                    'y': y,
-                    'speed': random.uniform(30, 80),
-                    'size': random.randint(1, 3),
-                    'life': random.uniform(1.0, 3.0),
-                })
+                self.ember_particles.append(
+                    {
+                        "x": x + random.randint(-20, 20),
+                        "y": y,
+                        "speed": random.uniform(30, 80),
+                        "size": random.randint(1, 3),
+                        "life": random.uniform(1.0, 3.0),
+                    }
+                )
 
     def _start_dialogue(self):
         """현재 대화 시작"""
         if self.current_dialogue_index < len(self.dialogue_after):
-            self.dialogue_text = self.dialogue_after[self.current_dialogue_index].get("text", "")
+            self.dialogue_text = self.dialogue_after[self.current_dialogue_index].get(
+                "text", ""
+            )
             self.typing_progress = 0.0
             self.waiting_for_click = False
             self.dialogue_complete = False
@@ -9835,7 +11040,10 @@ class BurningRecordEffect:
         # 일정 대화마다 타들어가기 시작
         if self.dialogues_per_image > 0:
             expected_image = self.current_dialogue_index // self.dialogues_per_image
-            if expected_image > self.current_record_index and self.current_record_index < len(self.records) - 1:
+            if (
+                expected_image > self.current_record_index
+                and self.current_record_index < len(self.records) - 1
+            ):
                 self.phase = self.PHASE_BURNING
                 self.phase_timer = 0.0
                 self.burn_progress = 0.0
@@ -9861,7 +11069,9 @@ class BurningRecordEffect:
 
         elif event.type == pygame.KEYDOWN:
             if event.key in [pygame.K_SPACE, pygame.K_RETURN]:
-                return self.handle_event(pygame.event.Event(pygame.MOUSEBUTTONDOWN, button=1))
+                return self.handle_event(
+                    pygame.event.Event(pygame.MOUSEBUTTONDOWN, button=1)
+                )
 
         return False
 
@@ -9894,12 +11104,12 @@ class BurningRecordEffect:
 
         # 현재 이미지의 흩어진 위치 가져오기
         pos = self.scatter_positions[self.current_record_index]
-        img_x = pos['x']
-        img_y = pos['y']
-        rotation = pos['rotation']
+        img_x = pos["x"]
+        img_y = pos["y"]
+        rotation = pos["rotation"]
 
         record = self.records[self.current_record_index]
-        img = record['image'].copy()
+        img = record["image"].copy()
 
         # 타들어가는 효과 적용
         if self.phase == self.PHASE_BURNING and self.burn_progress > 0:
@@ -9907,12 +11117,26 @@ class BurningRecordEffect:
 
         # 테두리가 있는 사진 서피스 생성 (탄 종이 느낌)
         border_size = 15
-        photo_surf = pygame.Surface((self.img_width + border_size * 2, self.img_height + border_size * 2), pygame.SRCALPHA)
+        photo_surf = pygame.Surface(
+            (self.img_width + border_size * 2, self.img_height + border_size * 2),
+            pygame.SRCALPHA,
+        )
 
         # 탄 종이 테두리 (불규칙한 갈색)
-        pygame.draw.rect(photo_surf, (70, 50, 35, 230), (0, 0, photo_surf.get_width(), photo_surf.get_height()), border_radius=3)
+        pygame.draw.rect(
+            photo_surf,
+            (70, 50, 35, 230),
+            (0, 0, photo_surf.get_width(), photo_surf.get_height()),
+            border_radius=3,
+        )
         # 탄 자국 테두리
-        pygame.draw.rect(photo_surf, (40, 25, 15, 200), (0, 0, photo_surf.get_width(), photo_surf.get_height()), 3, border_radius=3)
+        pygame.draw.rect(
+            photo_surf,
+            (40, 25, 15, 200),
+            (0, 0, photo_surf.get_width(), photo_surf.get_height()),
+            3,
+            border_radius=3,
+        )
 
         # 이미지 배치
         photo_surf.blit(img, (border_size, border_size))
@@ -9926,12 +11150,20 @@ class BurningRecordEffect:
             photo_surf.set_alpha(int(self.fade_alpha))
 
         # 회전 후 중앙 정렬을 위한 위치 조정
-        rotated_rect = photo_surf.get_rect(center=(img_x + self.img_width // 2, img_y + self.img_height // 2))
+        rotated_rect = photo_surf.get_rect(
+            center=(img_x + self.img_width // 2, img_y + self.img_height // 2)
+        )
         screen.blit(photo_surf, rotated_rect)
 
         # 타는 중이면 가장자리에 빛나는 효과
         if self.phase == self.PHASE_BURNING:
-            self._render_burning_edge(screen, rotated_rect.x, rotated_rect.y, photo_surf.get_width(), photo_surf.get_height())
+            self._render_burning_edge(
+                screen,
+                rotated_rect.x,
+                rotated_rect.y,
+                photo_surf.get_width(),
+                photo_surf.get_height(),
+            )
 
     def _apply_burn_effect(self, img: pygame.Surface):
         """이미지에 타들어가는 효과 적용"""
@@ -9956,43 +11188,72 @@ class BurningRecordEffect:
         # 가장자리에 주황/빨간 불꽃 색
         edge_radius = int(burn_radius)
         if edge_radius > 10:
-            pygame.draw.circle(burn_overlay, (255, 100, 30, 100), (center_x, center_y), edge_radius + 5, 8)
-            pygame.draw.circle(burn_overlay, (255, 200, 50, 80), (center_x, center_y), edge_radius + 2, 4)
+            pygame.draw.circle(
+                burn_overlay,
+                (255, 100, 30, 100),
+                (center_x, center_y),
+                edge_radius + 5,
+                8,
+            )
+            pygame.draw.circle(
+                burn_overlay,
+                (255, 200, 50, 80),
+                (center_x, center_y),
+                edge_radius + 2,
+                4,
+            )
 
         img.blit(burn_overlay, (0, 0))
 
-    def _render_burning_edge(self, screen: pygame.Surface, img_x: int, img_y: int, width: int = None, height: int = None):
+    def _render_burning_edge(
+        self,
+        screen: pygame.Surface,
+        img_x: int,
+        img_y: int,
+        width: int = None,
+        height: int = None,
+    ):
         """타는 가장자리 빛 효과"""
         w = width or self.img_width
         h = height or self.img_height
         center_x = img_x + w // 2
         center_y = img_y + h // 2
-        max_dist = math.sqrt((w // 2)**2 + (h // 2)**2)
+        max_dist = math.sqrt((w // 2) ** 2 + (h // 2) ** 2)
         burn_radius = int(max_dist * (1.0 - self.burn_progress))
 
         glow_surf = pygame.Surface(self.screen_size, pygame.SRCALPHA)
         # 빛나는 원 (불꽃 색)
         for i in range(5):
             alpha = 40 - i * 7
-            pygame.draw.circle(glow_surf, (255, 150, 50, max(0, alpha)), (center_x, center_y), burn_radius + i * 15, 4)
+            pygame.draw.circle(
+                glow_surf,
+                (255, 150, 50, max(0, alpha)),
+                (center_x, center_y),
+                burn_radius + i * 15,
+                4,
+            )
 
         screen.blit(glow_surf, (0, 0), special_flags=pygame.BLEND_RGBA_ADD)
 
     def _render_particles(self, screen: pygame.Surface):
         """파티클 렌더링"""
         for p in self.fire_particles:
-            alpha = int(255 * (p['life'] / 1.5))
-            color = (*p['color'][:3], min(255, alpha))
-            surf = pygame.Surface((p['size'] * 2, p['size'] * 2), pygame.SRCALPHA)
-            pygame.draw.circle(surf, color, (p['size'], p['size']), p['size'])
-            screen.blit(surf, (int(p['x'] - p['size']), int(p['y'] - p['size'])), special_flags=pygame.BLEND_RGBA_ADD)
+            alpha = int(255 * (p["life"] / 1.5))
+            color = (*p["color"][:3], min(255, alpha))
+            surf = pygame.Surface((p["size"] * 2, p["size"] * 2), pygame.SRCALPHA)
+            pygame.draw.circle(surf, color, (p["size"], p["size"]), p["size"])
+            screen.blit(
+                surf,
+                (int(p["x"] - p["size"]), int(p["y"] - p["size"])),
+                special_flags=pygame.BLEND_RGBA_ADD,
+            )
 
         for p in self.ember_particles:
-            alpha = int(200 * (p['life'] / 3.0))
+            alpha = int(200 * (p["life"] / 3.0))
             color = (255, 180, 100, min(255, alpha))
-            surf = pygame.Surface((p['size'] * 2, p['size'] * 2), pygame.SRCALPHA)
-            pygame.draw.circle(surf, color, (p['size'], p['size']), p['size'])
-            screen.blit(surf, (int(p['x'] - p['size']), int(p['y'] - p['size'])))
+            surf = pygame.Surface((p["size"] * 2, p["size"] * 2), pygame.SRCALPHA)
+            pygame.draw.circle(surf, color, (p["size"], p["size"]), p["size"])
+            screen.blit(surf, (int(p["x"] - p["size"]), int(p["y"] - p["size"])))
 
     def _render_vignette(self, screen: pygame.Surface):
         """비네트 효과 (붉은 톤)"""
@@ -10005,14 +11266,21 @@ class BurningRecordEffect:
         for i in range(10):
             radius = int(max_dist * (1.0 - i * 0.08))
             alpha = i * 15
-            pygame.draw.circle(vignette, (30, 10, 5, alpha), (center_x, center_y), radius, 50)
+            pygame.draw.circle(
+                vignette, (30, 10, 5, alpha), (center_x, center_y), radius, 50
+            )
 
         screen.blit(vignette, (0, 0))
 
     def _render_dialogue(self, screen: pygame.Surface):
         """대사 박스 렌더링 (초상화 포함)"""
-        if not self.dialogue_after or self.current_dialogue_index >= len(self.dialogue_after):
-            if self.dialogue_complete and self.current_record_index < len(self.records) - 1:
+        if not self.dialogue_after or self.current_dialogue_index >= len(
+            self.dialogue_after
+        ):
+            if (
+                self.dialogue_complete
+                and self.current_record_index < len(self.records) - 1
+            ):
                 self._render_hint(screen, "클릭하여 다음 기록")
             elif self.dialogue_complete:
                 self._render_hint(screen, "클릭하여 계속")
@@ -10020,11 +11288,21 @@ class BurningRecordEffect:
         dialogue = self.dialogue_after[self.current_dialogue_index]
         speaker = dialogue.get("speaker", "")
         portrait = self._get_portrait(speaker) if speaker else None
-        render_dialogue_box(screen, self.screen_size, self.fonts, dialogue,
-                           self.dialogue_text, self.typing_progress, self.waiting_for_click,
-                           box_color=(30, 15, 10, 220), border_color=(150, 80, 40, 150),
-                           text_color=(255, 240, 220), box_height=160,
-                           has_portrait=(portrait is not None), portrait=portrait)
+        render_dialogue_box(
+            screen,
+            self.screen_size,
+            self.fonts,
+            dialogue,
+            self.dialogue_text,
+            self.typing_progress,
+            self.waiting_for_click,
+            box_color=(30, 15, 10, 220),
+            border_color=(150, 80, 40, 150),
+            text_color=(255, 240, 220),
+            box_height=160,
+            has_portrait=(portrait is not None),
+            portrait=portrait,
+        )
 
     def _get_portrait(self, speaker: str) -> pygame.Surface:
         """초상화 이미지 가져오기 (캐시 사용)"""
@@ -10033,6 +11311,7 @@ class BurningRecordEffect:
 
         try:
             from mode_configs.config_story_dialogue import CHARACTER_PORTRAITS
+
             path = CHARACTER_PORTRAITS.get(speaker)
         except ImportError:
             path = None
@@ -10079,16 +11358,22 @@ class FilmReelEffect:
     """
 
     PHASE_FADEIN = 0
-    PHASE_FILM_ROLL = 1      # 필름이 위에서 내려옴
-    PHASE_DISPLAY = 2        # 이미지 표시, 대화
-    PHASE_FILM_ADVANCE = 3   # 다음 프레임으로 전환 (위로 롤아웃)
+    PHASE_FILM_ROLL = 1  # 필름이 위에서 내려옴
+    PHASE_DISPLAY = 2  # 이미지 표시, 대화
+    PHASE_FILM_ADVANCE = 3  # 다음 프레임으로 전환 (위로 롤아웃)
     PHASE_FADEOUT = 4
     PHASE_DONE = 5
 
-    def __init__(self, screen_size: tuple, film_paths: list,
-                 background_path: str = None, dialogue_after: list = None,
-                 sound_manager=None, special_effects: dict = None,
-                 scene_id: str = "film_scene"):
+    def __init__(
+        self,
+        screen_size: tuple,
+        film_paths: list,
+        background_path: str = None,
+        dialogue_after: list = None,
+        sound_manager=None,
+        special_effects: dict = None,
+        scene_id: str = "film_scene",
+    ):
         self.screen_size = screen_size
         self.film_paths = film_paths
         self.background_path = background_path
@@ -10104,8 +11389,8 @@ class FilmReelEffect:
         # 타이밍
         self.fadein_duration = 1.5
         self.fadeout_duration = 1.5
-        self.roll_duration = 0.8       # 롤링 애니메이션 시간
-        self.advance_duration = 0.6    # 다음 프레임 전환 시간
+        self.roll_duration = 0.8  # 롤링 애니메이션 시간
+        self.advance_duration = 0.6  # 다음 프레임 전환 시간
         self.fade_alpha = 0.0
 
         # 배경 (어둡게 처리하되 붉은 톤은 줄임)
@@ -10118,7 +11403,7 @@ class FilmReelEffect:
         self.film_height = int(screen_h * 0.55)
 
         # 스프로킷 구멍 설정
-        self.sprocket_margin = 50      # 좌우 여백 (구멍 영역)
+        self.sprocket_margin = 50  # 좌우 여백 (구멍 영역)
         self.sprocket_hole_radius = 12
         self.sprocket_hole_spacing = 40
 
@@ -10138,8 +11423,8 @@ class FilmReelEffect:
 
         # 필름 효과
         self.flicker_timer = 0.0
-        self.flicker_alpha = 0       # 깜빡임 알파 (0~30 정도)
-        self.scratch_lines = []      # 스크래치 라인들
+        self.flicker_alpha = 0  # 깜빡임 알파 (0~30 정도)
+        self.scratch_lines = []  # 스크래치 라인들
         self._generate_scratch_lines()
 
         # 대사 관련
@@ -10194,33 +11479,41 @@ class FilmReelEffect:
                 # 중앙 크롭
                 crop_x = (new_w - self.film_width) // 2
                 crop_y = (new_h - self.film_height) // 2
-                cropped = pygame.Surface((self.film_width, self.film_height), pygame.SRCALPHA)
+                cropped = pygame.Surface(
+                    (self.film_width, self.film_height), pygame.SRCALPHA
+                )
                 cropped.blit(film_img, (-crop_x, -crop_y))
                 film_img = cropped
             except Exception as e:
                 print(f"WARNING: Failed to load film: {path} - {e}")
-                film_img = pygame.Surface((self.film_width, self.film_height), pygame.SRCALPHA)
+                film_img = pygame.Surface(
+                    (self.film_width, self.film_height), pygame.SRCALPHA
+                )
                 film_img.fill((60, 60, 65, 200))
 
             filename = Path(path).name
             effect_info = self.special_effects.get(filename, {})
 
-            self.films.append({
-                'image': film_img,
-                'filename': filename,
-                'effect': effect_info.get('effect', None),
-            })
+            self.films.append(
+                {
+                    "image": film_img,
+                    "filename": filename,
+                    "effect": effect_info.get("effect", None),
+                }
+            )
 
     def _generate_scratch_lines(self):
         """필름 스크래치 라인 생성"""
         screen_h = self.screen_size[1]
         # 3~5개의 세로 스크래치 라인
         for _ in range(random.randint(3, 5)):
-            self.scratch_lines.append({
-                'x': random.randint(100, self.screen_size[0] - 100),
-                'alpha': random.randint(15, 40),
-                'width': random.randint(1, 2),
-            })
+            self.scratch_lines.append(
+                {
+                    "x": random.randint(100, self.screen_size[0] - 100),
+                    "alpha": random.randint(15, 40),
+                    "width": random.randint(1, 2),
+                }
+            )
 
     def _setup_dialogue_per_image(self):
         """이미지당 대화 수 계산"""
@@ -10229,7 +11522,9 @@ class FilmReelEffect:
         if num_images == 0:
             self.dialogues_per_image = 0
         else:
-            self.dialogues_per_image = max(1, (num_dialogues + num_images - 1) // num_images)
+            self.dialogues_per_image = max(
+                1, (num_dialogues + num_images - 1) // num_images
+            )
 
     def set_fonts(self, fonts: dict):
         self.fonts = fonts
@@ -10312,7 +11607,9 @@ class FilmReelEffect:
     def _start_dialogue(self):
         """현재 대화 시작"""
         if self.current_dialogue_index < len(self.dialogue_after):
-            self.dialogue_text = self.dialogue_after[self.current_dialogue_index].get("text", "")
+            self.dialogue_text = self.dialogue_after[self.current_dialogue_index].get(
+                "text", ""
+            )
             self.typing_progress = 0.0
             self.waiting_for_click = False
             self.dialogue_complete = False
@@ -10338,7 +11635,10 @@ class FilmReelEffect:
         # 일정 대화마다 다음 프레임으로 전환
         if self.dialogues_per_image > 0:
             expected_image = self.current_dialogue_index // self.dialogues_per_image
-            if expected_image > self.current_frame_index and self.current_frame_index < len(self.films) - 1:
+            if (
+                expected_image > self.current_frame_index
+                and self.current_frame_index < len(self.films) - 1
+            ):
                 self.phase = self.PHASE_FILM_ADVANCE
                 self.phase_timer = 0.0
                 return
@@ -10363,7 +11663,9 @@ class FilmReelEffect:
 
         elif event.type == pygame.KEYDOWN:
             if event.key in [pygame.K_SPACE, pygame.K_RETURN]:
-                return self.handle_event(pygame.event.Event(pygame.MOUSEBUTTONDOWN, button=1))
+                return self.handle_event(
+                    pygame.event.Event(pygame.MOUSEBUTTONDOWN, button=1)
+                )
 
         return False
 
@@ -10376,7 +11678,11 @@ class FilmReelEffect:
             screen.blit(bg_copy, (0, 0))
 
         # 필름 프레임 렌더링
-        if self.phase in [self.PHASE_FILM_ROLL, self.PHASE_DISPLAY, self.PHASE_FILM_ADVANCE]:
+        if self.phase in [
+            self.PHASE_FILM_ROLL,
+            self.PHASE_DISPLAY,
+            self.PHASE_FILM_ADVANCE,
+        ]:
             self._render_film_frame(screen)
 
         # 필름 스크래치
@@ -10406,41 +11712,69 @@ class FilmReelEffect:
         frame_y = center_y - self.frame_height // 2 + int(self.roll_offset)
 
         # 필름 프레임 서피스 생성
-        frame_surf = pygame.Surface((self.frame_width, self.frame_height), pygame.SRCALPHA)
+        frame_surf = pygame.Surface(
+            (self.frame_width, self.frame_height), pygame.SRCALPHA
+        )
 
         # 필름 베이스 (검은색 필름 스트립)
-        pygame.draw.rect(frame_surf, (25, 25, 30, 255),
-                        (0, 0, self.frame_width, self.frame_height))
+        pygame.draw.rect(
+            frame_surf, (25, 25, 30, 255), (0, 0, self.frame_width, self.frame_height)
+        )
 
         # 좌우 스프로킷 구멍
         hole_start_y = 30
         hole_end_y = self.frame_height - 30
         for y in range(hole_start_y, hole_end_y, self.sprocket_hole_spacing):
             # 왼쪽 구멍
-            pygame.draw.circle(frame_surf, (10, 10, 12, 255),
-                             (self.sprocket_margin // 2, y), self.sprocket_hole_radius)
+            pygame.draw.circle(
+                frame_surf,
+                (10, 10, 12, 255),
+                (self.sprocket_margin // 2, y),
+                self.sprocket_hole_radius,
+            )
             # 구멍 테두리
-            pygame.draw.circle(frame_surf, (40, 40, 45, 255),
-                             (self.sprocket_margin // 2, y), self.sprocket_hole_radius, 2)
+            pygame.draw.circle(
+                frame_surf,
+                (40, 40, 45, 255),
+                (self.sprocket_margin // 2, y),
+                self.sprocket_hole_radius,
+                2,
+            )
             # 오른쪽 구멍
-            pygame.draw.circle(frame_surf, (10, 10, 12, 255),
-                             (self.frame_width - self.sprocket_margin // 2, y), self.sprocket_hole_radius)
-            pygame.draw.circle(frame_surf, (40, 40, 45, 255),
-                             (self.frame_width - self.sprocket_margin // 2, y), self.sprocket_hole_radius, 2)
+            pygame.draw.circle(
+                frame_surf,
+                (10, 10, 12, 255),
+                (self.frame_width - self.sprocket_margin // 2, y),
+                self.sprocket_hole_radius,
+            )
+            pygame.draw.circle(
+                frame_surf,
+                (40, 40, 45, 255),
+                (self.frame_width - self.sprocket_margin // 2, y),
+                self.sprocket_hole_radius,
+                2,
+            )
 
         # 이미지 영역 배경 (약간 밝은 회색)
         img_area_x = self.sprocket_margin
         img_area_y = 20
-        pygame.draw.rect(frame_surf, (45, 45, 50, 255),
-                        (img_area_x, img_area_y, self.film_width, self.film_height))
+        pygame.draw.rect(
+            frame_surf,
+            (45, 45, 50, 255),
+            (img_area_x, img_area_y, self.film_width, self.film_height),
+        )
 
         # 이미지 원본 그대로 표시! (틴트 없음!)
         film = self.films[self.current_frame_index]
-        frame_surf.blit(film['image'], (img_area_x, img_area_y))
+        frame_surf.blit(film["image"], (img_area_x, img_area_y))
 
         # 이미지 테두리
-        pygame.draw.rect(frame_surf, (60, 60, 65, 255),
-                        (img_area_x, img_area_y, self.film_width, self.film_height), 2)
+        pygame.draw.rect(
+            frame_surf,
+            (60, 60, 65, 255),
+            (img_area_x, img_area_y, self.film_width, self.film_height),
+            2,
+        )
 
         # 프레임 번호 텍스트
         frame_num_y = img_area_y + self.film_height + 15
@@ -10459,10 +11793,12 @@ class FilmReelEffect:
     def _render_scratches(self, screen: pygame.Surface):
         """필름 스크래치 렌더링"""
         for scratch in self.scratch_lines:
-            color = (200, 190, 170, scratch['alpha'])
-            scratch_surf = pygame.Surface((scratch['width'], self.screen_size[1]), pygame.SRCALPHA)
+            color = (200, 190, 170, scratch["alpha"])
+            scratch_surf = pygame.Surface(
+                (scratch["width"], self.screen_size[1]), pygame.SRCALPHA
+            )
             scratch_surf.fill(color)
-            screen.blit(scratch_surf, (scratch['x'], 0))
+            screen.blit(scratch_surf, (scratch["x"], 0))
 
     def _render_flicker(self, screen: pygame.Surface):
         """필름 깜빡임 렌더링"""
@@ -10482,14 +11818,21 @@ class FilmReelEffect:
         for i in range(8):
             radius = int(max_dist * (1.0 - i * 0.08))
             alpha = i * 10  # 약한 비네트
-            pygame.draw.circle(vignette, (15, 15, 20, alpha), (center_x, center_y), radius, 60)
+            pygame.draw.circle(
+                vignette, (15, 15, 20, alpha), (center_x, center_y), radius, 60
+            )
 
         screen.blit(vignette, (0, 0))
 
     def _render_dialogue(self, screen: pygame.Surface):
         """대사 박스 렌더링 (초상화 포함)"""
-        if not self.dialogue_after or self.current_dialogue_index >= len(self.dialogue_after):
-            if self.dialogue_complete and self.current_frame_index < len(self.films) - 1:
+        if not self.dialogue_after or self.current_dialogue_index >= len(
+            self.dialogue_after
+        ):
+            if (
+                self.dialogue_complete
+                and self.current_frame_index < len(self.films) - 1
+            ):
                 self._render_hint(screen, "클릭하여 다음 프레임")
             elif self.dialogue_complete:
                 self._render_hint(screen, "클릭하여 계속")
@@ -10499,11 +11842,21 @@ class FilmReelEffect:
         portrait = self._get_portrait(speaker) if speaker else None
 
         # 중립적인 어두운 색상의 대화 상자
-        render_dialogue_box(screen, self.screen_size, self.fonts, dialogue,
-                           self.dialogue_text, self.typing_progress, self.waiting_for_click,
-                           box_color=(25, 25, 30, 230), border_color=(80, 80, 90, 180),
-                           text_color=(240, 235, 220), box_height=160,
-                           has_portrait=(portrait is not None), portrait=portrait)
+        render_dialogue_box(
+            screen,
+            self.screen_size,
+            self.fonts,
+            dialogue,
+            self.dialogue_text,
+            self.typing_progress,
+            self.waiting_for_click,
+            box_color=(25, 25, 30, 230),
+            border_color=(80, 80, 90, 180),
+            text_color=(240, 235, 220),
+            box_height=160,
+            has_portrait=(portrait is not None),
+            portrait=portrait,
+        )
 
     def _render_hint(self, screen: pygame.Surface, text: str):
         if "small" not in self.fonts:
@@ -10546,13 +11899,25 @@ class ShatteredMirrorEffect(BaseCutsceneEffect):
     PHASE_FRAGMENTS = 10
     PHASE_ASSEMBLE = 11
 
-    def __init__(self, screen_size: tuple, fragment_paths: list,
-                 background_path: str = None, dialogue_after: list = None,
-                 sound_manager=None, special_effects: dict = None,
-                 scene_id: str = "mirror_scene"):
+    def __init__(
+        self,
+        screen_size: tuple,
+        fragment_paths: list,
+        background_path: str = None,
+        dialogue_after: list = None,
+        sound_manager=None,
+        special_effects: dict = None,
+        scene_id: str = "mirror_scene",
+    ):
         # 베이스 클래스 초기화
-        super().__init__(screen_size, background_path, dialogue_after,
-                        sound_manager, special_effects, scene_id)
+        super().__init__(
+            screen_size,
+            background_path,
+            dialogue_after,
+            sound_manager,
+            special_effects,
+            scene_id,
+        )
 
         self.fragment_paths = fragment_paths
         self.typing_speed = 25.0  # 오버라이드
@@ -10581,7 +11946,9 @@ class ShatteredMirrorEffect(BaseCutsceneEffect):
             frag_img = None
             try:
                 frag_img = pygame.image.load(path).convert_alpha()
-                frag_img = pygame.transform.smoothscale(frag_img, (frag_size, frag_size))
+                frag_img = pygame.transform.smoothscale(
+                    frag_img, (frag_size, frag_size)
+                )
             except Exception as e:
                 print(f"WARNING: Failed to load fragment: {path} - {e}")
                 frag_img = pygame.Surface((frag_size, frag_size), pygame.SRCALPHA)
@@ -10589,7 +11956,7 @@ class ShatteredMirrorEffect(BaseCutsceneEffect):
 
             filename = Path(path).name
             effect_info = self.special_effects.get(filename, {})
-            is_final = effect_info.get('is_final', False)
+            is_final = effect_info.get("is_final", False)
 
             # 원형 배치 또는 최종 이미지
             if is_final:
@@ -10603,22 +11970,24 @@ class ShatteredMirrorEffect(BaseCutsceneEffect):
                 start_x = center_x + (radius * 2) * math.cos(angle)
                 start_y = center_y + (radius * 2) * math.sin(angle)
 
-            self.fragments.append({
-                'image': frag_img,
-                'filename': filename,
-                'is_final': is_final,
-                'x': start_x,
-                'y': start_y,
-                'target_x': target_x,
-                'target_y': target_y,
-                'start_x': start_x,
-                'start_y': start_y,
-                'alpha': 0,
-                'rotation': random.uniform(0, 360),
-                'rotation_speed': random.uniform(-30, 30),
-                'scale': 0.5 if is_final else 1.0,
-                'glow': 0.0,
-            })
+            self.fragments.append(
+                {
+                    "image": frag_img,
+                    "filename": filename,
+                    "is_final": is_final,
+                    "x": start_x,
+                    "y": start_y,
+                    "target_x": target_x,
+                    "target_y": target_y,
+                    "start_x": start_x,
+                    "start_y": start_y,
+                    "alpha": 0,
+                    "rotation": random.uniform(0, 360),
+                    "rotation_speed": random.uniform(-30, 30),
+                    "scale": 0.5 if is_final else 1.0,
+                    "glow": 0.0,
+                }
+            )
 
     # set_fonts는 베이스 클래스에서 상속
 
@@ -10636,9 +12005,9 @@ class ShatteredMirrorEffect(BaseCutsceneEffect):
 
         # 파편 회전 (항상 업데이트)
         for frag in self.fragments:
-            if not frag['is_final']:
-                frag['rotation'] += frag['rotation_speed'] * dt
-            frag['glow'] = 0.5 + 0.5 * math.sin(self.phase_timer * 2 + frag['rotation'])
+            if not frag["is_final"]:
+                frag["rotation"] += frag["rotation_speed"] * dt
+            frag["glow"] = 0.5 + 0.5 * math.sin(self.phase_timer * 2 + frag["rotation"])
 
         # 페이즈별 처리
         if self.phase == self.PHASE_FADEIN:
@@ -10665,17 +12034,21 @@ class ShatteredMirrorEffect(BaseCutsceneEffect):
         visible_count = int(self.frag_animation_progress)
 
         for i, frag in enumerate(self.fragments):
-            if frag['is_final']:
+            if frag["is_final"]:
                 continue
             if i < visible_count:
                 progress = min(1.0, self.frag_animation_progress - i)
                 eased = 1.0 - (1.0 - progress) ** 3
-                frag['alpha'] = int(220 * eased)
-                frag['x'] = frag['start_x'] + (frag['target_x'] - frag['start_x']) * eased
-                frag['y'] = frag['start_y'] + (frag['target_y'] - frag['start_y']) * eased
+                frag["alpha"] = int(220 * eased)
+                frag["x"] = (
+                    frag["start_x"] + (frag["target_x"] - frag["start_x"]) * eased
+                )
+                frag["y"] = (
+                    frag["start_y"] + (frag["target_y"] - frag["start_y"]) * eased
+                )
 
         # 모든 파편 등장 후 클릭 대기
-        non_final_count = sum(1 for f in self.fragments if not f['is_final'])
+        non_final_count = sum(1 for f in self.fragments if not f["is_final"])
         if visible_count >= non_final_count:
             self.waiting_for_click = True
 
@@ -10686,13 +12059,13 @@ class ShatteredMirrorEffect(BaseCutsceneEffect):
 
         # 파편들이 중앙으로 모임
         for frag in self.fragments:
-            if not frag['is_final']:
-                frag['alpha'] = int(220 * (1.0 - progress))
-                frag['scale'] = 1.0 - 0.5 * progress
+            if not frag["is_final"]:
+                frag["alpha"] = int(220 * (1.0 - progress))
+                frag["scale"] = 1.0 - 0.5 * progress
             else:
                 # 최종 이미지 등장
-                frag['alpha'] = int(255 * eased)
-                frag['scale'] = 0.5 + 0.5 * eased
+                frag["alpha"] = int(255 * eased)
+                frag["scale"] = 0.5 + 0.5 * eased
 
         if progress >= 1.0:
             self._transition_to_dialogue()
@@ -10715,12 +12088,12 @@ class ShatteredMirrorEffect(BaseCutsceneEffect):
 
         # 파편들 (최종 이미지가 아닌 것들 먼저)
         for frag in self.fragments:
-            if not frag['is_final']:
+            if not frag["is_final"]:
                 self._render_fragment(screen, frag)
 
         # 최종 이미지
         for frag in self.fragments:
-            if frag['is_final']:
+            if frag["is_final"]:
                 self._render_fragment(screen, frag)
 
         # 대사
@@ -10732,52 +12105,75 @@ class ShatteredMirrorEffect(BaseCutsceneEffect):
             self._render_click_hint(screen, "클릭하여 진실 확인")
 
     def _render_fragment(self, screen: pygame.Surface, frag: dict):
-        if frag['alpha'] <= 0:
+        if frag["alpha"] <= 0:
             return
 
-        img = frag['image']
+        img = frag["image"]
 
         # 스케일
-        scaled_w = int(img.get_width() * frag['scale'])
-        scaled_h = int(img.get_height() * frag['scale'])
+        scaled_w = int(img.get_width() * frag["scale"])
+        scaled_h = int(img.get_height() * frag["scale"])
         if scaled_w <= 0 or scaled_h <= 0:
             return
         scaled = pygame.transform.smoothscale(img, (scaled_w, scaled_h))
 
         # 회전 (최종 이미지는 회전 안 함)
-        if not frag['is_final']:
-            rotated = pygame.transform.rotate(scaled, frag['rotation'])
+        if not frag["is_final"]:
+            rotated = pygame.transform.rotate(scaled, frag["rotation"])
         else:
             rotated = scaled
 
         # 글로우 효과
-        glow_surf = pygame.Surface((rotated.get_width() + 20, rotated.get_height() + 20), pygame.SRCALPHA)
-        glow_alpha = int(50 * frag['glow'])
-        pygame.draw.rect(glow_surf, (150, 180, 255, glow_alpha),
-                        (0, 0, glow_surf.get_width(), glow_surf.get_height()), border_radius=5)
-        screen.blit(glow_surf, (frag['x'] - glow_surf.get_width() // 2,
-                                frag['y'] - glow_surf.get_height() // 2))
+        glow_surf = pygame.Surface(
+            (rotated.get_width() + 20, rotated.get_height() + 20), pygame.SRCALPHA
+        )
+        glow_alpha = int(50 * frag["glow"])
+        pygame.draw.rect(
+            glow_surf,
+            (150, 180, 255, glow_alpha),
+            (0, 0, glow_surf.get_width(), glow_surf.get_height()),
+            border_radius=5,
+        )
+        screen.blit(
+            glow_surf,
+            (
+                frag["x"] - glow_surf.get_width() // 2,
+                frag["y"] - glow_surf.get_height() // 2,
+            ),
+        )
 
         # 알파
-        rotated.set_alpha(frag['alpha'])
+        rotated.set_alpha(frag["alpha"])
 
         # 위치
-        rect = rotated.get_rect(center=(frag['x'], frag['y']))
+        rect = rotated.get_rect(center=(frag["x"], frag["y"]))
         screen.blit(rotated, rect)
 
     def _render_dialogue(self, screen: pygame.Surface):
         """대화창 렌더링 (초상화 포함)"""
-        if not self.dialogue_after or self.current_dialogue_index >= len(self.dialogue_after):
+        if not self.dialogue_after or self.current_dialogue_index >= len(
+            self.dialogue_after
+        ):
             return
         dialogue = self.dialogue_after[self.current_dialogue_index]
         speaker = dialogue.get("speaker", "")
         portrait = self._get_portrait(speaker) if speaker else None
 
-        render_dialogue_box(screen, self.screen_size, self.fonts, dialogue,
-                           self.dialogue_text, self.typing_progress, self.waiting_for_click,
-                           box_color=(20, 25, 40, 230), border_color=(120, 140, 180),
-                           text_color=(220, 220, 240), box_height=180,
-                           has_portrait=(portrait is not None), portrait=portrait)
+        render_dialogue_box(
+            screen,
+            self.screen_size,
+            self.fonts,
+            dialogue,
+            self.dialogue_text,
+            self.typing_progress,
+            self.waiting_for_click,
+            box_color=(20, 25, 40, 230),
+            border_color=(120, 140, 180),
+            text_color=(220, 220, 240),
+            box_height=180,
+            has_portrait=(portrait is not None),
+            portrait=portrait,
+        )
 
 
 # =========================================================
@@ -10798,14 +12194,27 @@ class StarMapEffect(BaseCutsceneEffect):
     PHASE_MARKERS = 10
     PHASE_ROUTE = 11
 
-    def __init__(self, screen_size: tuple, marker_paths: list,
-                 marker_positions: dict = None, route_order: list = None,
-                 background_path: str = None, dialogue_after: list = None,
-                 sound_manager=None, special_effects: dict = None,
-                 scene_id: str = "starmap_scene"):
+    def __init__(
+        self,
+        screen_size: tuple,
+        marker_paths: list,
+        marker_positions: dict = None,
+        route_order: list = None,
+        background_path: str = None,
+        dialogue_after: list = None,
+        sound_manager=None,
+        special_effects: dict = None,
+        scene_id: str = "starmap_scene",
+    ):
         # 베이스 클래스 초기화
-        super().__init__(screen_size, background_path, dialogue_after,
-                        sound_manager, special_effects, scene_id)
+        super().__init__(
+            screen_size,
+            background_path,
+            dialogue_after,
+            sound_manager,
+            special_effects,
+            scene_id,
+        )
 
         self.marker_paths = marker_paths
         self.marker_positions = marker_positions or {}
@@ -10835,14 +12244,16 @@ class StarMapEffect(BaseCutsceneEffect):
     def _create_stars(self):
         """배경 별 생성"""
         for _ in range(150):
-            self.stars.append({
-                'x': random.randint(0, self.screen_size[0]),
-                'y': random.randint(0, self.screen_size[1]),
-                'size': random.uniform(1, 3),
-                'brightness': random.uniform(0.3, 1.0),
-                'twinkle_speed': random.uniform(1, 4),
-                'twinkle_offset': random.uniform(0, math.pi * 2),
-            })
+            self.stars.append(
+                {
+                    "x": random.randint(0, self.screen_size[0]),
+                    "y": random.randint(0, self.screen_size[1]),
+                    "size": random.uniform(1, 3),
+                    "brightness": random.uniform(0.3, 1.0),
+                    "twinkle_speed": random.uniform(1, 4),
+                    "twinkle_offset": random.uniform(0, math.pi * 2),
+                }
+            )
 
     # _load_background는 베이스 클래스에서 상속
 
@@ -10855,35 +12266,44 @@ class StarMapEffect(BaseCutsceneEffect):
             marker_img = None
             try:
                 marker_img = pygame.image.load(path).convert_alpha()
-                marker_img = pygame.transform.smoothscale(marker_img, (marker_size, marker_size))
+                marker_img = pygame.transform.smoothscale(
+                    marker_img, (marker_size, marker_size)
+                )
             except Exception as e:
                 print(f"WARNING: Failed to load marker: {path} - {e}")
                 marker_img = pygame.Surface((marker_size, marker_size), pygame.SRCALPHA)
-                pygame.draw.circle(marker_img, (200, 150, 100), (marker_size // 2, marker_size // 2), marker_size // 2)
+                pygame.draw.circle(
+                    marker_img,
+                    (200, 150, 100),
+                    (marker_size // 2, marker_size // 2),
+                    marker_size // 2,
+                )
 
             filename = Path(path).name
             pos_info = self.marker_positions.get(filename, {})
-            rel_pos = pos_info.get('rel_pos', (0.5, 0.5))
-            label = pos_info.get('label', '')
-            color = pos_info.get('color', (255, 255, 255))
+            rel_pos = pos_info.get("rel_pos", (0.5, 0.5))
+            label = pos_info.get("label", "")
+            color = pos_info.get("color", (255, 255, 255))
 
-            self.markers.append({
-                'image': marker_img,
-                'filename': filename,
-                'x': int(screen_w * rel_pos[0]),
-                'y': int(screen_h * rel_pos[1]),
-                'label': label,
-                'color': color,
-                'alpha': 0,
-                'scale': 0.5,
-                'pulse': 0.0,
-            })
+            self.markers.append(
+                {
+                    "image": marker_img,
+                    "filename": filename,
+                    "x": int(screen_w * rel_pos[0]),
+                    "y": int(screen_h * rel_pos[1]),
+                    "label": label,
+                    "color": color,
+                    "alpha": 0,
+                    "scale": 0.5,
+                    "pulse": 0.0,
+                }
+            )
 
         # 경로 포인트 생성
         for filename in self.route_order:
             for marker in self.markers:
-                if marker['filename'] == filename:
-                    self.route_points.append((marker['x'], marker['y']))
+                if marker["filename"] == filename:
+                    self.route_points.append((marker["x"], marker["y"]))
                     break
 
     # set_fonts, _start_dialogue는 베이스 클래스에서 상속
@@ -10902,7 +12322,9 @@ class StarMapEffect(BaseCutsceneEffect):
 
         # 마커 펄스 (항상 업데이트)
         for marker in self.markers:
-            marker['pulse'] = 0.5 + 0.5 * math.sin(self.phase_timer * 2 + marker['x'] * 0.01)
+            marker["pulse"] = 0.5 + 0.5 * math.sin(
+                self.phase_timer * 2 + marker["x"] * 0.01
+            )
 
         # 페이즈별 처리
         if self.phase == self.PHASE_FADEIN:
@@ -10932,8 +12354,8 @@ class StarMapEffect(BaseCutsceneEffect):
             if i < visible_count:
                 progress = min(1.0, self.marker_animation_progress - i)
                 eased = 1.0 - (1.0 - progress) ** 3
-                marker['alpha'] = int(255 * eased)
-                marker['scale'] = 0.5 + 0.5 * eased
+                marker["alpha"] = int(255 * eased)
+                marker["scale"] = 0.5 + 0.5 * eased
 
         if visible_count >= len(self.markers):
             self.waiting_for_click = True
@@ -10992,10 +12414,16 @@ class StarMapEffect(BaseCutsceneEffect):
     def _render_stars(self, screen: pygame.Surface):
         """별 렌더링"""
         for star in self.stars:
-            twinkle = 0.5 + 0.5 * math.sin(self.phase_timer * star['twinkle_speed'] + star['twinkle_offset'])
-            brightness = int(255 * star['brightness'] * twinkle * (self.fade_alpha / 255))
+            twinkle = 0.5 + 0.5 * math.sin(
+                self.phase_timer * star["twinkle_speed"] + star["twinkle_offset"]
+            )
+            brightness = int(
+                255 * star["brightness"] * twinkle * (self.fade_alpha / 255)
+            )
             color = (brightness, brightness, int(brightness * 0.9))
-            pygame.draw.circle(screen, color, (int(star['x']), int(star['y'])), int(star['size']))
+            pygame.draw.circle(
+                screen, color, (int(star["x"]), int(star["y"])), int(star["size"])
+            )
 
     def _render_grid(self, screen: pygame.Surface):
         """홀로그램 그리드"""
@@ -11042,20 +12470,22 @@ class StarMapEffect(BaseCutsceneEffect):
                 ratio = (current_dist - drawn_dist) / length
                 mid_x = p1[0] + (p2[0] - p1[0]) * ratio
                 mid_y = p1[1] + (p2[1] - p1[1]) * ratio
-                pygame.draw.line(route_surf, (255, 200, 100, 200), p1, (mid_x, mid_y), 3)
+                pygame.draw.line(
+                    route_surf, (255, 200, 100, 200), p1, (mid_x, mid_y), 3
+                )
                 break
 
         screen.blit(route_surf, (0, 0))
 
     def _render_marker(self, screen: pygame.Surface, marker: dict):
-        if marker['alpha'] <= 0:
+        if marker["alpha"] <= 0:
             return
 
-        img = marker['image']
+        img = marker["image"]
 
         # 스케일
-        scaled_w = int(img.get_width() * marker['scale'])
-        scaled_h = int(img.get_height() * marker['scale'])
+        scaled_w = int(img.get_width() * marker["scale"])
+        scaled_h = int(img.get_height() * marker["scale"])
         if scaled_w <= 0 or scaled_h <= 0:
             return
         scaled = pygame.transform.smoothscale(img, (scaled_w, scaled_h))
@@ -11063,36 +12493,56 @@ class StarMapEffect(BaseCutsceneEffect):
         # 글로우
         glow_size = int(scaled_w * 1.5)
         glow_surf = pygame.Surface((glow_size, glow_size), pygame.SRCALPHA)
-        glow_alpha = int(80 * marker['pulse'])
-        pygame.draw.circle(glow_surf, (*marker['color'], glow_alpha),
-                          (glow_size // 2, glow_size // 2), glow_size // 2)
-        screen.blit(glow_surf, (marker['x'] - glow_size // 2, marker['y'] - glow_size // 2))
+        glow_alpha = int(80 * marker["pulse"])
+        pygame.draw.circle(
+            glow_surf,
+            (*marker["color"], glow_alpha),
+            (glow_size // 2, glow_size // 2),
+            glow_size // 2,
+        )
+        screen.blit(
+            glow_surf, (marker["x"] - glow_size // 2, marker["y"] - glow_size // 2)
+        )
 
         # 마커
-        scaled.set_alpha(marker['alpha'])
-        rect = scaled.get_rect(center=(marker['x'], marker['y']))
+        scaled.set_alpha(marker["alpha"])
+        rect = scaled.get_rect(center=(marker["x"], marker["y"]))
         screen.blit(scaled, rect)
 
         # 라벨
-        if marker['label'] and marker['alpha'] > 200 and "small" in self.fonts:
-            label_surf = self.fonts["small"].render(marker['label'], True, marker['color'])
-            label_x = marker['x'] - label_surf.get_width() // 2
-            label_y = marker['y'] + scaled_h // 2 + 10
+        if marker["label"] and marker["alpha"] > 200 and "small" in self.fonts:
+            label_surf = self.fonts["small"].render(
+                marker["label"], True, marker["color"]
+            )
+            label_x = marker["x"] - label_surf.get_width() // 2
+            label_y = marker["y"] + scaled_h // 2 + 10
             screen.blit(label_surf, (label_x, label_y))
 
     def _render_dialogue(self, screen: pygame.Surface):
         """대화창 렌더링 (초상화 포함)"""
-        if not self.dialogue_after or self.current_dialogue_index >= len(self.dialogue_after):
+        if not self.dialogue_after or self.current_dialogue_index >= len(
+            self.dialogue_after
+        ):
             return
         dialogue = self.dialogue_after[self.current_dialogue_index]
         speaker = dialogue.get("speaker", "")
         portrait = self._get_portrait(speaker) if speaker else None
 
-        render_dialogue_box(screen, self.screen_size, self.fonts, dialogue,
-                           self.dialogue_text, self.typing_progress, self.waiting_for_click,
-                           box_color=(10, 20, 40, 220), border_color=(100, 150, 255),
-                           text_color=(220, 230, 255), box_height=180,
-                           has_portrait=(portrait is not None), portrait=portrait)
+        render_dialogue_box(
+            screen,
+            self.screen_size,
+            self.fonts,
+            dialogue,
+            self.dialogue_text,
+            self.typing_progress,
+            self.waiting_for_click,
+            box_color=(10, 20, 40, 220),
+            border_color=(100, 150, 255),
+            text_color=(220, 230, 255),
+            box_height=180,
+            has_portrait=(portrait is not None),
+            portrait=portrait,
+        )
 
 
 # =========================================================
@@ -11110,19 +12560,31 @@ class AndromedaWorldEffect(BaseCutsceneEffect):
     - 영원한 황혼 분위기
     """
 
-    def __init__(self, screen_size: tuple, background_path: str = None,
-                 dialogue_after: list = None, sound_manager=None,
-                 special_effects: dict = None, scene_id: str = "andromeda_scene"):
-        super().__init__(screen_size, background_path, dialogue_after,
-                        sound_manager, special_effects, scene_id)
+    def __init__(
+        self,
+        screen_size: tuple,
+        background_path: str = None,
+        dialogue_after: list = None,
+        sound_manager=None,
+        special_effects: dict = None,
+        scene_id: str = "andromeda_scene",
+    ):
+        super().__init__(
+            screen_size,
+            background_path,
+            dialogue_after,
+            sound_manager,
+            special_effects,
+            scene_id,
+        )
 
         self.typing_speed = 25.0
 
         # 안드로메다 색상 팔레트 (제한적)
         self.neon_colors = [
-            (0, 255, 255),      # 청록
-            (200, 100, 255),    # 보라
-            (255, 150, 50),     # 주황
+            (0, 255, 255),  # 청록
+            (200, 100, 255),  # 보라
+            (255, 150, 50),  # 주황
         ]
         self.sky_color = (40, 20, 60)  # 짙은 보라/검은색
 
@@ -11153,14 +12615,16 @@ class AndromedaWorldEffect(BaseCutsceneEffect):
             width = random.randint(80, 150)
             height = random.randint(150, 300)
             color_idx = random.randint(0, len(self.neon_colors) - 1)
-            self.buildings.append({
-                'x': x,
-                'y': screen_h - height // 2,
-                'width': width,
-                'height': height,
-                'color': self.neon_colors[color_idx],
-                'glow_offset': random.uniform(0, math.pi * 2),
-            })
+            self.buildings.append(
+                {
+                    "x": x,
+                    "y": screen_h - height // 2,
+                    "width": width,
+                    "height": height,
+                    "color": self.neon_colors[color_idx],
+                    "glow_offset": random.uniform(0, math.pi * 2),
+                }
+            )
 
     def _create_circuits(self):
         """네온 회로 라인 생성"""
@@ -11171,41 +12635,47 @@ class AndromedaWorldEffect(BaseCutsceneEffect):
             length = random.randint(50, 150)
             horizontal = random.choice([True, False])
             color_idx = random.randint(0, len(self.neon_colors) - 1)
-            self.circuit_lines.append({
-                'start': (start_x, start_y),
-                'length': length,
-                'horizontal': horizontal,
-                'color': self.neon_colors[color_idx],
-                'pulse_offset': random.uniform(0, math.pi * 2),
-            })
+            self.circuit_lines.append(
+                {
+                    "start": (start_x, start_y),
+                    "length": length,
+                    "horizontal": horizontal,
+                    "color": self.neon_colors[color_idx],
+                    "pulse_offset": random.uniform(0, math.pi * 2),
+                }
+            )
 
     def _create_hologram_chars(self):
         """홀로그램 고대 문자 생성"""
         screen_w, screen_h = self.screen_size
         # 간단한 기호들로 고대 문자 표현
-        symbols = ['◆', '◇', '○', '△', '▽', '□', '☆', '⬡', '⬢']
+        symbols = ["◆", "◇", "○", "△", "▽", "□", "☆", "⬡", "⬢"]
         for _ in range(20):
-            self.holo_chars.append({
-                'x': random.randint(50, screen_w - 50),
-                'y': random.randint(50, screen_h - 200),
-                'char': random.choice(symbols),
-                'size': random.randint(15, 30),
-                'alpha': random.randint(50, 150),
-                'drift_speed': random.uniform(0.2, 0.5),
-                'drift_offset': random.uniform(0, math.pi * 2),
-            })
+            self.holo_chars.append(
+                {
+                    "x": random.randint(50, screen_w - 50),
+                    "y": random.randint(50, screen_h - 200),
+                    "char": random.choice(symbols),
+                    "size": random.randint(15, 30),
+                    "alpha": random.randint(50, 150),
+                    "drift_speed": random.uniform(0.2, 0.5),
+                    "drift_offset": random.uniform(0, math.pi * 2),
+                }
+            )
 
     def _create_particles(self):
         """네온 파티클 생성"""
         for _ in range(30):
-            self.particles.append({
-                'x': random.randint(0, self.screen_size[0]),
-                'y': random.randint(0, self.screen_size[1]),
-                'size': random.uniform(1, 3),
-                'color': random.choice(self.neon_colors),
-                'speed': random.uniform(10, 30),
-                'alpha': random.randint(100, 200),
-            })
+            self.particles.append(
+                {
+                    "x": random.randint(0, self.screen_size[0]),
+                    "y": random.randint(0, self.screen_size[1]),
+                    "size": random.uniform(1, 3),
+                    "color": random.choice(self.neon_colors),
+                    "speed": random.uniform(10, 30),
+                    "alpha": random.randint(100, 200),
+                }
+            )
 
     def update(self, dt: float):
         """업데이트"""
@@ -11217,10 +12687,10 @@ class AndromedaWorldEffect(BaseCutsceneEffect):
 
         # 파티클 이동
         for p in self.particles:
-            p['y'] -= p['speed'] * dt
-            if p['y'] < 0:
-                p['y'] = self.screen_size[1]
-                p['x'] = random.randint(0, self.screen_size[0])
+            p["y"] -= p["speed"] * dt
+            if p["y"] < 0:
+                p["y"] = self.screen_size[1]
+                p["x"] = random.randint(0, self.screen_size[0])
 
         # 페이즈 처리
         if self.phase == self.PHASE_FADEIN:
@@ -11270,40 +12740,46 @@ class AndromedaWorldEffect(BaseCutsceneEffect):
         for bld in self.buildings:
             # 피라미드 형태
             points = [
-                (bld['x'], bld['y']),  # 상단 중앙
-                (bld['x'] - bld['width'] // 2, bld['y'] + bld['height']),  # 좌하단
-                (bld['x'] + bld['width'] // 2, bld['y'] + bld['height']),  # 우하단
+                (bld["x"], bld["y"]),  # 상단 중앙
+                (bld["x"] - bld["width"] // 2, bld["y"] + bld["height"]),  # 좌하단
+                (bld["x"] + bld["width"] // 2, bld["y"] + bld["height"]),  # 우하단
             ]
 
             # 글로우 효과
-            glow = 0.5 + 0.5 * math.sin(self.glow_timer * 2 + bld['glow_offset'])
-            color = tuple(int(c * glow) for c in bld['color'])
+            glow = 0.5 + 0.5 * math.sin(self.glow_timer * 2 + bld["glow_offset"])
+            color = tuple(int(c * glow) for c in bld["color"])
 
             # 외곽선
             pygame.draw.polygon(screen, color, points, 2)
 
             # 내부 회로 라인
             for i in range(3):
-                y_offset = bld['height'] * (i + 1) // 4
-                line_y = bld['y'] + y_offset
-                half_width = bld['width'] * (bld['height'] - y_offset) // (2 * bld['height'])
-                pygame.draw.line(screen, (*color[:3], int(100 * glow)),
-                               (bld['x'] - half_width, line_y),
-                               (bld['x'] + half_width, line_y), 1)
+                y_offset = bld["height"] * (i + 1) // 4
+                line_y = bld["y"] + y_offset
+                half_width = (
+                    bld["width"] * (bld["height"] - y_offset) // (2 * bld["height"])
+                )
+                pygame.draw.line(
+                    screen,
+                    (*color[:3], int(100 * glow)),
+                    (bld["x"] - half_width, line_y),
+                    (bld["x"] + half_width, line_y),
+                    1,
+                )
 
     def _render_circuits(self, screen: pygame.Surface):
         """네온 회로 렌더링"""
         circuit_surf = pygame.Surface(self.screen_size, pygame.SRCALPHA)
         for circuit in self.circuit_lines:
-            pulse = 0.3 + 0.7 * math.sin(self.glow_timer * 3 + circuit['pulse_offset'])
+            pulse = 0.3 + 0.7 * math.sin(self.glow_timer * 3 + circuit["pulse_offset"])
             alpha = int(200 * pulse)
-            color = (*circuit['color'], alpha)
+            color = (*circuit["color"], alpha)
 
-            start = circuit['start']
-            if circuit['horizontal']:
-                end = (start[0] + circuit['length'], start[1])
+            start = circuit["start"]
+            if circuit["horizontal"]:
+                end = (start[0] + circuit["length"], start[1])
             else:
-                end = (start[0], start[1] - circuit['length'])
+                end = (start[0], start[1] - circuit["length"])
 
             pygame.draw.line(circuit_surf, color, start, end, 2)
 
@@ -11317,47 +12793,66 @@ class AndromedaWorldEffect(BaseCutsceneEffect):
         holo_surf = pygame.Surface(self.screen_size, pygame.SRCALPHA)
         for char in self.holo_chars:
             # 부유 효과
-            drift = math.sin(self.glow_timer * char['drift_speed'] + char['drift_offset']) * 10
-            y = char['y'] + drift
+            drift = (
+                math.sin(self.glow_timer * char["drift_speed"] + char["drift_offset"])
+                * 10
+            )
+            y = char["y"] + drift
 
             # 깜빡임
-            flicker = 0.5 + 0.5 * math.sin(self.glow_timer * 5 + char['drift_offset'])
-            alpha = int(char['alpha'] * flicker)
+            flicker = 0.5 + 0.5 * math.sin(self.glow_timer * 5 + char["drift_offset"])
+            alpha = int(char["alpha"] * flicker)
 
             color = (0, 255, 255, alpha)  # 청록색
-            text = self.fonts["small"].render(char['char'], True, color[:3])
+            text = self.fonts["small"].render(char["char"], True, color[:3])
             text.set_alpha(alpha)
-            holo_surf.blit(text, (char['x'], y))
+            holo_surf.blit(text, (char["x"], y))
 
         screen.blit(holo_surf, (0, 0))
 
     def _render_particles(self, screen: pygame.Surface):
         """파티클 렌더링"""
         for p in self.particles:
-            alpha = int(p['alpha'] * (self.fade_alpha / 255))
-            color = (*p['color'], alpha)
-            pygame.draw.circle(screen, color, (int(p['x']), int(p['y'])), int(p['size']))
+            alpha = int(p["alpha"] * (self.fade_alpha / 255))
+            color = (*p["color"], alpha)
+            pygame.draw.circle(
+                screen, color, (int(p["x"]), int(p["y"])), int(p["size"])
+            )
 
     def _render_scanlines(self, screen: pygame.Surface):
         """스캔라인 효과 (CRT 느낌)"""
         scanline_surf = pygame.Surface(self.screen_size, pygame.SRCALPHA)
         for y in range(0, self.screen_size[1], 4):
-            pygame.draw.line(scanline_surf, (0, 0, 0, 30), (0, y), (self.screen_size[0], y))
+            pygame.draw.line(
+                scanline_surf, (0, 0, 0, 30), (0, y), (self.screen_size[0], y)
+            )
         screen.blit(scanline_surf, (0, 0))
 
     def _render_dialogue(self, screen: pygame.Surface):
         """대화창 렌더링"""
-        if not self.dialogue_after or self.current_dialogue_index >= len(self.dialogue_after):
+        if not self.dialogue_after or self.current_dialogue_index >= len(
+            self.dialogue_after
+        ):
             return
         dialogue = self.dialogue_after[self.current_dialogue_index]
         speaker = dialogue.get("speaker", "")
         portrait = self._get_portrait(speaker) if speaker else None
 
-        render_dialogue_box(screen, self.screen_size, self.fonts, dialogue,
-                           self.dialogue_text, self.typing_progress, self.waiting_for_click,
-                           box_color=(20, 10, 40, 230), border_color=(0, 255, 255),
-                           text_color=(200, 230, 255), box_height=180,
-                           has_portrait=(portrait is not None), portrait=portrait)
+        render_dialogue_box(
+            screen,
+            self.screen_size,
+            self.fonts,
+            dialogue,
+            self.dialogue_text,
+            self.typing_progress,
+            self.waiting_for_click,
+            box_color=(20, 10, 40, 230),
+            border_color=(0, 255, 255),
+            text_color=(200, 230, 255),
+            box_height=180,
+            has_portrait=(portrait is not None),
+            portrait=portrait,
+        )
 
 
 # =========================================================
@@ -11376,12 +12871,19 @@ class TwoWorldsEffect(BaseCutsceneEffect):
     PHASE_SPLIT = 10
     PHASE_MERGE = 11
 
-    def __init__(self, screen_size: tuple, andromeda_bg: str = None,
-                 earth_bg: str = None, dialogue_after: list = None,
-                 sound_manager=None, special_effects: dict = None,
-                 scene_id: str = "two_worlds_scene"):
-        super().__init__(screen_size, None, dialogue_after,
-                        sound_manager, special_effects, scene_id)
+    def __init__(
+        self,
+        screen_size: tuple,
+        andromeda_bg: str = None,
+        earth_bg: str = None,
+        dialogue_after: list = None,
+        sound_manager=None,
+        special_effects: dict = None,
+        scene_id: str = "two_worlds_scene",
+    ):
+        super().__init__(
+            screen_size, None, dialogue_after, sound_manager, special_effects, scene_id
+        )
 
         self.typing_speed = 25.0
 
@@ -11420,28 +12922,34 @@ class TwoWorldsEffect(BaseCutsceneEffect):
     def _create_petals(self):
         """벚꽃 꽃잎 생성"""
         for _ in range(30):
-            self.petals.append({
-                'x': random.randint(self.screen_size[0] // 2, self.screen_size[0]),
-                'y': random.randint(-50, self.screen_size[1]),
-                'size': random.randint(5, 12),
-                'speed_y': random.uniform(20, 50),
-                'speed_x': random.uniform(-20, 20),
-                'rotation': random.uniform(0, 360),
-                'rot_speed': random.uniform(-90, 90),
-                'alpha': random.randint(150, 255),
-            })
+            self.petals.append(
+                {
+                    "x": random.randint(self.screen_size[0] // 2, self.screen_size[0]),
+                    "y": random.randint(-50, self.screen_size[1]),
+                    "size": random.randint(5, 12),
+                    "speed_y": random.uniform(20, 50),
+                    "speed_x": random.uniform(-20, 20),
+                    "rotation": random.uniform(0, 360),
+                    "rot_speed": random.uniform(-90, 90),
+                    "alpha": random.randint(150, 255),
+                }
+            )
 
     def _create_neon_particles(self):
         """네온 파티클 생성"""
         for _ in range(20):
-            self.neon_particles.append({
-                'x': random.randint(0, self.screen_size[0] // 2),
-                'y': random.randint(0, self.screen_size[1]),
-                'size': random.uniform(1, 3),
-                'color': random.choice([(0, 255, 255), (200, 100, 255), (255, 150, 50)]),
-                'speed': random.uniform(10, 30),
-                'alpha': random.randint(100, 200),
-            })
+            self.neon_particles.append(
+                {
+                    "x": random.randint(0, self.screen_size[0] // 2),
+                    "y": random.randint(0, self.screen_size[1]),
+                    "size": random.uniform(1, 3),
+                    "color": random.choice(
+                        [(0, 255, 255), (200, 100, 255), (255, 150, 50)]
+                    ),
+                    "speed": random.uniform(10, 30),
+                    "alpha": random.randint(100, 200),
+                }
+            )
 
     def _on_fadein_complete(self):
         """페이드인 완료 후 분할 화면 페이즈"""
@@ -11457,19 +12965,23 @@ class TwoWorldsEffect(BaseCutsceneEffect):
 
         # 꽃잎 이동
         for petal in self.petals:
-            petal['y'] += petal['speed_y'] * dt
-            petal['x'] += petal['speed_x'] * dt
-            petal['rotation'] += petal['rot_speed'] * dt
-            if petal['y'] > self.screen_size[1]:
-                petal['y'] = -20
-                petal['x'] = random.randint(int(self.screen_size[0] * self.split_position), self.screen_size[0])
+            petal["y"] += petal["speed_y"] * dt
+            petal["x"] += petal["speed_x"] * dt
+            petal["rotation"] += petal["rot_speed"] * dt
+            if petal["y"] > self.screen_size[1]:
+                petal["y"] = -20
+                petal["x"] = random.randint(
+                    int(self.screen_size[0] * self.split_position), self.screen_size[0]
+                )
 
         # 네온 파티클 이동
         for p in self.neon_particles:
-            p['y'] -= p['speed'] * dt
-            if p['y'] < 0:
-                p['y'] = self.screen_size[1]
-                p['x'] = random.randint(0, int(self.screen_size[0] * self.split_position))
+            p["y"] -= p["speed"] * dt
+            if p["y"] < 0:
+                p["y"] = self.screen_size[1]
+                p["x"] = random.randint(
+                    0, int(self.screen_size[0] * self.split_position)
+                )
 
         # 페이즈 처리
         if self.phase == self.PHASE_FADEIN:
@@ -11520,32 +13032,53 @@ class TwoWorldsEffect(BaseCutsceneEffect):
 
         # 오른쪽: 지구
         if self.earth_bg:
-            screen.blit(self.earth_bg, (split_x, 0),
-                       (split_x, 0, self.screen_size[0] - split_x, self.screen_size[1]))
+            screen.blit(
+                self.earth_bg,
+                (split_x, 0),
+                (split_x, 0, self.screen_size[0] - split_x, self.screen_size[1]),
+            )
         else:
-            pygame.draw.rect(screen, (100, 150, 200),
-                           (split_x, 0, self.screen_size[0] - split_x, self.screen_size[1]))
+            pygame.draw.rect(
+                screen,
+                (100, 150, 200),
+                (split_x, 0, self.screen_size[0] - split_x, self.screen_size[1]),
+            )
 
         # 네온 파티클 (안드로메다 쪽)
         for p in self.neon_particles:
-            if p['x'] < split_x:
-                alpha = int(p['alpha'] * (self.fade_alpha / 255))
-                pygame.draw.circle(screen, (*p['color'], alpha), (int(p['x']), int(p['y'])), int(p['size']))
+            if p["x"] < split_x:
+                alpha = int(p["alpha"] * (self.fade_alpha / 255))
+                pygame.draw.circle(
+                    screen,
+                    (*p["color"], alpha),
+                    (int(p["x"]), int(p["y"])),
+                    int(p["size"]),
+                )
 
         # 꽃잎 (지구 쪽)
         for petal in self.petals:
-            if petal['x'] >= split_x:
+            if petal["x"] >= split_x:
                 self._render_petal(screen, petal)
 
         # 분할선 (글로우 효과)
         glow_width = 10
-        glow_surf = pygame.Surface((glow_width * 2, self.screen_size[1]), pygame.SRCALPHA)
+        glow_surf = pygame.Surface(
+            (glow_width * 2, self.screen_size[1]), pygame.SRCALPHA
+        )
         for i in range(glow_width):
             alpha = int(150 * (1 - i / glow_width))
-            pygame.draw.line(glow_surf, (255, 255, 255, alpha),
-                           (glow_width - i, 0), (glow_width - i, self.screen_size[1]))
-            pygame.draw.line(glow_surf, (255, 255, 255, alpha),
-                           (glow_width + i, 0), (glow_width + i, self.screen_size[1]))
+            pygame.draw.line(
+                glow_surf,
+                (255, 255, 255, alpha),
+                (glow_width - i, 0),
+                (glow_width - i, self.screen_size[1]),
+            )
+            pygame.draw.line(
+                glow_surf,
+                (255, 255, 255, alpha),
+                (glow_width + i, 0),
+                (glow_width + i, self.screen_size[1]),
+            )
         screen.blit(glow_surf, (split_x - glow_width, 0))
 
         # 라벨
@@ -11556,7 +13089,15 @@ class TwoWorldsEffect(BaseCutsceneEffect):
 
             # 지구 라벨
             label_e = self.fonts["small"].render("지구", True, (255, 200, 150))
-            screen.blit(label_e, (split_x + (self.screen_size[0] - split_x) // 2 - label_e.get_width() // 2, 30))
+            screen.blit(
+                label_e,
+                (
+                    split_x
+                    + (self.screen_size[0] - split_x) // 2
+                    - label_e.get_width() // 2,
+                    30,
+                ),
+            )
 
         # 안내
         if self.waiting_for_click and self.phase == self.PHASE_SPLIT:
@@ -11568,31 +13109,43 @@ class TwoWorldsEffect(BaseCutsceneEffect):
 
     def _render_petal(self, screen: pygame.Surface, petal: dict):
         """벚꽃 꽃잎 렌더링"""
-        size = petal['size']
+        size = petal["size"]
         surf = pygame.Surface((size * 2, size * 2), pygame.SRCALPHA)
 
         # 꽃잎 모양 (타원)
-        color = (255, 200, 220, petal['alpha'])
+        color = (255, 200, 220, petal["alpha"])
         pygame.draw.ellipse(surf, color, (0, size // 2, size * 2, size))
 
         # 회전
-        rotated = pygame.transform.rotate(surf, petal['rotation'])
-        rect = rotated.get_rect(center=(petal['x'], petal['y']))
+        rotated = pygame.transform.rotate(surf, petal["rotation"])
+        rect = rotated.get_rect(center=(petal["x"], petal["y"]))
         screen.blit(rotated, rect)
 
     def _render_dialogue(self, screen: pygame.Surface):
         """대화창 렌더링"""
-        if not self.dialogue_after or self.current_dialogue_index >= len(self.dialogue_after):
+        if not self.dialogue_after or self.current_dialogue_index >= len(
+            self.dialogue_after
+        ):
             return
         dialogue = self.dialogue_after[self.current_dialogue_index]
         speaker = dialogue.get("speaker", "")
         portrait = self._get_portrait(speaker) if speaker else None
 
-        render_dialogue_box(screen, self.screen_size, self.fonts, dialogue,
-                           self.dialogue_text, self.typing_progress, self.waiting_for_click,
-                           box_color=(20, 20, 30, 230), border_color=(200, 180, 255),
-                           text_color=(240, 240, 255), box_height=180,
-                           has_portrait=(portrait is not None), portrait=portrait)
+        render_dialogue_box(
+            screen,
+            self.screen_size,
+            self.fonts,
+            dialogue,
+            self.dialogue_text,
+            self.typing_progress,
+            self.waiting_for_click,
+            box_color=(20, 20, 30, 230),
+            border_color=(200, 180, 255),
+            text_color=(240, 240, 255),
+            box_height=180,
+            has_portrait=(portrait is not None),
+            portrait=portrait,
+        )
 
 
 # =========================================================
@@ -11610,11 +13163,18 @@ class SeasonMemoryEffect(BaseCutsceneEffect):
 
     PHASE_SEASONS = 10
 
-    def __init__(self, screen_size: tuple, season_images: list = None,
-                 dialogue_after: list = None, sound_manager=None,
-                 special_effects: dict = None, scene_id: str = "season_memory_scene"):
-        super().__init__(screen_size, None, dialogue_after,
-                        sound_manager, special_effects, scene_id)
+    def __init__(
+        self,
+        screen_size: tuple,
+        season_images: list = None,
+        dialogue_after: list = None,
+        sound_manager=None,
+        special_effects: dict = None,
+        scene_id: str = "season_memory_scene",
+    ):
+        super().__init__(
+            screen_size, None, dialogue_after, sound_manager, special_effects, scene_id
+        )
 
         self.typing_speed = 25.0
 
@@ -11663,15 +13223,17 @@ class SeasonMemoryEffect(BaseCutsceneEffect):
         """계절별 파티클 생성"""
         self.particles = []
         for _ in range(40):
-            self.particles.append({
-                'x': random.randint(0, self.screen_size[0]),
-                'y': random.randint(-50, self.screen_size[1]),
-                'size': random.randint(3, 8),
-                'speed_y': random.uniform(30, 80),
-                'speed_x': random.uniform(-30, 30),
-                'rotation': random.uniform(0, 360),
-                'rot_speed': random.uniform(-180, 180),
-            })
+            self.particles.append(
+                {
+                    "x": random.randint(0, self.screen_size[0]),
+                    "y": random.randint(-50, self.screen_size[1]),
+                    "size": random.randint(3, 8),
+                    "speed_y": random.uniform(30, 80),
+                    "speed_x": random.uniform(-30, 30),
+                    "rotation": random.uniform(0, 360),
+                    "rot_speed": random.uniform(-180, 180),
+                }
+            )
 
     def _on_fadein_complete(self):
         """페이드인 완료 후 계절 전환 페이즈"""
@@ -11688,12 +13250,12 @@ class SeasonMemoryEffect(BaseCutsceneEffect):
 
         # 파티클 이동
         for p in self.particles:
-            p['y'] += p['speed_y'] * dt
-            p['x'] += p['speed_x'] * dt
-            p['rotation'] += p['rot_speed'] * dt
-            if p['y'] > self.screen_size[1] + 50:
-                p['y'] = -50
-                p['x'] = random.randint(0, self.screen_size[0])
+            p["y"] += p["speed_y"] * dt
+            p["x"] += p["speed_x"] * dt
+            p["rotation"] += p["rot_speed"] * dt
+            if p["y"] > self.screen_size[1] + 50:
+                p["y"] = -50
+                p["x"] = random.randint(0, self.screen_size[0])
 
         # 페이즈 처리
         if self.phase == self.PHASE_FADEIN:
@@ -11704,7 +13266,9 @@ class SeasonMemoryEffect(BaseCutsceneEffect):
             self.season_timer += dt
 
             if self.transitioning:
-                self.transition_progress = min(1.0, self.transition_progress + dt / self.transition_duration)
+                self.transition_progress = min(
+                    1.0, self.transition_progress + dt / self.transition_duration
+                )
                 if self.transition_progress >= 1.0:
                     self.transitioning = False
                     self.current_season = (self.current_season + 1) % 4
@@ -11756,7 +13320,9 @@ class SeasonMemoryEffect(BaseCutsceneEffect):
             color = self.season_colors[self.current_season]
 
             # 글로우 효과
-            glow_alpha = int(150 * (1 - self.transition_progress if self.transitioning else 1))
+            glow_alpha = int(
+                150 * (1 - self.transition_progress if self.transitioning else 1)
+            )
             text = self.fonts["large"].render(season_name, True, color)
             text.set_alpha(glow_alpha)
 
@@ -11784,42 +13350,56 @@ class SeasonMemoryEffect(BaseCutsceneEffect):
 
     def _render_petal(self, screen: pygame.Surface, p: dict, color: tuple):
         """꽃잎 렌더링"""
-        size = p['size']
+        size = p["size"]
         surf = pygame.Surface((size * 2, size * 2), pygame.SRCALPHA)
         pygame.draw.ellipse(surf, (*color, 200), (0, size // 2, size * 2, size))
-        rotated = pygame.transform.rotate(surf, p['rotation'])
-        rect = rotated.get_rect(center=(p['x'], p['y']))
+        rotated = pygame.transform.rotate(surf, p["rotation"])
+        rect = rotated.get_rect(center=(p["x"], p["y"]))
         screen.blit(rotated, rect)
 
     def _render_leaf(self, screen: pygame.Surface, p: dict, color: tuple):
         """나뭇잎 렌더링"""
-        size = p['size']
+        size = p["size"]
         surf = pygame.Surface((size * 2, size), pygame.SRCALPHA)
         # 잎 모양 (다이아몬드)
         points = [(size, 0), (size * 2, size // 2), (size, size), (0, size // 2)]
         pygame.draw.polygon(surf, (*color, 200), points)
-        rotated = pygame.transform.rotate(surf, p['rotation'])
-        rect = rotated.get_rect(center=(p['x'], p['y']))
+        rotated = pygame.transform.rotate(surf, p["rotation"])
+        rect = rotated.get_rect(center=(p["x"], p["y"]))
         screen.blit(rotated, rect)
 
     def _render_snow(self, screen: pygame.Surface, p: dict):
         """눈 렌더링"""
         alpha = int(200 * (self.fade_alpha / 255))
-        pygame.draw.circle(screen, (255, 255, 255, alpha), (int(p['x']), int(p['y'])), p['size'])
+        pygame.draw.circle(
+            screen, (255, 255, 255, alpha), (int(p["x"]), int(p["y"])), p["size"]
+        )
 
     def _render_dialogue(self, screen: pygame.Surface):
         """대화창 렌더링"""
-        if not self.dialogue_after or self.current_dialogue_index >= len(self.dialogue_after):
+        if not self.dialogue_after or self.current_dialogue_index >= len(
+            self.dialogue_after
+        ):
             return
         dialogue = self.dialogue_after[self.current_dialogue_index]
         speaker = dialogue.get("speaker", "")
         portrait = self._get_portrait(speaker) if speaker else None
 
-        render_dialogue_box(screen, self.screen_size, self.fonts, dialogue,
-                           self.dialogue_text, self.typing_progress, self.waiting_for_click,
-                           box_color=(30, 25, 40, 230), border_color=(200, 180, 150),
-                           text_color=(255, 250, 240), box_height=180,
-                           has_portrait=(portrait is not None), portrait=portrait)
+        render_dialogue_box(
+            screen,
+            self.screen_size,
+            self.fonts,
+            dialogue,
+            self.dialogue_text,
+            self.typing_progress,
+            self.waiting_for_click,
+            box_color=(30, 25, 40, 230),
+            border_color=(200, 180, 150),
+            text_color=(255, 250, 240),
+            box_height=180,
+            has_portrait=(portrait is not None),
+            portrait=portrait,
+        )
 
 
 class BrokenToyEffect(BaseCutsceneEffect):
@@ -11836,11 +13416,18 @@ class BrokenToyEffect(BaseCutsceneEffect):
     PHASE_ZOOM_IN = 10
     PHASE_MEMORIES = 11
 
-    def __init__(self, screen_size: tuple, toy_image_path: str = None,
-                 dialogue_after: list = None, sound_manager=None,
-                 special_effects: dict = None, scene_id: str = "broken_toy_scene"):
-        super().__init__(screen_size, None, dialogue_after,
-                        sound_manager, special_effects, scene_id)
+    def __init__(
+        self,
+        screen_size: tuple,
+        toy_image_path: str = None,
+        dialogue_after: list = None,
+        sound_manager=None,
+        special_effects: dict = None,
+        scene_id: str = "broken_toy_scene",
+    ):
+        super().__init__(
+            screen_size, None, dialogue_after, sound_manager, special_effects, scene_id
+        )
 
         self.typing_speed = 25.0
 
@@ -11867,14 +13454,16 @@ class BrokenToyEffect(BaseCutsceneEffect):
         # 먼지 파티클
         self.dust_particles = []
         for _ in range(50):
-            self.dust_particles.append({
-                'x': random.randint(0, screen_size[0]),
-                'y': random.randint(0, screen_size[1]),
-                'size': random.uniform(1, 3),
-                'speed_y': random.uniform(5, 15),
-                'speed_x': random.uniform(-5, 5),
-                'alpha': random.randint(50, 150),
-            })
+            self.dust_particles.append(
+                {
+                    "x": random.randint(0, screen_size[0]),
+                    "y": random.randint(0, screen_size[1]),
+                    "size": random.uniform(1, 3),
+                    "speed_y": random.uniform(5, 15),
+                    "speed_x": random.uniform(-5, 5),
+                    "alpha": random.randint(50, 150),
+                }
+            )
 
         # 회상 플래시 효과
         self.flash_alpha = 0
@@ -11934,11 +13523,11 @@ class BrokenToyEffect(BaseCutsceneEffect):
 
         # 먼지 파티클 업데이트
         for p in self.dust_particles:
-            p['y'] += p['speed_y'] * dt
-            p['x'] += p['speed_x'] * dt
-            if p['y'] > self.screen_size[1]:
-                p['y'] = -10
-                p['x'] = random.randint(0, self.screen_size[0])
+            p["y"] += p["speed_y"] * dt
+            p["x"] += p["speed_x"] * dt
+            if p["y"] > self.screen_size[1]:
+                p["y"] = -10
+                p["x"] = random.randint(0, self.screen_size[0])
 
         # 회상 플래시 효과
         self.flash_timer += dt
@@ -11956,7 +13545,9 @@ class BrokenToyEffect(BaseCutsceneEffect):
 
         elif self.phase == self.PHASE_ZOOM_IN:
             # 줌인 애니메이션
-            self.zoom_scale = min(self.target_zoom, self.zoom_scale + self.zoom_speed * dt)
+            self.zoom_scale = min(
+                self.target_zoom, self.zoom_scale + self.zoom_speed * dt
+            )
             if self.zoom_scale >= self.target_zoom:
                 self.phase = self.PHASE_MEMORIES
                 self.phase_timer = 0.0
@@ -11985,19 +13576,27 @@ class BrokenToyEffect(BaseCutsceneEffect):
         for i in range(20):
             alpha = 10 + i * 3
             y = self.screen_size[1] - i * 30
-            pygame.draw.rect(screen, (40 + i * 2, 35 + i, 30), (0, y, self.screen_size[0], 30))
+            pygame.draw.rect(
+                screen, (40 + i * 2, 35 + i, 30), (0, y, self.screen_size[0], 30)
+            )
 
         # 먼지 파티클
         for p in self.dust_particles:
-            color = (180, 170, 150, p['alpha'])
-            surf = pygame.Surface((int(p['size'] * 2), int(p['size'] * 2)), pygame.SRCALPHA)
-            pygame.draw.circle(surf, color, (int(p['size']), int(p['size'])), int(p['size']))
-            screen.blit(surf, (int(p['x']), int(p['y'])))
+            color = (180, 170, 150, p["alpha"])
+            surf = pygame.Surface(
+                (int(p["size"] * 2), int(p["size"] * 2)), pygame.SRCALPHA
+            )
+            pygame.draw.circle(
+                surf, color, (int(p["size"]), int(p["size"])), int(p["size"])
+            )
+            screen.blit(surf, (int(p["x"]), int(p["y"])))
 
         # 장난감
         if self.toy_image:
-            scaled_size = (int(self.toy_size[0] * self.zoom_scale),
-                          int(self.toy_size[1] * self.zoom_scale))
+            scaled_size = (
+                int(self.toy_size[0] * self.zoom_scale),
+                int(self.toy_size[1] * self.zoom_scale),
+            )
             scaled_toy = pygame.transform.smoothscale(self.toy_image, scaled_size)
             rotated_toy = pygame.transform.rotate(scaled_toy, self.toy_rotation)
 
@@ -12023,7 +13622,12 @@ class BrokenToyEffect(BaseCutsceneEffect):
         vignette = pygame.Surface(self.screen_size, pygame.SRCALPHA)
         for i in range(100):
             alpha = int(i * 1.5)
-            pygame.draw.rect(vignette, (0, 0, 0, alpha), (i, i, self.screen_size[0] - i * 2, self.screen_size[1] - i * 2), 1)
+            pygame.draw.rect(
+                vignette,
+                (0, 0, 0, alpha),
+                (i, i, self.screen_size[0] - i * 2, self.screen_size[1] - i * 2),
+                1,
+            )
         screen.blit(vignette, (0, 0))
 
         # 페이드
@@ -12039,17 +13643,29 @@ class BrokenToyEffect(BaseCutsceneEffect):
 
     def _render_dialogue(self, screen: pygame.Surface):
         """대화창 렌더링"""
-        if not self.dialogue_after or self.current_dialogue_index >= len(self.dialogue_after):
+        if not self.dialogue_after or self.current_dialogue_index >= len(
+            self.dialogue_after
+        ):
             return
         dialogue = self.dialogue_after[self.current_dialogue_index]
         speaker = dialogue.get("speaker", "")
         portrait = self._get_portrait(speaker) if speaker else None
 
-        render_dialogue_box(screen, self.screen_size, self.fonts, dialogue,
-                           self.dialogue_text, self.typing_progress, self.waiting_for_click,
-                           box_color=(40, 30, 25, 230), border_color=(150, 120, 80),
-                           text_color=(255, 250, 240), box_height=180,
-                           has_portrait=(portrait is not None), portrait=portrait)
+        render_dialogue_box(
+            screen,
+            self.screen_size,
+            self.fonts,
+            dialogue,
+            self.dialogue_text,
+            self.typing_progress,
+            self.waiting_for_click,
+            box_color=(40, 30, 25, 230),
+            border_color=(150, 120, 80),
+            text_color=(255, 250, 240),
+            box_height=180,
+            has_portrait=(portrait is not None),
+            portrait=portrait,
+        )
 
 
 class HologramMessageEffect(BaseCutsceneEffect):
@@ -12067,11 +13683,18 @@ class HologramMessageEffect(BaseCutsceneEffect):
     PHASE_HOLOGRAM_FLICKER = 11
     PHASE_MESSAGE_PLAY = 12
 
-    def __init__(self, screen_size: tuple, father_image_path: str = None,
-                 dialogue_after: list = None, sound_manager=None,
-                 special_effects: dict = None, scene_id: str = "hologram_message_scene"):
-        super().__init__(screen_size, None, dialogue_after,
-                        sound_manager, special_effects, scene_id)
+    def __init__(
+        self,
+        screen_size: tuple,
+        father_image_path: str = None,
+        dialogue_after: list = None,
+        sound_manager=None,
+        special_effects: dict = None,
+        scene_id: str = "hologram_message_scene",
+    ):
+        super().__init__(
+            screen_size, None, dialogue_after, sound_manager, special_effects, scene_id
+        )
 
         self.typing_speed = 22.0
 
@@ -12083,7 +13706,9 @@ class HologramMessageEffect(BaseCutsceneEffect):
         if father_image_path:
             try:
                 img = pygame.image.load(father_image_path).convert_alpha()
-                self.father_image = pygame.transform.smoothscale(img, self.hologram_size)
+                self.father_image = pygame.transform.smoothscale(
+                    img, self.hologram_size
+                )
             except:
                 self._create_placeholder_silhouette()
         else:
@@ -12204,27 +13829,43 @@ class HologramMessageEffect(BaseCutsceneEffect):
         pygame.draw.circle(screen, self.holo_color, device_center, 80, 3)
 
         # 홀로그램
-        if self.phase in [self.PHASE_HOLOGRAM_FLICKER, self.PHASE_MESSAGE_PLAY, self.PHASE_DIALOGUE]:
+        if self.phase in [
+            self.PHASE_HOLOGRAM_FLICKER,
+            self.PHASE_MESSAGE_PLAY,
+            self.PHASE_DIALOGUE,
+        ]:
             if self.father_image:
                 holo_surf = self.father_image.copy()
                 holo_surf.set_alpha(self.hologram_alpha)
 
                 # 글리치 오프셋 적용
-                pos = (self.hologram_pos[0] - self.hologram_size[0] // 2 + self.glitch_offset,
-                      self.hologram_pos[1] - self.hologram_size[1] // 2)
+                pos = (
+                    self.hologram_pos[0]
+                    - self.hologram_size[0] // 2
+                    + self.glitch_offset,
+                    self.hologram_pos[1] - self.hologram_size[1] // 2,
+                )
                 screen.blit(holo_surf, pos)
 
                 # 스캔라인 효과
                 for y in range(0, self.screen_size[1], 4):
                     alpha = 30 if (y + int(self.scanline_offset)) % 8 < 4 else 0
                     if alpha > 0:
-                        pygame.draw.line(screen, (0, 0, 0, alpha), (0, y), (self.screen_size[0], y))
+                        pygame.draw.line(
+                            screen, (0, 0, 0, alpha), (0, y), (self.screen_size[0], y)
+                        )
 
                 # 홀로그램 외곽 글로우
                 glow_surf = pygame.Surface(self.screen_size, pygame.SRCALPHA)
-                glow_rect = pygame.Rect(pos[0] - 20, pos[1] - 20,
-                                       self.hologram_size[0] + 40, self.hologram_size[1] + 40)
-                pygame.draw.rect(glow_surf, (*self.holo_color, 30), glow_rect, border_radius=10)
+                glow_rect = pygame.Rect(
+                    pos[0] - 20,
+                    pos[1] - 20,
+                    self.hologram_size[0] + 40,
+                    self.hologram_size[1] + 40,
+                )
+                pygame.draw.rect(
+                    glow_surf, (*self.holo_color, 30), glow_rect, border_radius=10
+                )
                 screen.blit(glow_surf, (0, 0))
 
         # 페이드
@@ -12240,17 +13881,29 @@ class HologramMessageEffect(BaseCutsceneEffect):
 
     def _render_dialogue(self, screen: pygame.Surface):
         """대화창 렌더링"""
-        if not self.dialogue_after or self.current_dialogue_index >= len(self.dialogue_after):
+        if not self.dialogue_after or self.current_dialogue_index >= len(
+            self.dialogue_after
+        ):
             return
         dialogue = self.dialogue_after[self.current_dialogue_index]
         speaker = dialogue.get("speaker", "")
         portrait = self._get_portrait(speaker) if speaker else None
 
-        render_dialogue_box(screen, self.screen_size, self.fonts, dialogue,
-                           self.dialogue_text, self.typing_progress, self.waiting_for_click,
-                           box_color=(20, 30, 50, 230), border_color=(100, 180, 220),
-                           text_color=(200, 240, 255), box_height=180,
-                           has_portrait=(portrait is not None), portrait=portrait)
+        render_dialogue_box(
+            screen,
+            self.screen_size,
+            self.fonts,
+            dialogue,
+            self.dialogue_text,
+            self.typing_progress,
+            self.waiting_for_click,
+            box_color=(20, 30, 50, 230),
+            border_color=(100, 180, 220),
+            text_color=(200, 240, 255),
+            box_height=180,
+            has_portrait=(portrait is not None),
+            portrait=portrait,
+        )
 
 
 class DualMemoryEffect(BaseCutsceneEffect):
@@ -12267,12 +13920,19 @@ class DualMemoryEffect(BaseCutsceneEffect):
     PHASE_SPLIT_SCREEN = 10
     PHASE_MERGE = 11
 
-    def __init__(self, screen_size: tuple, past_image_path: str = None,
-                 present_image_path: str = None, dialogue_after: list = None,
-                 sound_manager=None, special_effects: dict = None,
-                 scene_id: str = "dual_memory_scene"):
-        super().__init__(screen_size, None, dialogue_after,
-                        sound_manager, special_effects, scene_id)
+    def __init__(
+        self,
+        screen_size: tuple,
+        past_image_path: str = None,
+        present_image_path: str = None,
+        dialogue_after: list = None,
+        sound_manager=None,
+        special_effects: dict = None,
+        scene_id: str = "dual_memory_scene",
+    ):
+        super().__init__(
+            screen_size, None, dialogue_after, sound_manager, special_effects, scene_id
+        )
 
         self.typing_speed = 24.0
 
@@ -12365,24 +14025,28 @@ class DualMemoryEffect(BaseCutsceneEffect):
 
         # 과거: 빛나는 먼지
         for _ in range(30):
-            self.past_particles.append({
-                'x': random.randint(0, half_w),
-                'y': random.randint(0, self.screen_size[1]),
-                'size': random.uniform(2, 4),
-                'speed': random.uniform(-20, 20),
-                'alpha': random.randint(100, 200),
-            })
+            self.past_particles.append(
+                {
+                    "x": random.randint(0, half_w),
+                    "y": random.randint(0, self.screen_size[1]),
+                    "size": random.uniform(2, 4),
+                    "speed": random.uniform(-20, 20),
+                    "alpha": random.randint(100, 200),
+                }
+            )
 
         # 현재: 재/연기
         for _ in range(40):
-            self.present_particles.append({
-                'x': random.randint(half_w, self.screen_size[0]),
-                'y': random.randint(0, self.screen_size[1]),
-                'size': random.uniform(3, 6),
-                'speed_y': random.uniform(-30, -10),
-                'speed_x': random.uniform(-10, 10),
-                'alpha': random.randint(50, 100),
-            })
+            self.present_particles.append(
+                {
+                    "x": random.randint(half_w, self.screen_size[0]),
+                    "y": random.randint(0, self.screen_size[1]),
+                    "size": random.uniform(3, 6),
+                    "speed_y": random.uniform(-30, -10),
+                    "speed_x": random.uniform(-10, 10),
+                    "alpha": random.randint(50, 100),
+                }
+            )
 
     def _on_fadein_complete(self):
         """페이드인 완료"""
@@ -12402,16 +14066,16 @@ class DualMemoryEffect(BaseCutsceneEffect):
 
         # 파티클 업데이트
         for p in self.past_particles:
-            p['y'] += p['speed'] * dt
-            if p['y'] < 0 or p['y'] > self.screen_size[1]:
-                p['speed'] = -p['speed']
+            p["y"] += p["speed"] * dt
+            if p["y"] < 0 or p["y"] > self.screen_size[1]:
+                p["speed"] = -p["speed"]
 
         for p in self.present_particles:
-            p['y'] += p['speed_y'] * dt
-            p['x'] += p['speed_x'] * dt
-            if p['y'] < -10:
-                p['y'] = self.screen_size[1] + 10
-                p['x'] = random.randint(self.screen_size[0] // 2, self.screen_size[0])
+            p["y"] += p["speed_y"] * dt
+            p["x"] += p["speed_x"] * dt
+            if p["y"] < -10:
+                p["y"] = self.screen_size[1] + 10
+                p["x"] = random.randint(self.screen_size[0] // 2, self.screen_size[0])
 
         # 페이즈 처리
         if self.phase == self.PHASE_FADEIN:
@@ -12438,7 +14102,9 @@ class DualMemoryEffect(BaseCutsceneEffect):
         if self.past_image:
             screen.blit(self.past_image, (0, 0))
             # 따뜻한 오버레이
-            warm_overlay = pygame.Surface((half_w, self.screen_size[1]), pygame.SRCALPHA)
+            warm_overlay = pygame.Surface(
+                (half_w, self.screen_size[1]), pygame.SRCALPHA
+            )
             warm_overlay.fill((*self.past_tint, 30))
             screen.blit(warm_overlay, (0, 0))
 
@@ -12446,28 +14112,46 @@ class DualMemoryEffect(BaseCutsceneEffect):
         if self.present_image:
             screen.blit(self.present_image, (half_w, 0))
             # 차가운 오버레이
-            cold_overlay = pygame.Surface((half_w, self.screen_size[1]), pygame.SRCALPHA)
+            cold_overlay = pygame.Surface(
+                (half_w, self.screen_size[1]), pygame.SRCALPHA
+            )
             cold_overlay.fill((*self.present_tint, 40))
             screen.blit(cold_overlay, (half_w, 0))
 
         # 과거 파티클 (빛)
         for p in self.past_particles:
-            glow_surf = pygame.Surface((int(p['size'] * 4), int(p['size'] * 4)), pygame.SRCALPHA)
-            pygame.draw.circle(glow_surf, (255, 240, 200, p['alpha']),
-                             (int(p['size'] * 2), int(p['size'] * 2)), int(p['size']))
-            screen.blit(glow_surf, (int(p['x']), int(p['y'])))
+            glow_surf = pygame.Surface(
+                (int(p["size"] * 4), int(p["size"] * 4)), pygame.SRCALPHA
+            )
+            pygame.draw.circle(
+                glow_surf,
+                (255, 240, 200, p["alpha"]),
+                (int(p["size"] * 2), int(p["size"] * 2)),
+                int(p["size"]),
+            )
+            screen.blit(glow_surf, (int(p["x"]), int(p["y"])))
 
         # 현재 파티클 (재)
         for p in self.present_particles:
-            pygame.draw.circle(screen, (80, 80, 80, p['alpha']),
-                             (int(p['x']), int(p['y'])), int(p['size']))
+            pygame.draw.circle(
+                screen,
+                (80, 80, 80, p["alpha"]),
+                (int(p["x"]), int(p["y"])),
+                int(p["size"]),
+            )
 
         # 분할선 (글로우 효과)
         wave_offset = int(math.sin(self.split_wave) * 5)
         for i in range(-10, 11, 2):
             alpha = 255 - abs(i) * 20
             x = half_w + wave_offset + i
-            pygame.draw.line(screen, (255, 255, 255, max(0, alpha)), (x, 0), (x, self.screen_size[1]), 1)
+            pygame.draw.line(
+                screen,
+                (255, 255, 255, max(0, alpha)),
+                (x, 0),
+                (x, self.screen_size[1]),
+                1,
+            )
 
         # 레이블
         if self.phase == self.PHASE_SPLIT_SCREEN and "medium" in self.fonts:
@@ -12475,7 +14159,10 @@ class DualMemoryEffect(BaseCutsceneEffect):
             present_label = self.fonts["medium"].render("현재", True, self.present_tint)
 
             screen.blit(past_label, (half_w // 2 - past_label.get_width() // 2, 30))
-            screen.blit(present_label, (half_w + half_w // 2 - present_label.get_width() // 2, 30))
+            screen.blit(
+                present_label,
+                (half_w + half_w // 2 - present_label.get_width() // 2, 30),
+            )
 
         # 페이드
         if self.phase == self.PHASE_FADEIN:
@@ -12490,17 +14177,29 @@ class DualMemoryEffect(BaseCutsceneEffect):
 
     def _render_dialogue(self, screen: pygame.Surface):
         """대화창 렌더링"""
-        if not self.dialogue_after or self.current_dialogue_index >= len(self.dialogue_after):
+        if not self.dialogue_after or self.current_dialogue_index >= len(
+            self.dialogue_after
+        ):
             return
         dialogue = self.dialogue_after[self.current_dialogue_index]
         speaker = dialogue.get("speaker", "")
         portrait = self._get_portrait(speaker) if speaker else None
 
-        render_dialogue_box(screen, self.screen_size, self.fonts, dialogue,
-                           self.dialogue_text, self.typing_progress, self.waiting_for_click,
-                           box_color=(30, 30, 40, 230), border_color=(200, 200, 220),
-                           text_color=(255, 255, 255), box_height=180,
-                           has_portrait=(portrait is not None), portrait=portrait)
+        render_dialogue_box(
+            screen,
+            self.screen_size,
+            self.fonts,
+            dialogue,
+            self.dialogue_text,
+            self.typing_progress,
+            self.waiting_for_click,
+            box_color=(30, 30, 40, 230),
+            border_color=(200, 200, 220),
+            text_color=(255, 255, 255),
+            box_height=180,
+            has_portrait=(portrait is not None),
+            portrait=portrait,
+        )
 
 
 class RadioWaveEffect(BaseCutsceneEffect):
@@ -12518,11 +14217,18 @@ class RadioWaveEffect(BaseCutsceneEffect):
     PHASE_SIGNAL_FOUND = 11
     PHASE_VOICE_DETECTED = 12
 
-    def __init__(self, screen_size: tuple, mother_voice_text: str = None,
-                 dialogue_after: list = None, sound_manager=None,
-                 special_effects: dict = None, scene_id: str = "radio_wave_scene"):
-        super().__init__(screen_size, None, dialogue_after,
-                        sound_manager, special_effects, scene_id)
+    def __init__(
+        self,
+        screen_size: tuple,
+        mother_voice_text: str = None,
+        dialogue_after: list = None,
+        sound_manager=None,
+        special_effects: dict = None,
+        scene_id: str = "radio_wave_scene",
+    ):
+        super().__init__(
+            screen_size, None, dialogue_after, sound_manager, special_effects, scene_id
+        )
 
         self.typing_speed = 20.0
 
@@ -12536,14 +14242,18 @@ class RadioWaveEffect(BaseCutsceneEffect):
         self.noise_intensity = 1.0
         self.noise_particles = []
         for _ in range(100):
-            self.noise_particles.append({
-                'x': random.randint(0, screen_size[0]),
-                'y': random.randint(0, screen_size[1]),
-                'size': random.randint(1, 3),
-            })
+            self.noise_particles.append(
+                {
+                    "x": random.randint(0, screen_size[0]),
+                    "y": random.randint(0, screen_size[1]),
+                    "size": random.randint(1, 3),
+                }
+            )
 
         # 어머니 목소리 텍스트 (신호에서 추출)
-        self.mother_voice_text = mother_voice_text or "...아르테미스... 살아있다면... 우리를 찾아..."
+        self.mother_voice_text = (
+            mother_voice_text or "...아르테미스... 살아있다면... 우리를 찾아..."
+        )
         self.decoded_text = ""
         self.decode_progress = 0.0
 
@@ -12572,7 +14282,10 @@ class RadioWaveEffect(BaseCutsceneEffect):
 
         # 웨이브 데이터 업데이트
         self.wave_data.pop(0)
-        if self.phase == self.PHASE_SIGNAL_FOUND or self.phase == self.PHASE_VOICE_DETECTED:
+        if (
+            self.phase == self.PHASE_SIGNAL_FOUND
+            or self.phase == self.PHASE_VOICE_DETECTED
+        ):
             # 신호 감지됨: 규칙적인 패턴
             wave_value = math.sin(self.phase_timer * 10) * 0.8
             wave_value += random.uniform(-0.1, 0.1) * self.noise_intensity
@@ -12585,8 +14298,8 @@ class RadioWaveEffect(BaseCutsceneEffect):
         # 노이즈 파티클 업데이트
         if random.random() < 0.3:
             for p in self.noise_particles:
-                p['x'] = random.randint(0, self.screen_size[0])
-                p['y'] = random.randint(0, self.screen_size[1])
+                p["x"] = random.randint(0, self.screen_size[0])
+                p["y"] = random.randint(0, self.screen_size[1])
 
         # 페이즈 처리
         if self.phase == self.PHASE_FADEIN:
@@ -12641,8 +14354,9 @@ class RadioWaveEffect(BaseCutsceneEffect):
         # 노이즈 파티클
         for p in self.noise_particles:
             alpha = int(self.noise_intensity * 150)
-            pygame.draw.rect(screen, (100, 100, 100, alpha),
-                           (p['x'], p['y'], p['size'], p['size']))
+            pygame.draw.rect(
+                screen, (100, 100, 100, alpha), (p["x"], p["y"], p["size"], p["size"])
+            )
 
         # 라디오 웨이브
         wave_height = 150
@@ -12660,7 +14374,9 @@ class RadioWaveEffect(BaseCutsceneEffect):
             for offset in range(3, 0, -1):
                 alpha = 100 - offset * 30
                 offset_points = [(p[0], p[1] + offset) for p in points]
-                pygame.draw.lines(screen, (*self.wave_color[:3], alpha), False, offset_points, 2)
+                pygame.draw.lines(
+                    screen, (*self.wave_color[:3], alpha), False, offset_points, 2
+                )
 
             pygame.draw.lines(screen, self.wave_color, False, points, 2)
 
@@ -12676,12 +14392,18 @@ class RadioWaveEffect(BaseCutsceneEffect):
         gauge_width = 150
         gauge_height = 20
 
-        pygame.draw.rect(screen, (50, 50, 50), (gauge_x, gauge_y, gauge_width, gauge_height))
+        pygame.draw.rect(
+            screen, (50, 50, 50), (gauge_x, gauge_y, gauge_width, gauge_height)
+        )
         fill_width = int(gauge_width * self.signal_strength)
         if fill_width > 0:
             color = self.signal_color if self.signal_strength > 0.5 else self.wave_color
-            pygame.draw.rect(screen, color, (gauge_x, gauge_y, fill_width, gauge_height))
-        pygame.draw.rect(screen, (100, 100, 100), (gauge_x, gauge_y, gauge_width, gauge_height), 2)
+            pygame.draw.rect(
+                screen, color, (gauge_x, gauge_y, fill_width, gauge_height)
+            )
+        pygame.draw.rect(
+            screen, (100, 100, 100), (gauge_x, gauge_y, gauge_width, gauge_height), 2
+        )
 
         if "small" in self.fonts:
             label = self.fonts["small"].render("신호 강도", True, (150, 150, 150))
@@ -12694,19 +14416,27 @@ class RadioWaveEffect(BaseCutsceneEffect):
                 # 글로우 박스
                 box_rect = pygame.Rect(50, text_y - 20, self.screen_size[0] - 100, 80)
                 pygame.draw.rect(screen, (20, 30, 40, 200), box_rect, border_radius=10)
-                pygame.draw.rect(screen, self.signal_color, box_rect, 2, border_radius=10)
+                pygame.draw.rect(
+                    screen, self.signal_color, box_rect, 2, border_radius=10
+                )
 
-                decoded_surf = self.fonts["medium"].render(self.decoded_text, True, self.signal_color)
+                decoded_surf = self.fonts["medium"].render(
+                    self.decoded_text, True, self.signal_color
+                )
                 screen.blit(decoded_surf, (70, text_y))
 
-                label = self.fonts["small"].render("수신된 메시지:", True, (150, 150, 150))
+                label = self.fonts["small"].render(
+                    "수신된 메시지:", True, (150, 150, 150)
+                )
                 screen.blit(label, (70, text_y - 25))
 
         # 스캔 중 텍스트
         if self.phase == self.PHASE_SCANNING and "medium" in self.fonts:
             scan_text = "주파수 스캔 중..."
             alpha = int(128 + 127 * math.sin(self.phase_timer * 5))
-            scan_surf = self.fonts["medium"].render(scan_text, True, (*self.wave_color[:3], alpha))
+            scan_surf = self.fonts["medium"].render(
+                scan_text, True, (*self.wave_color[:3], alpha)
+            )
             x = self.screen_size[0] // 2 - scan_surf.get_width() // 2
             screen.blit(scan_surf, (x, self.screen_size[1] - 100))
 
@@ -12723,17 +14453,29 @@ class RadioWaveEffect(BaseCutsceneEffect):
 
     def _render_dialogue(self, screen: pygame.Surface):
         """대화창 렌더링"""
-        if not self.dialogue_after or self.current_dialogue_index >= len(self.dialogue_after):
+        if not self.dialogue_after or self.current_dialogue_index >= len(
+            self.dialogue_after
+        ):
             return
         dialogue = self.dialogue_after[self.current_dialogue_index]
         speaker = dialogue.get("speaker", "")
         portrait = self._get_portrait(speaker) if speaker else None
 
-        render_dialogue_box(screen, self.screen_size, self.fonts, dialogue,
-                           self.dialogue_text, self.typing_progress, self.waiting_for_click,
-                           box_color=(15, 25, 35, 230), border_color=(0, 200, 150),
-                           text_color=(200, 255, 230), box_height=180,
-                           has_portrait=(portrait is not None), portrait=portrait)
+        render_dialogue_box(
+            screen,
+            self.screen_size,
+            self.fonts,
+            dialogue,
+            self.dialogue_text,
+            self.typing_progress,
+            self.waiting_for_click,
+            box_color=(15, 25, 35, 230),
+            border_color=(0, 200, 150),
+            text_color=(200, 255, 230),
+            box_height=180,
+            has_portrait=(portrait is not None),
+            portrait=portrait,
+        )
 
 
 class CountdownEffect(BaseCutsceneEffect):
@@ -12750,12 +14492,19 @@ class CountdownEffect(BaseCutsceneEffect):
     PHASE_COUNTDOWN = 10
     PHASE_ZERO = 11
 
-    def __init__(self, screen_size: tuple, countdown_start: int = 10,
-                 countdown_messages: list = None, dialogue_after: list = None,
-                 sound_manager=None, special_effects: dict = None,
-                 scene_id: str = "countdown_scene"):
-        super().__init__(screen_size, None, dialogue_after,
-                        sound_manager, special_effects, scene_id)
+    def __init__(
+        self,
+        screen_size: tuple,
+        countdown_start: int = 10,
+        countdown_messages: list = None,
+        dialogue_after: list = None,
+        sound_manager=None,
+        special_effects: dict = None,
+        scene_id: str = "countdown_scene",
+    ):
+        super().__init__(
+            screen_size, None, dialogue_after, sound_manager, special_effects, scene_id
+        )
 
         self.typing_speed = 30.0
 
@@ -12809,14 +14558,18 @@ class CountdownEffect(BaseCutsceneEffect):
         for _ in range(20):
             angle = random.uniform(0, math.pi * 2)
             speed = random.uniform(100, 300)
-            self.spark_particles.append({
-                'x': center[0],
-                'y': center[1],
-                'vx': math.cos(angle) * speed,
-                'vy': math.sin(angle) * speed,
-                'life': 1.0,
-                'color': random.choice([(255, 200, 100), (255, 150, 50), (255, 100, 50)]),
-            })
+            self.spark_particles.append(
+                {
+                    "x": center[0],
+                    "y": center[1],
+                    "vx": math.cos(angle) * speed,
+                    "vy": math.sin(angle) * speed,
+                    "life": 1.0,
+                    "color": random.choice(
+                        [(255, 200, 100), (255, 150, 50), (255, 100, 50)]
+                    ),
+                }
+            )
 
     def update(self, dt: float):
         """업데이트"""
@@ -12837,16 +14590,16 @@ class CountdownEffect(BaseCutsceneEffect):
         shake_intensity = max(0, (5 - self.current_count)) * 2
         self.shake_offset = (
             random.randint(-int(shake_intensity), int(shake_intensity)),
-            random.randint(-int(shake_intensity), int(shake_intensity))
+            random.randint(-int(shake_intensity), int(shake_intensity)),
         )
 
         # 파티클 업데이트
         for p in self.spark_particles[:]:
-            p['x'] += p['vx'] * dt
-            p['y'] += p['vy'] * dt
-            p['vy'] += 200 * dt  # 중력
-            p['life'] -= dt * 2
-            if p['life'] <= 0:
+            p["x"] += p["vx"] * dt
+            p["y"] += p["vy"] * dt
+            p["vy"] += 200 * dt  # 중력
+            p["life"] -= dt * 2
+            if p["life"] <= 0:
                 self.spark_particles.remove(p)
 
         # 페이즈 처리
@@ -12888,9 +14641,16 @@ class CountdownEffect(BaseCutsceneEffect):
     def render(self, screen: pygame.Surface):
         """렌더링"""
         # 배경 그라데이션 (긴박함 증가)
-        progress = 1 - (self.current_count / self.countdown_start) if self.countdown_start > 0 else 1
+        progress = (
+            1 - (self.current_count / self.countdown_start)
+            if self.countdown_start > 0
+            else 1
+        )
         bg_color = [
-            int(self.bg_colors[0][i] + (self.bg_colors[2][i] - self.bg_colors[0][i]) * progress)
+            int(
+                self.bg_colors[0][i]
+                + (self.bg_colors[2][i] - self.bg_colors[0][i]) * progress
+            )
             for i in range(3)
         ]
         screen.fill(bg_color)
@@ -12903,8 +14663,10 @@ class CountdownEffect(BaseCutsceneEffect):
             screen.blit(flash_surf, (0, 0))
 
         # 원형 웨이브 (숫자 주변)
-        center = (self.screen_size[0] // 2 + self.shake_offset[0],
-                 self.screen_size[1] // 2 + self.shake_offset[1])
+        center = (
+            self.screen_size[0] // 2 + self.shake_offset[0],
+            self.screen_size[1] // 2 + self.shake_offset[1],
+        )
 
         wave_radius = int(100 + (self.count_timer / self.count_interval) * 200)
         wave_alpha = int(100 * (1 - self.count_timer / self.count_interval))
@@ -12930,8 +14692,10 @@ class CountdownEffect(BaseCutsceneEffect):
                 glow_surf = font.render(count_text, True, glow_color)
                 glow_surf.set_alpha(50 - glow_offset * 4)
 
-                scaled_size = (int(glow_surf.get_width() * self.pulse_scale),
-                              int(glow_surf.get_height() * self.pulse_scale))
+                scaled_size = (
+                    int(glow_surf.get_width() * self.pulse_scale),
+                    int(glow_surf.get_height() * self.pulse_scale),
+                )
                 scaled = pygame.transform.smoothscale(glow_surf, scaled_size)
 
                 x = center[0] - scaled.get_width() // 2
@@ -12940,8 +14704,10 @@ class CountdownEffect(BaseCutsceneEffect):
 
             # 메인 숫자
             number_surf = font.render(count_text, True, (255, 220, 200))
-            scaled_size = (int(number_surf.get_width() * self.pulse_scale),
-                          int(number_surf.get_height() * self.pulse_scale))
+            scaled_size = (
+                int(number_surf.get_width() * self.pulse_scale),
+                int(number_surf.get_height() * self.pulse_scale),
+            )
             scaled = pygame.transform.smoothscale(number_surf, scaled_size)
 
             x = center[0] - scaled.get_width() // 2
@@ -12951,7 +14717,9 @@ class CountdownEffect(BaseCutsceneEffect):
         # 메시지
         if self.current_message and self.message_alpha > 0:
             if "medium" in self.fonts:
-                msg_surf = self.fonts["medium"].render(self.current_message, True, (255, 230, 200))
+                msg_surf = self.fonts["medium"].render(
+                    self.current_message, True, (255, 230, 200)
+                )
                 msg_surf.set_alpha(int(self.message_alpha))
                 x = center[0] - msg_surf.get_width() // 2
                 y = center[1] + 100
@@ -12959,12 +14727,12 @@ class CountdownEffect(BaseCutsceneEffect):
 
         # 불꽃 파티클
         for p in self.spark_particles:
-            alpha = int(255 * p['life'])
-            size = int(3 * p['life'])
+            alpha = int(255 * p["life"])
+            size = int(3 * p["life"])
             if size > 0:
                 spark_surf = pygame.Surface((size * 2, size * 2), pygame.SRCALPHA)
-                pygame.draw.circle(spark_surf, (*p['color'], alpha), (size, size), size)
-                screen.blit(spark_surf, (int(p['x']) - size, int(p['y']) - size))
+                pygame.draw.circle(spark_surf, (*p["color"], alpha), (size, size), size)
+                screen.blit(spark_surf, (int(p["x"]) - size, int(p["y"]) - size))
 
         # PHASE_ZERO 특별 효과
         if self.phase == self.PHASE_ZERO:
@@ -12978,7 +14746,9 @@ class CountdownEffect(BaseCutsceneEffect):
             # "전투 개시" 텍스트
             if self.phase_timer > 0.5 and "large" in self.fonts:
                 battle_text = "전투 개시"
-                battle_surf = self.fonts["large"].render(battle_text, True, (255, 200, 150))
+                battle_surf = self.fonts["large"].render(
+                    battle_text, True, (255, 200, 150)
+                )
                 x = center[0] - battle_surf.get_width() // 2
                 y = center[1] - battle_surf.get_height() // 2 - 50
                 screen.blit(battle_surf, (x, y))
@@ -12996,22 +14766,35 @@ class CountdownEffect(BaseCutsceneEffect):
 
     def _render_dialogue(self, screen: pygame.Surface):
         """대화창 렌더링"""
-        if not self.dialogue_after or self.current_dialogue_index >= len(self.dialogue_after):
+        if not self.dialogue_after or self.current_dialogue_index >= len(
+            self.dialogue_after
+        ):
             return
         dialogue = self.dialogue_after[self.current_dialogue_index]
         speaker = dialogue.get("speaker", "")
         portrait = self._get_portrait(speaker) if speaker else None
 
-        render_dialogue_box(screen, self.screen_size, self.fonts, dialogue,
-                           self.dialogue_text, self.typing_progress, self.waiting_for_click,
-                           box_color=(40, 20, 25, 230), border_color=(255, 150, 100),
-                           text_color=(255, 240, 230), box_height=180,
-                           has_portrait=(portrait is not None), portrait=portrait)
+        render_dialogue_box(
+            screen,
+            self.screen_size,
+            self.fonts,
+            dialogue,
+            self.dialogue_text,
+            self.typing_progress,
+            self.waiting_for_click,
+            box_color=(40, 20, 25, 230),
+            border_color=(255, 150, 100),
+            text_color=(255, 240, 230),
+            box_height=180,
+            has_portrait=(portrait is not None),
+            portrait=portrait,
+        )
 
 
 # =============================================================================
 # LightningEffect - 번개 체인 시각 효과 (이미지 기반)
 # =============================================================================
+
 
 class LightningEffect:
     """번개 체인 시각 효과 - 이미지 기반"""
@@ -13020,7 +14803,12 @@ class LightningEffect:
     _lightning_image = None
     _image_loaded = False
 
-    def __init__(self, start_pos: Tuple[float, float], end_pos: Tuple[float, float], duration: float = 0.4):
+    def __init__(
+        self,
+        start_pos: Tuple[float, float],
+        end_pos: Tuple[float, float],
+        duration: float = 0.4,
+    ):
         """
         번개 효과 초기화
 
@@ -13051,9 +14839,12 @@ class LightningEffect:
         cls._image_loaded = True
         try:
             from pathlib import Path
+
             image_path = Path("assets/images/effects/lightning_chain.png")
             if image_path.exists():
-                cls._lightning_image = pygame.image.load(str(image_path)).convert_alpha()
+                cls._lightning_image = pygame.image.load(
+                    str(image_path)
+                ).convert_alpha()
             else:
                 cls._lightning_image = None
         except:
@@ -13078,15 +14869,16 @@ class LightningEffect:
         scale_factor = distance / img_width if img_width > 0 else 1.0
 
         scaled_width = int(img_width * scale_factor)
-        scaled_height = int(LightningEffect._lightning_image.get_height() * scale_factor)
+        scaled_height = int(
+            LightningEffect._lightning_image.get_height() * scale_factor
+        )
 
         if scaled_width <= 0 or scaled_height <= 0:
             self.scaled_image = None
             return
 
         self.scaled_image = pygame.transform.scale(
-            LightningEffect._lightning_image,
-            (scaled_width, scaled_height)
+            LightningEffect._lightning_image, (scaled_width, scaled_height)
         )
 
         # 이미지 회전
@@ -13094,8 +14886,10 @@ class LightningEffect:
 
         # 렌더링 위치 계산
         rect = self.rotated_image.get_rect()
-        rect.center = ((self.start_pos.x + self.end_pos.x) / 2,
-                      (self.start_pos.y + self.end_pos.y) / 2)
+        rect.center = (
+            (self.start_pos.x + self.end_pos.x) / 2,
+            (self.start_pos.y + self.end_pos.y) / 2,
+        )
         self.render_rect = rect
 
     def update(self, dt: float):
@@ -13112,7 +14906,7 @@ class LightningEffect:
         # 알파값 계산 (페이드아웃)
         alpha = int(255 * (1.0 - self.elapsed / self.duration))
 
-        if self.scaled_image and hasattr(self, 'rotated_image'):
+        if self.scaled_image and hasattr(self, "rotated_image"):
             # 이미지 기반 번개
             temp_image = self.rotated_image.copy()
             temp_image.set_alpha(alpha)
@@ -13154,8 +14948,13 @@ class LightningEffect:
         for width, color in [(5, colors[2]), (3, colors[0]), (1, colors[1])]:
             if len(points) >= 2:
                 try:
-                    pygame.draw.lines(screen, color, False,
-                                    [(int(p.x), int(p.y)) for p in points], width)
+                    pygame.draw.lines(
+                        screen,
+                        color,
+                        False,
+                        [(int(p.x), int(p.y)) for p in points],
+                        width,
+                    )
                 except:
                     pass
 
@@ -13164,19 +14963,20 @@ class LightningEffect:
 # ReturnToBaseAnimation - 기지 복귀 애니메이션
 # =============================================================================
 
+
 class ReturnToBaseAnimation:
     """에피소드 종료 후 기지로 복귀하는 플레이어 우주선 애니메이션"""
 
     # 애니메이션 단계
-    PHASE_ORBIT = "orbit"             # 화면 외곽 시계반대방향 회전
-    PHASE_WARP_PORTAL = "warp_portal" # 워프 포탈 페이드 인/아웃
-    PHASE_COMPLETE = "complete"       # 완료
+    PHASE_ORBIT = "orbit"  # 화면 외곽 시계반대방향 회전
+    PHASE_WARP_PORTAL = "warp_portal"  # 워프 포탈 페이드 인/아웃
+    PHASE_COMPLETE = "complete"  # 완료
 
     def __init__(self, player_image, start_pos, screen_size):
         self.original_image = player_image.copy()
         self.screen_width, self.screen_height = screen_size
 
-        # 시작 위치
+        # 시작 위치..
         self.start_pos = pygame.math.Vector2(start_pos)
         self.pos = pygame.math.Vector2(start_pos)
 
@@ -13202,10 +15002,6 @@ class ReturnToBaseAnimation:
         self.warp_trigger_x = screen_size[0] * 0.3
         self.warp_started = False
 
-        print(f"DEBUG: ReturnToBase init - start_pos=({self.start_pos.x:.0f}, {self.start_pos.y:.0f}), "
-              f"start_angle={math.degrees(self.start_angle):.1f}°, "
-              f"warp_trigger_x={self.warp_trigger_x:.0f}")
-
         # 회전 완료 시 위치
         self.orbit_end_pos = None
 
@@ -13224,9 +15020,15 @@ class ReturnToBaseAnimation:
 
         if self.phase == self.PHASE_ORBIT:
             # 타원 궤도를 따라 시계반대방향 회전
-            progress = min(2.0, self.elapsed / self.orbit_duration)  # 최대 2바퀴까지 허용
+            progress = min(
+                2.0, self.elapsed / self.orbit_duration
+            )  # 최대 2바퀴까지 허용
             # easing: ease-in-out
-            eased = progress * progress * (3 - 2 * progress) if progress <= 1.0 else progress
+            eased = (
+                progress * progress * (3 - 2 * progress)
+                if progress <= 1.0
+                else progress
+            )
 
             # 시계반대방향 회전 (-2π = 한 바퀴)
             current_angle = self.start_angle - (2 * math.pi * eased)
@@ -13242,9 +15044,11 @@ class ReturnToBaseAnimation:
             if not self.warp_started and self.pos.x <= self.warp_trigger_x:
                 self.warp_started = True
                 self.warp_start_time = self.elapsed
-                print(f"INFO: Warp portal triggered at pos=({self.pos.x:.0f}, {self.pos.y:.0f}), elapsed={self.elapsed:.2f}s")
+                print(
+                    f"INFO: Warp portal triggered at pos=({self.pos.x:.0f}, {self.pos.y:.0f}), elapsed={self.elapsed:.2f}s"
+                )
 
-            # 워프 포탈 효과 업데이트 (시작된 이후)
+            # 워프 포탈 효과 업데이트  (시작된 이후)
             if self.warp_started:
                 warp_elapsed = self.elapsed - self.warp_start_time
 
@@ -13261,7 +15065,9 @@ class ReturnToBaseAnimation:
                     self.warp_portal_alpha = 255
                 elif warp_elapsed < 1.5:
                     # 페이드 아웃
-                    self.warp_portal_alpha = int(255 * (1.0 - (warp_elapsed - 1.0) / 0.5))
+                    self.warp_portal_alpha = int(
+                        255 * (1.0 - (warp_elapsed - 1.0) / 0.5)
+                    )
                 else:
                     # 완전히 사라짐
                     self.warp_portal_alpha = 0
@@ -13283,21 +15089,18 @@ class ReturnToBaseAnimation:
     def _load_warp_portal_image(self):
         """워프 포탈 이미지 로드 (warp_transition.png, 원형 포탈 크기로 스케일)"""
         from pathlib import Path
+
         warp_image_path = Path("assets/images/effects/warp_transition.png")
         if warp_image_path.exists():
             try:
                 loaded_img = pygame.image.load(str(warp_image_path)).convert_alpha()
                 # 포탈 크기로 스케일링 (400x400)
                 self.warp_portal_image = pygame.transform.scale(
-                    loaded_img,
-                    (self.warp_portal_size, self.warp_portal_size)
+                    loaded_img, (self.warp_portal_size, self.warp_portal_size)
                 )
-                print(f"INFO: Warp portal image loaded ({self.warp_portal_size}x{self.warp_portal_size})")
             except Exception as e:
-                print(f"WARNING: Failed to load warp portal image: {e}")
                 self.warp_portal_image = None
         else:
-            print(f"WARNING: Warp portal image not found at {warp_image_path}")
             self.warp_portal_image = None
 
     def draw(self, screen):
@@ -13308,7 +15111,9 @@ class ReturnToBaseAnimation:
         if self.warp_started and self.warp_portal_image and self.warp_portal_alpha > 0:
             portal_with_alpha = self.warp_portal_image.copy()
             portal_with_alpha.set_alpha(self.warp_portal_alpha)
-            portal_rect = portal_with_alpha.get_rect(center=(int(self.pos.x), int(self.pos.y)))
+            portal_rect = portal_with_alpha.get_rect(
+                center=(int(self.pos.x), int(self.pos.y))
+            )
             screen.blit(portal_with_alpha, portal_rect)
 
         # 우주선 그리기 (워프 시작되면 페이드 아웃)
@@ -13320,7 +15125,9 @@ class ReturnToBaseAnimation:
             screen.blit(faded_image, rect)
         else:
             # 워프 효과 전: 일반 렌더링
-            rect = self.original_image.get_rect(center=(int(self.pos.x), int(self.pos.y)))
+            rect = self.original_image.get_rect(
+                center=(int(self.pos.x), int(self.pos.y))
+            )
             screen.blit(self.original_image, rect)
 
 
@@ -13366,28 +15173,34 @@ class BaseArrivalAnimation:
 
         # 워프 포탈 이미지
         self.warp_portal_image = None
-        self.warp_portal_size = 600  # 포탈 크기 (픽셀) - 기지 진입 시 더 크게 (50% 확대)
+        self.warp_portal_size = (
+            600  # 포탈 크기 (픽셀) - 기지 진입 시 더 크게 (50% 확대)
+        )
         self.warp_portal_alpha = 0
         self._load_warp_portal_image()
 
     def _load_warp_portal_image(self):
         """워프 포탈 이미지 로드 (warp_transition.png)"""
         from pathlib import Path
+
         warp_image_path = Path("assets/images/effects/warp_transition.png")
         if warp_image_path.exists():
             try:
                 loaded_img = pygame.image.load(str(warp_image_path)).convert_alpha()
                 # 포탈 크기로 스케일링 (400x400)
                 self.warp_portal_image = pygame.transform.scale(
-                    loaded_img,
-                    (self.warp_portal_size, self.warp_portal_size)
+                    loaded_img, (self.warp_portal_size, self.warp_portal_size)
                 )
-                print(f"INFO: [BaseArrival] Warp portal image loaded ({self.warp_portal_size}x{self.warp_portal_size})")
+                print(
+                    f"INFO: [BaseArrival] Warp portal image loaded ({self.warp_portal_size}x{self.warp_portal_size})"
+                )
             except Exception as e:
                 print(f"WARNING: [BaseArrival] Failed to load warp portal image: {e}")
                 self.warp_portal_image = None
         else:
-            print(f"WARNING: [BaseArrival] Warp portal image not found at {warp_image_path}")
+            print(
+                f"WARNING: [BaseArrival] Warp portal image not found at {warp_image_path}"
+            )
             self.warp_portal_image = None
 
     def update(self, dt: float):
@@ -13410,8 +15223,12 @@ class BaseArrivalAnimation:
             self.warp_portal_alpha = int(255 * portal_progress)
         else:
             # 페이드 아웃 시작 (우주선 이동 중)
-            fade_progress = (self.elapsed - self.portal_duration) / (self.duration - self.portal_duration)
-            self.warp_portal_alpha = int(255 * (1.0 - min(1.0, fade_progress * 2)))  # 빠르게 페이드 아웃
+            fade_progress = (self.elapsed - self.portal_duration) / (
+                self.duration - self.portal_duration
+            )
+            self.warp_portal_alpha = int(
+                255 * (1.0 - min(1.0, fade_progress * 2))
+            )  # 빠르게 페이드 아웃
 
         # Easing: ease-in-out (부드러운 감속)
         eased = progress * progress * (3 - 2 * progress)
@@ -13422,7 +15239,9 @@ class BaseArrivalAnimation:
             self.pos = self.start_pos
         else:
             # 우주선 이동 시작
-            move_progress = (self.elapsed - self.ship_appear_delay) / (self.duration - self.ship_appear_delay)
+            move_progress = (self.elapsed - self.ship_appear_delay) / (
+                self.duration - self.ship_appear_delay
+            )
             move_eased = move_progress * move_progress * (3 - 2 * move_progress)
             self.pos = self.start_pos.lerp(self.target_pos, move_eased)
 
@@ -13437,19 +15256,23 @@ class BaseArrivalAnimation:
         if self.warp_portal_image and self.warp_portal_alpha > 0:
             portal_with_alpha = self.warp_portal_image.copy()
             portal_with_alpha.set_alpha(self.warp_portal_alpha)
-            portal_rect = portal_with_alpha.get_rect(center=(int(self.portal_pos.x), int(self.portal_pos.y)))
+            portal_rect = portal_with_alpha.get_rect(
+                center=(int(self.portal_pos.x), int(self.portal_pos.y))
+            )
             screen.blit(portal_with_alpha, portal_rect)
 
         # 우주선 그리기 (ship_appear_delay 이후에만 표시)
         if self.elapsed >= self.ship_appear_delay:
             # 크기 계산 (선형 축소)
-            current_scale = self.start_scale + (self.end_scale - self.start_scale) * progress
+            current_scale = (
+                self.start_scale + (self.end_scale - self.start_scale) * progress
+            )
 
             # 이미지 스케일링
             original_size = self.original_image.get_size()
             new_size = (
                 int(original_size[0] * current_scale),
-                int(original_size[1] * current_scale)
+                int(original_size[1] * current_scale),
             )
 
             if new_size[0] > 0 and new_size[1] > 0:
@@ -13457,7 +15280,9 @@ class BaseArrivalAnimation:
 
                 # 페이드 아웃 (85% 진행 시점부터)
                 if progress >= self.fade_start_progress:
-                    fade_progress = (progress - self.fade_start_progress) / (1.0 - self.fade_start_progress)
+                    fade_progress = (progress - self.fade_start_progress) / (
+                        1.0 - self.fade_start_progress
+                    )
                     alpha = int(255 * (1.0 - fade_progress))
                     scaled_image.set_alpha(alpha)
 
@@ -13521,6 +15346,7 @@ class DialogueShipAnimation:
 
         # 타원 궤도 위치 계산
         import math
+
         self.pos.x = self.center.x + math.cos(self.current_angle) * self.orbit_radius_x
         self.pos.y = self.center.y + math.sin(self.current_angle) * self.orbit_radius_y
 

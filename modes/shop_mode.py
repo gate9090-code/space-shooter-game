@@ -18,7 +18,7 @@ from dataclasses import dataclass
 
 import config
 from modes.base_mode import GameMode, ModeConfig
-from ui import render_text_with_emoji
+from ui_render import render_text_with_emoji
 from ui_components import UILayoutManager, TabData, TabState, UnifiedParticleSystem
 
 

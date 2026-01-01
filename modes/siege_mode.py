@@ -474,7 +474,7 @@ class SiegeMode(GameMode):
 
     def _render_overlay(self, screen: pygame.Surface):
         """상태별 오버레이"""
-        from ui import draw_pause_and_over_screens
+        from ui_render import draw_pause_and_over_screens
 
         state = self.game_data["game_state"]
 

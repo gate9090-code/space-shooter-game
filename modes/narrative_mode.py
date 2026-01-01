@@ -183,6 +183,9 @@ class NarrativeMode(GameMode):
         if self.scene_id and not self.dialogues:
             self._load_scene_from_json()
 
+        # 음성 시스템 초기화 (delegate effect 생성 전에 먼저 초기화)
+        self._init_voice_system()
+
         # CUTSCENE 타입: 효과 클래스 위임 시도
         if self.narrative_type == "CUTSCENE":
             effect_created = self._create_delegate_effect()
@@ -210,9 +213,6 @@ class NarrativeMode(GameMode):
 
         # 포트레이트 로드 (실패해도 계속 진행)
         self._load_portraits()
-
-        # 음성 시스템 초기화
-        self._init_voice_system()
 
         # 커스텀 커서
         self.custom_cursor = self._load_base_cursor()
@@ -457,6 +457,7 @@ class NarrativeMode(GameMode):
 
     def _init_voice_system(self):
         """음성 시스템 초기화"""
+        print("DEBUG: _init_voice_system called")
         try:
             from systems.voice_system import VoiceSystem, EdgeTTSAdapter, Pyttsx3Adapter, SilentAdapter
             from mode_configs import config_story_dialogue
@@ -465,8 +466,10 @@ class NarrativeMode(GameMode):
             voice_settings = config_story_dialogue.VOICE_SYSTEM_SETTINGS
             char_voice_settings = config_story_dialogue.CHARACTER_VOICE_SETTINGS
 
+            print(f"DEBUG: voice_settings enabled={voice_settings.get('enabled', False)}")
             if not voice_settings.get("enabled", False):
                 self.voice_system = None
+                print("DEBUG: Voice system disabled by config")
                 return
 
             # VoiceSystem 생성
@@ -501,7 +504,7 @@ class NarrativeMode(GameMode):
 
             # 음성 시스템 시작
             self.voice_system.start()
-            print("INFO: NarrativeMode voice system initialized")
+            print(f"INFO: NarrativeMode voice system initialized - system={self.voice_system is not None}")
 
         except ImportError as e:
             print(f"WARNING: Voice system not available: {e}")
@@ -513,11 +516,21 @@ class NarrativeMode(GameMode):
     def _init_dialogue_ship_animation(self):
         """대화 중 우주선 회전 애니메이션 초기화"""
         try:
-            from objects import DialogueShipAnimation
+            from effects.game_animations import DialogueShipAnimation
             import config
 
+            # 현재 선택된 우주선 가져오기
+            current_ship = self.engine.shared_state.get('current_ship', config.DEFAULT_SHIP)
+
+            # 우주선 데이터에서 이미지 파일명 가져오기
+            ship_data = config.SHIP_TYPES.get(current_ship, config.SHIP_TYPES[config.DEFAULT_SHIP])
+            ship_image_filename = ship_data.get('image', 'player_ship.png')
+
+            # 우주선 이미지 경로 구성
+            ship_image_path = config.IMAGE_DIR / "ships" / ship_image_filename
+
             # 플레이어 우주선 이미지 로드
-            ship_image = pygame.image.load(str(config.PLAYER_SHIP_IMAGE_PATH)).convert_alpha()
+            ship_image = pygame.image.load(str(ship_image_path)).convert_alpha()
 
             # 대화 중 우주선 애니메이션 생성 (135% 크기, 중간 타원 궤도)
             self.dialogue_ship_animation = DialogueShipAnimation(
@@ -525,7 +538,7 @@ class NarrativeMode(GameMode):
                 screen_size=self.screen_size,
                 scale=1.35  # 120-150% 범위에서 135% 선택
             )
-            print(f"INFO: Dialogue ship animation initialized")
+            print(f"INFO: Dialogue ship animation initialized with {current_ship} ({ship_image_filename})")
         except Exception as e:
             print(f"WARNING: Failed to initialize dialogue ship animation: {e}")
             self.dialogue_ship_animation = None
@@ -841,7 +854,7 @@ class NarrativeMode(GameMode):
 
     def _create_polaroid_effect(self, episode_loader, effect_data: dict) -> bool:
         """PolaroidMemoryEffect 생성"""
-        from objects import PolaroidMemoryEffect
+        from cutscenes.memory_effects import PolaroidMemoryEffect
 
         # 이미지 경로 해석
         polaroid_images = effect_data.get("polaroid_images", [])
@@ -862,11 +875,12 @@ class NarrativeMode(GameMode):
             screen_size=self.screen_size,
             photo_paths=photo_paths,
             background_path=bg_path,
-            dialogue_after=self.dialogues,
-            dialogue_per_photo=[],  # 개별 사진 대화는 별도로 처리
+            dialogue_after=[],  # 모든 사진 후 대화는 사용 안 함
+            dialogue_per_photo=self.dialogues,  # 각 사진 등장 시 대화 표시
             sound_manager=getattr(self, 'sound_manager', None),
             special_effects=special_effects,
-            scene_id=self.scene_id
+            scene_id=self.scene_id,
+            voice_system=getattr(self, 'voice_system', None)  # 음성 시스템 전달
         )
 
         # 폰트 설정
@@ -880,7 +894,7 @@ class NarrativeMode(GameMode):
 
     def _create_document_effect(self, episode_loader, effect_data: dict) -> bool:
         """ClassifiedDocumentEffect 생성"""
-        from objects import ClassifiedDocumentEffect
+        from cutscenes.document_effects import ClassifiedDocumentEffect
 
         # 문서 이미지 경로
         document_images = effect_data.get("document_images", [])
@@ -916,7 +930,7 @@ class NarrativeMode(GameMode):
 
     def _create_hologram_effect(self, episode_loader, effect_data: dict) -> bool:
         """FilmReelEffect (DamagedHologramEffect) 생성"""
-        from objects import FilmReelEffect
+        from cutscenes.document_effects import FilmReelEffect
 
         # 홀로그램 이미지 경로
         hologram_images = effect_data.get("hologram_images", [])
@@ -947,7 +961,7 @@ class NarrativeMode(GameMode):
 
     def _create_mirror_effect(self, episode_loader, effect_data: dict) -> bool:
         """ShatteredMirrorEffect 생성"""
-        from objects import ShatteredMirrorEffect
+        from cutscenes.memory_effects import ShatteredMirrorEffect
 
         # 파편 이미지 경로
         fragment_images = effect_data.get("fragment_images", [])
@@ -978,7 +992,7 @@ class NarrativeMode(GameMode):
 
     def _create_starmap_effect(self, episode_loader, effect_data: dict) -> bool:
         """StarMapEffect 생성"""
-        from objects import StarMapEffect
+        from cutscenes.world_effects import StarMapEffect
 
         # 마커 이미지 경로
         marker_images = effect_data.get("marker_images", [])
@@ -1168,7 +1182,7 @@ class NarrativeMode(GameMode):
 
     def _render_dialogue(self, screen: pygame.Surface):
         """대화창 렌더링 - render_dialogue_box 함수 사용 (인트로와 동일 포맷)"""
-        from objects import render_dialogue_box
+        from cutscenes.base import render_dialogue_box
 
         # 현재 대화 데이터 구성
         current_dialogue = {

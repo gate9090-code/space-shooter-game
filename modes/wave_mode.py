@@ -15,18 +15,23 @@ from systems.skill_system import SkillSystem
 from systems.effect_system import EffectSystem
 from systems.spawn_system import SpawnSystem, SpawnConfig
 from systems.ui_system import UISystem, UIConfig
-from objects import (
-    Player, Enemy, Bullet, ParallaxLayer, Meteor,
-    BackgroundTransition, Drone, Turret, CombatMotionEffect
-)
+# Entity imports from new modules
+from entities.player import Player
+from entities.enemies import Enemy
+from entities.weapons import Bullet
+from entities.support_units import Drone, Turret
+# Effect and background classes
+from effects.transitions import ParallaxLayer, BackgroundTransition
+from effects.game_animations import Meteor
+from cutscenes.combat_effects import CombatMotionEffect
 from asset_manager import AssetManager
-from utils import (
+from game_logic import (
     reset_game_data, start_wave, advance_to_next_wave, check_wave_clear,
     update_game_objects, handle_spawning, spawn_gem, generate_tactical_options,
     handle_tactical_upgrade, update_random_event, get_active_event_modifiers,
     get_next_level_threshold, auto_place_turrets, trigger_ship_ability,
 )
-from ui import (
+from ui_render import (
     draw_hud, draw_pause_and_over_screens, draw_shop_screen,
     draw_tactical_menu, draw_wave_prepare_screen, draw_wave_clear_screen,
     draw_boss_health_bar, draw_victory_screen, draw_skill_indicators,
@@ -436,11 +441,18 @@ class WaveMode(GameMode):
         # 전투 모션 효과 즉시 종료
         self.combat_motion_effect.is_active = False
 
+        # 플레이어 트레일 비활성화 (적 퇴각 시작 시점부터 파티클 제거)
+        if self.player:
+            self.player.disable_trail = True
+            # 기존 트레일 파티클 모두 제거
+            self.player.trail_particles.clear()
+            print("INFO: Player trail disabled during wave transition")
+
         # 페이즈 변경
         self.game_data['wave_phase'] = 'cleanup'
 
         # WaveTransitionEffect 추가 (화면 어두워짐 + 이미지 서서히 등장)
-        from objects import WaveTransitionEffect
+        from effects.transitions import WaveTransitionEffect
         try:
             transition_effect = WaveTransitionEffect(
                 screen_size=self.screen_size,
@@ -468,12 +480,12 @@ class WaveMode(GameMode):
 
         self.sound_manager.play_sfx("level_up")  # 전환 사운드
 
-        # 레벨업 효과 트리거 (웨이브 클리어 = 레벨업)
-        self.level_up_effect.trigger(self.game_data["current_wave"])
+        # 레벨업 효과 비활성화 (적 퇴각 시점에는 파티클 효과 제거)
+        # self.level_up_effect.trigger(self.game_data["current_wave"])
 
     def _start_victory_animation(self):
         """웨이브 클리어 시 플레이어 승리 애니메이션 시작"""
-        from objects import PlayerVictoryAnimation
+        from effects.game_animations import PlayerVictoryAnimation, WaveClearFireworksEffect
 
         print(f"INFO: Starting victory animation for wave {self.game_data['current_wave']}")
 
@@ -484,6 +496,10 @@ class WaveMode(GameMode):
         # 승리 애니메이션 생성
         def on_animation_complete():
             self.game_data['victory_animation_active'] = False
+            # 트레일 다시 활성화 (다음 웨이브를 위해)
+            if self.player:
+                self.player.disable_trail = False
+                print("INFO: Player trail re-enabled for next wave")
             print("INFO: Victory animation completed")
 
         victory_anim = PlayerVictoryAnimation(
@@ -494,6 +510,14 @@ class WaveMode(GameMode):
         )
         victory_anim.on_complete = on_animation_complete
         self.effects.append(victory_anim)
+
+        # 불꽃놀이 축하 효과 추가 (웨이브 완전 클리어 시에만 표시)
+        fireworks_effect = WaveClearFireworksEffect(
+            screen_size=self.screen_size,
+            duration=5.5  # 승리 애니메이션 전체 시간 동안 표시 (3.5 + 2.0)
+        )
+        self.effects.append(fireworks_effect)
+        print("INFO: Fireworks effect added to celebrate wave clear")
 
     def _check_game_over(self):
         """게임 오버 체크"""
@@ -536,7 +560,7 @@ class WaveMode(GameMode):
 
     def _add_revive_effects(self, text: str, color: Tuple[int, int, int]):
         """부활 시 시각 효과 추가 (화면 플래시 + 텍스트)"""
-        from objects import ScreenFlash, ReviveTextEffect
+        from cutscenes.animation_effects import ScreenFlash, ReviveTextEffect
 
         # 화면 플래시 (0.4초)
         flash = ScreenFlash(self.screen_size, color=color, duration=0.4)
@@ -617,10 +641,12 @@ class WaveMode(GameMode):
 
         # 시각적 피드백 효과 렌더링 (최상위 레이어)
         self.damage_flash.render(screen)
-        self.level_up_effect.render(screen)
+        # LevelUpEffect 렌더링 비활성화 (골드 파티클 효과 제거)
+        # self.level_up_effect.render(screen)
 
-        # 전투 모션 효과 (고속 비행 연출) - RUNNING 상태에서만
-        if self.game_data["game_state"] == config.GAME_STATE_RUNNING:
+        # 전투 모션 효과 (고속 비행 연출) - RUNNING 상태에서만, 승리 애니메이션 중에는 비활성화
+        wave_phase = self.game_data.get('wave_phase', 'normal')
+        if self.game_data["game_state"] == config.GAME_STATE_RUNNING and wave_phase != 'victory_animation':
             self.combat_motion_effect.draw(screen)
 
         # 커스텀 커서 렌더링 (최상위)
@@ -682,7 +708,7 @@ class WaveMode(GameMode):
                          "medium": self.fonts["medium"], "small": self.fonts["small"]}
             draw_victory_screen(screen, self.game_data, self.player, fonts_dict)
         elif state == config.GAME_STATE_BOSS_CLEAR:
-            from ui import draw_boss_clear_choice
+            from ui_render import draw_boss_clear_choice
             fonts_dict = {"huge": self.fonts["huge"], "title": self.fonts["large"],
                          "medium": self.fonts["medium"], "small": self.fonts["small"]}
             self.boss_clear_button_rects = draw_boss_clear_choice(screen, self.game_data, fonts_dict)
@@ -1264,7 +1290,7 @@ class WaveMode(GameMode):
         """Base Hub로 귀환 (애니메이션 포함)"""
         # 복귀 애니메이션 시작
         if not hasattr(self, 'return_animation'):
-            from objects import ReturnToBaseAnimation
+            from effects.game_animations import ReturnToBaseAnimation
 
             # 플레이어 이미지와 시작 위치 설정
             if self.player and hasattr(self.player, 'original_image'):

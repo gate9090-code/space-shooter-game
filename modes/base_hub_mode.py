@@ -396,7 +396,7 @@ class BaseHubMode(GameMode):
 
     def _show_opening_cutscene(self):
         """게임 오프닝 컷씬 표시"""
-        from objects import StoryBriefingEffect
+        from cutscenes.story_effects import StoryBriefingEffect
         from mode_configs import config_story_dialogue
 
         # JSON 우선 로드 시도
@@ -1453,12 +1453,23 @@ class BaseHubMode(GameMode):
 
     def _start_arrival_animation(self):
         """기지 진입 애니메이션 시작"""
-        from objects import BaseArrivalAnimation
+        from effects.game_animations import BaseArrivalAnimation
 
         # 플레이어 이미지 로드
         try:
             import config
-            player_image = pygame.image.load(str(config.PLAYER_SHIP_IMAGE_PATH)).convert_alpha()
+
+            # 현재 선택된 우주선 가져오기
+            current_ship = self.engine.shared_state.get('current_ship', config.DEFAULT_SHIP)
+
+            # 우주선 데이터에서 이미지 파일명 가져오기
+            ship_data = config.SHIP_TYPES.get(current_ship, config.SHIP_TYPES[config.DEFAULT_SHIP])
+            ship_image_filename = ship_data.get('image', 'player_ship.png')
+
+            # 우주선 이미지 경로 구성
+            ship_image_path = config.IMAGE_DIR / "ships" / ship_image_filename
+
+            player_image = pygame.image.load(str(ship_image_path)).convert_alpha()
 
             # 기지 중앙 위치 (carrier_rect 사용)
             if self.carrier_rect:
@@ -1474,7 +1485,7 @@ class BaseHubMode(GameMode):
                 base_center
             )
 
-            print("INFO: Base arrival animation started")
+            print(f"INFO: Base arrival animation started with {current_ship} ({ship_image_filename})")
 
         except Exception as e:
             print(f"ERROR: Failed to start arrival animation: {e}")

@@ -30,18 +30,23 @@ from systems.skill_system import SkillSystem
 from systems.effect_system import EffectSystem
 from systems.spawn_system import SpawnSystem, SpawnConfig
 from systems.ui_system import UISystem, UIConfig
-from objects import (
-    Player, Enemy, Bullet, ParallaxLayer, Meteor,
-    BackgroundTransition, Drone, Turret, CombatMotionEffect
-)
+# Entity imports from new modules
+from entities.player import Player
+from entities.enemies import Enemy
+from entities.weapons import Bullet
+from entities.support_units import Drone, Turret
+# Effect and background classes
+from effects.transitions import ParallaxLayer, BackgroundTransition
+from effects.game_animations import Meteor
+from cutscenes.combat_effects import CombatMotionEffect
 from asset_manager import AssetManager
-from utils import (
+from game_logic import (
     reset_game_data, start_wave, advance_to_next_wave, check_wave_clear,
     update_game_objects, handle_spawning, spawn_gem, generate_tactical_options,
     handle_tactical_upgrade, update_random_event, get_active_event_modifiers,
     get_next_level_threshold, auto_place_turrets, trigger_ship_ability,
 )
-from ui import (
+from ui_render import (
     draw_hud, draw_pause_and_over_screens, draw_shop_screen,
     draw_tactical_menu, draw_wave_prepare_screen, draw_wave_clear_screen,
     draw_boss_health_bar, draw_victory_screen, draw_skill_indicators,
@@ -519,8 +524,9 @@ class CombatMode(GameMode):
         # 시각적 피드백 효과 렌더링 (최상위 레이어)
         if self.damage_flash:
             self.damage_flash.render(screen)
-        if self.level_up_effect:
-            self.level_up_effect.render(screen)
+        # LevelUpEffect 렌더링 비활성화 (골드 파티클 효과 제거)
+        # if self.level_up_effect:
+        #     self.level_up_effect.render(screen)
 
         # 전투 모션 효과
         if self.combat_state == "fighting" and self.combat_motion_effect:

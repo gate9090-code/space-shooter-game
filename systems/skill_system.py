@@ -10,7 +10,9 @@ import random
 import math
 from typing import List, Optional
 import config
-from objects import Player, Enemy
+# Entity imports from new modules
+from entities.player import Player
+from entities.enemies import Enemy
 
 
 class SkillSystem:
@@ -105,8 +107,8 @@ class SkillSystem:
         **kwargs
     ) -> int:
         """폭발 스킬 처리"""
-        from utils import create_explosion_particles
-        from objects import Shockwave
+        from game_logic import create_explosion_particles
+        from effects.screen_effects import Shockwave
 
         if not player.has_explosive or not position:
             return 0
@@ -152,7 +154,7 @@ class SkillSystem:
         **kwargs
     ) -> int:
         """번개 체인 스킬 처리"""
-        from objects import LightningEffect
+        from effects.screen_effects import LightningEffect
 
         if not player.has_lightning or not position:
             return 0
@@ -287,7 +289,7 @@ class SkillSystem:
         **kwargs
     ) -> int:
         """처형 스킬 처리 (낮은 HP 적 즉사)"""
-        from objects import ExecuteEffect
+        from effects.screen_effects import ExecuteEffect
 
         if player.execute_threshold <= 0:
             return 0
@@ -318,7 +320,7 @@ class SkillSystem:
         **kwargs
     ) -> int:
         """별똥별 스킬 처리 (궁극기)"""
-        from objects import StarfallEffect
+        from effects.screen_effects import StarfallEffect
 
         if not player.has_starfall:
             return 0

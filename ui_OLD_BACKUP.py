@@ -4,10 +4,10 @@ import pygame
 import math
 from typing import Tuple, List, Dict, TYPE_CHECKING, Optional
 import config
-from utils import get_next_level_threshold
+from game_logic import get_next_level_threshold
 
 if TYPE_CHECKING:
-    from objects import Player
+    from entities.player import Player
 
 
 # =========================================================
