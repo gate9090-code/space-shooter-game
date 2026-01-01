@@ -2,6 +2,7 @@
 """
 리팩토링된 메인 진입점
 GameEngine + 모드 시스템 사용
+Timeline 테스트를 위한 첫 번째 수정
 """
 
 import pygame
