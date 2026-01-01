@@ -99,8 +99,21 @@ class WaveMode(GameMode):
         self.save_system = get_save_system()
 
         # 저장된 진행 불러오기 여부 확인
-        self.continue_from_save = self.engine.shared_state.get('continue_wave_save', False)
-        self.engine.shared_state['continue_wave_save'] = False  # 플래그 리셋
+        continue_wave_data = self.engine.shared_state.get('continue_wave_data', None)
+        self.continue_from_save = continue_wave_data is not None
+        self.continue_wave_data = continue_wave_data
+        self.engine.shared_state['continue_wave_data'] = None  # 플래그 리셋
+
+        # 새 게임 시작이면 저장 파일 삭제
+        if not self.continue_from_save:
+            from pathlib import Path
+            save_path = Path("saves/wave_progress.json")
+            if save_path.exists():
+                try:
+                    save_path.unlink()
+                    print("INFO: Cleared previous wave progress")
+                except Exception as e:
+                    print(f"WARNING: Failed to clear wave progress: {e}")
 
         # 게임 데이터 초기화
         self.game_data = reset_game_data()
@@ -153,21 +166,21 @@ class WaveMode(GameMode):
         self.combat_motion_effect = CombatMotionEffect(self.screen_size)
         self.player_prev_pos = None  # 이동 감지용
 
+        # 기본 마우스 커서 숨김 (전투 중에는 커스텀 커서 사용)
+        pygame.mouse.set_visible(False)
+
         print("INFO: WaveMode initialized")
 
     def _load_saved_progress(self):
         """저장된 진행 불러오기"""
-        save_data = self.save_system.load_wave_progress()
-        if not save_data:
+        if not self.continue_wave_data:
             print("WARNING: No save data found to continue")
             return
 
         # 게임 데이터 복원
-        saved_game = save_data.get("game_data", {})
-        self.game_data["current_wave"] = saved_game.get("current_wave", 1)
-        self.game_data["score"] = saved_game.get("score", 0)
-        self.game_data["player_level"] = saved_game.get("player_level", 1)
-        self.game_data["kill_count"] = saved_game.get("kill_count", 0)
+        self.game_data["current_wave"] = self.continue_wave_data.get("wave", 1)
+        self.game_data["score"] = self.continue_wave_data.get("score", 0)
+        self.game_data["player_level"] = self.continue_wave_data.get("player_level", 1)
 
         # 웨이브 타겟 킬 업데이트
         current_wave = self.game_data["current_wave"]
@@ -175,9 +188,12 @@ class WaveMode(GameMode):
             self.game_data["wave_target_kills"] = config.WAVE_SCALING[current_wave]["target_kills"]
 
         # 플레이어 데이터 복원
-        saved_player = save_data.get("player_data", {})
-        if saved_player and self.player:
-            apply_player_save_data(self.player, saved_player)
+        if self.player:
+            self.player.hp = self.continue_wave_data.get("player_hp", 100)
+            self.player.max_hp = self.continue_wave_data.get("player_max_hp", 100)
+            player_upgrades = self.continue_wave_data.get("player_upgrades", {})
+            if player_upgrades:
+                self.player.upgrades = player_upgrades
 
         print(f"INFO: Loaded saved progress - Wave {self.game_data['current_wave']}, Level {self.game_data['player_level']}")
 
@@ -227,6 +243,20 @@ class WaveMode(GameMode):
 
     def update(self, dt: float, current_time: float):
         """웨이브 모드 업데이트"""
+        # 복귀 애니메이션 업데이트 (최우선)
+        if hasattr(self, 'return_animation') and self.return_animation:
+            self.return_animation.update(dt)
+            # 애니메이션 완료 시 기지로 복귀
+            if not self.return_animation.is_alive:
+                from modes.base_hub_mode import BaseHubMode
+                # 기지 진입 애니메이션을 위한 플래그 설정
+                self.engine.shared_state['start_arrival_animation'] = True
+                self.request_switch_mode(BaseHubMode)
+                print("INFO: Return animation complete, switching to Base Hub")
+                return
+            # 애니메이션 중에는 다른 업데이트 스킵
+            return
+
         # 공통 업데이트 (타임스케일, 화면 흔들림, 이펙트)
         scaled_dt = self.update_common(dt, current_time)
 
@@ -459,8 +489,8 @@ class WaveMode(GameMode):
         victory_anim = PlayerVictoryAnimation(
             player=self.player,
             screen_size=self.screen_size,
-            orbit_duration=2.5,   # 아주 천천히 회전
-            move_duration=1.5     # 1.5초 동안 하단으로 이동
+            orbit_duration=3.5,   # 느리게 회전 (기본값 사용)
+            move_duration=2.0     # 2.0초 동안 하단으로 이동 (기본값 사용)
         )
         victory_anim.on_complete = on_animation_complete
         self.effects.append(victory_anim)
@@ -537,6 +567,14 @@ class WaveMode(GameMode):
 
     def render(self, screen: pygame.Surface):
         """웨이브 모드 렌더링"""
+        # 복귀 애니메이션 렌더링 (최우선)
+        if hasattr(self, 'return_animation') and self.return_animation:
+            # 배경 렌더링
+            self._render_background(screen)
+            # 애니메이션 그리기 (워프 포탈은 배경 위에 오버레이)
+            self.return_animation.draw(screen)
+            return
+
         # 배경 렌더링
         self._render_background(screen)
 
@@ -643,6 +681,11 @@ class WaveMode(GameMode):
             fonts_dict = {"huge": self.fonts["huge"], "title": self.fonts["large"],
                          "medium": self.fonts["medium"], "small": self.fonts["small"]}
             draw_victory_screen(screen, self.game_data, self.player, fonts_dict)
+        elif state == config.GAME_STATE_BOSS_CLEAR:
+            from ui import draw_boss_clear_choice
+            fonts_dict = {"huge": self.fonts["huge"], "title": self.fonts["large"],
+                         "medium": self.fonts["medium"], "small": self.fonts["small"]}
+            self.boss_clear_button_rects = draw_boss_clear_choice(screen, self.game_data, fonts_dict)
         elif state == config.GAME_STATE_QUIT_CONFIRM:
             self.ui_system.draw_quit_confirm_overlay(screen, self.screen_size, self.fonts)
         elif state == config.GAME_STATE_TURRET_PLACEMENT:
@@ -676,6 +719,8 @@ class WaveMode(GameMode):
             self._handle_game_over_event(event)
         elif state == config.GAME_STATE_VICTORY:
             self._handle_victory_event(event)
+        elif state == config.GAME_STATE_BOSS_CLEAR:
+            self._handle_boss_clear_event(event)
         elif state == config.GAME_STATE_QUIT_CONFIRM:
             self._handle_quit_confirm_event(event)
         elif state == config.GAME_STATE_TURRET_PLACEMENT:
@@ -944,6 +989,51 @@ class WaveMode(GameMode):
                     self._mark_episode_complete()
                     self._return_to_base()
 
+    def _handle_boss_clear_event(self, event: pygame.event.Event):
+        """보스 클리어 후 선택 이벤트"""
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_c or event.key == pygame.K_RETURN or event.key == pygame.K_SPACE:
+                # C키 또는 Enter/Space: 웨이브 계속
+                self._continue_wave()
+            elif event.key == pygame.K_b or event.key == pygame.K_ESCAPE:
+                # B키 또는 ESC: 기지 복귀
+                self._save_wave_progress()
+                self._return_to_base()
+
+        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            mouse_pos = event.pos
+            if hasattr(self, 'boss_clear_button_rects'):
+                # Continue 버튼 클릭
+                if "continue" in self.boss_clear_button_rects:
+                    if self.boss_clear_button_rects["continue"].collidepoint(mouse_pos):
+                        self.sound_manager.play_sfx("button_click")
+                        self._continue_wave()
+                        return
+
+                # Return to Base 버튼 클릭
+                if "return_base" in self.boss_clear_button_rects:
+                    if self.boss_clear_button_rects["return_base"].collidepoint(mouse_pos):
+                        self.sound_manager.play_sfx("button_click")
+                        self._save_wave_progress()
+                        self._return_to_base()
+                        return
+
+    def _continue_wave(self):
+        """웨이브 계속 진행"""
+        current_wave = self.game_data.get("current_wave", 1)
+
+        # 마지막 웨이브(20)에서 계속을 누르면 승리 화면으로
+        if current_wave >= config.TOTAL_WAVES:
+            self.game_data["game_state"] = config.GAME_STATE_VICTORY
+            if self.sound_manager:
+                self.sound_manager.play_bgm("victory", loops=0, fade_ms=2000)
+            print("INFO: ALL WAVES CLEARED! VICTORY!")
+        else:
+            # 다음 웨이브로 증가
+            self.game_data["current_wave"] += 1
+            self.game_data["game_state"] = config.GAME_STATE_WAVE_PREPARE
+            print(f"INFO: Continuing to Wave {self.game_data['current_wave']}")
+
     def _handle_paused_event(self, event: pygame.event.Event):
         """일시정지 이벤트 - P키는 handle_common_events에서 처리됨, 마우스 클릭 지원"""
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -1114,11 +1204,91 @@ class WaveMode(GameMode):
         # 점수를 global_score에 저장
         self.engine.shared_state['global_score'] = self.game_data.get('score', 0)
 
+    def _save_wave_progress(self):
+        """현재 웨이브 진행 상황 저장"""
+        import json
+        from pathlib import Path
+
+        progress_data = {
+            'wave': self.game_data.get('current_wave', 1),
+            'score': self.game_data.get('score', 0),
+            'player_hp': self.player.hp if self.player else 100,
+            'player_max_hp': self.player.max_hp if self.player else 100,
+            'player_level': self.game_data.get('player_level', 1),
+            'player_exp': 0,  # exp는 웨이브 모드에서 사용하지 않음
+            'player_upgrades': self.player.upgrades if self.player else {},
+        }
+
+        save_path = Path("saves/wave_progress.json")
+        save_path.parent.mkdir(parents=True, exist_ok=True)
+
+        try:
+            with open(save_path, 'w', encoding='utf-8') as f:
+                json.dump(progress_data, f, indent=2, ensure_ascii=False)
+            print(f"INFO: Wave progress saved (Wave {progress_data['wave']})")
+        except Exception as e:
+            print(f"ERROR: Failed to save wave progress: {e}")
+
+    def _load_wave_progress(self):
+        """저장된 웨이브 진행 상황 로드"""
+        import json
+        from pathlib import Path
+
+        save_path = Path("saves/wave_progress.json")
+        if not save_path.exists():
+            return None
+
+        try:
+            with open(save_path, 'r', encoding='utf-8') as f:
+                progress_data = json.load(f)
+            print(f"INFO: Wave progress loaded (Wave {progress_data.get('wave', 1)})")
+            return progress_data
+        except Exception as e:
+            print(f"ERROR: Failed to load wave progress: {e}")
+            return None
+
+    def _clear_wave_progress(self):
+        """저장된 웨이브 진행 상황 삭제"""
+        import json
+        from pathlib import Path
+
+        save_path = Path("saves/wave_progress.json")
+        if save_path.exists():
+            try:
+                save_path.unlink()
+                print("INFO: Wave progress cleared")
+            except Exception as e:
+                print(f"ERROR: Failed to clear wave progress: {e}")
+
     def _return_to_base(self):
-        """Base Hub로 귀환"""
-        from modes.base_hub_mode import BaseHubMode
-        self.request_switch_mode(BaseHubMode)
-        print("INFO: Returning to Base Hub")
+        """Base Hub로 귀환 (애니메이션 포함)"""
+        # 복귀 애니메이션 시작
+        if not hasattr(self, 'return_animation'):
+            from objects import ReturnToBaseAnimation
+
+            # 플레이어 이미지와 시작 위치 설정
+            if self.player and hasattr(self.player, 'original_image'):
+                player_image = self.player.original_image
+                # 전투 종료 위치 (플레이어의 현재 위치)
+                start_pos = (self.player.pos.x, self.player.pos.y)
+
+                self.return_animation = ReturnToBaseAnimation(
+                    player_image,
+                    start_pos,
+                    self.screen_size
+                )
+
+                # 애니메이션 중에는 플레이어 숨김
+                self.player_visible = False
+                print("INFO: Starting return to base animation")
+            else:
+                # 플레이어 이미지가 없으면 바로 복귀
+                from modes.base_hub_mode import BaseHubMode
+                self.request_switch_mode(BaseHubMode)
+                print("INFO: Returning to Base Hub (no animation)")
+        else:
+            # 이미 애니메이션 시작된 경우
+            pass
 
     def _complete_side_mission_and_return(self):
         """사이드 미션 완료 처리 후 BaseHub로 귀환 (base_mode 공통 메서드 사용)"""

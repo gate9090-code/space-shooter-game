@@ -507,12 +507,7 @@ class ReflectionMode(GameMode):
             return
 
         # 스피커 이름 매핑
-        speaker_map = {
-            "ARTEMIS": "ARTEMIS",
-            "PILOT": "PILOT",
-            "NARRATOR": "ANDROID"
-        }
-        portrait_key = speaker_map.get(self.current_speaker, "")
+        portrait_key = self.current_speaker
 
         if portrait_key not in self.portraits:
             return
@@ -548,16 +543,9 @@ class ReflectionMode(GameMode):
         # 현재 스피커의 포트레이트 가져오기
         portrait = None
         has_portrait = False
-        if self.current_speaker:
-            speaker_map = {
-                "ARTEMIS": "ARTEMIS",
-                "PILOT": "PILOT",
-                "NARRATOR": "ANDROID"
-            }
-            portrait_key = speaker_map.get(self.current_speaker, "")
-            if portrait_key in self.portraits:
-                portrait = self.portraits[portrait_key]
-                has_portrait = True
+        if self.current_speaker and self.current_speaker in self.portraits:
+            portrait = self.portraits[self.current_speaker]
+            has_portrait = True
 
         # 타이핑 진행률 계산
         typing_progress = len(self.displayed_text) if self.displayed_text else 0

@@ -163,6 +163,12 @@ class CombatSystem:
 
         took_damage = False
 
+        # 먼저 모든 적의 화상 상태를 초기화
+        for enemy in enemies:
+            if enemy.is_alive:
+                enemy.is_burning = False
+
+        # 충돌 확인 및 화상 상태 설정
         for enemy in enemies:
             if not enemy.is_alive:
                 continue
@@ -172,6 +178,9 @@ class CombatSystem:
             collision_radius = player.hitbox.width / 2 + enemy.hitbox.width / 2
 
             if distance < collision_radius:
+                # 플레이어와 접촉 중 - 화상 이미지 활성화
+                enemy.is_burning = True
+
                 # 쿨다운 체크
                 if current_time - player.last_hit_time < player.hit_cooldown:
                     continue

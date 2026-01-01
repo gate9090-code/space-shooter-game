@@ -101,3 +101,54 @@ class AssetManager:
             emoji_font = pygame.font.Font(None, size)
             self.emoji_font_cache[size] = emoji_font
             return emoji_font
+
+    def get_light_font(self, size: int) -> pygame.font.Font:
+        """Light 폰트 (설명, 본문용 - Malgun Gothic Semilight)"""
+        cache_key = ("light", size)
+        if cache_key in self.font_cache:
+            return self.font_cache[cache_key]
+
+        try:
+            font_system = getattr(config, "FONT_SYSTEM", {})
+            font_name = font_system.get("LIGHT", "Malgun Gothic Semilight")
+            fallback = font_system.get("LIGHT_FALLBACK", "Malgun Gothic")
+
+            font_obj = pygame.font.SysFont(font_name, size)
+            if font_obj is None or font_obj.get_height() == 0:
+                font_obj = pygame.font.SysFont(fallback, size)
+            if font_obj is None:
+                font_obj = self.get_font(size)
+
+            self.font_cache[cache_key] = font_obj
+            return font_obj
+        except Exception as e:
+            print(f"Light 폰트 로드 오류: {e}")
+            font_obj = self.get_font(size)
+            self.font_cache[cache_key] = font_obj
+            return font_obj
+
+    def get_regular_font(self, size: int) -> pygame.font.Font:
+        """Regular 폰트 (일반 텍스트용 - Malgun Gothic)"""
+        cache_key = ("regular", size)
+        if cache_key in self.font_cache:
+            return self.font_cache[cache_key]
+
+        try:
+            font_system = getattr(config, "FONT_SYSTEM", {})
+            font_name = font_system.get("REGULAR", "Malgun Gothic")
+
+            font_obj = pygame.font.SysFont(font_name, size)
+            if font_obj is None:
+                font_obj = self.get_font(size)
+
+            self.font_cache[cache_key] = font_obj
+            return font_obj
+        except Exception as e:
+            print(f"Regular 폰트 로드 오류: {e}")
+            font_obj = self.get_font(size)
+            self.font_cache[cache_key] = font_obj
+            return font_obj
+
+    def get_dialogue_font(self, size: int) -> pygame.font.Font:
+        """대화창용 가는 폰트 (Light 폰트와 동일)"""
+        return self.get_light_font(size)

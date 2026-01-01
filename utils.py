@@ -64,7 +64,12 @@ def start_wave(game_data: Dict, current_time: float, enemies: List = None):
 
     game_data["game_state"] = config.GAME_STATE_RUNNING
     game_data["wave_kills"] = 0
-    game_data["wave_target_kills"] = config.WAVE_SCALING[current_wave]["target_kills"]
+
+    # 웨이브 스케일링 데이터 가져오기 (범위 초과 시 마지막 웨이브 설정 사용)
+    max_defined_wave = max(config.WAVE_SCALING.keys())
+    wave_key = min(current_wave, max_defined_wave)
+    game_data["wave_target_kills"] = config.WAVE_SCALING[wave_key]["target_kills"]
+
     game_data["wave_start_time"] = current_time
     game_data["wave_phase"] = "normal"  # 웨이브 페이즈 초기화
 
@@ -140,7 +145,15 @@ def advance_to_next_wave(game_data: Dict, player: Player = None, sound_manager =
         else:
             total_waves = config.TOTAL_WAVES  # 20
 
-        if current_wave >= total_waves:
+        if current_wave in config.BOSS_WAVES:
+            # 보스 웨이브 클리어 - 선택 화면 표시
+            if current_wave >= total_waves:
+                # 마지막 웨이브(20)도 보스이므로 선택 가능
+                # 하지만 계속하기를 누르면 21웨이브로 가거나 완료 처리
+                pass
+            game_data["game_state"] = config.GAME_STATE_BOSS_CLEAR
+            print(f"INFO: Boss Wave {current_wave} cleared! Choose to continue or return to base.")
+        elif current_wave >= total_waves:
             # 게임 클리어!
             game_data["game_state"] = config.GAME_STATE_VICTORY
             # 승리 BGM 재생
@@ -370,7 +383,11 @@ def get_active_event_modifiers(game_data: Dict) -> Dict:
 
 def get_wave_scaling(wave: int) -> Dict:
     """웨이브의 난이도 스케일링 정보를 반환합니다."""
-    return config.WAVE_SCALING.get(wave, config.WAVE_SCALING[1])
+    if wave in config.WAVE_SCALING:
+        return config.WAVE_SCALING[wave]
+    # 범위를 벗어난 경우 마지막 정의된 웨이브 설정 사용
+    max_defined_wave = max(config.WAVE_SCALING.keys())
+    return config.WAVE_SCALING[max_defined_wave]
 
 
 def select_enemy_type(wave: int) -> str:
@@ -752,6 +769,7 @@ def update_game_objects(
 
                 # 속성 스킬: Chain Lightning (번개 체인)
                 if player.has_lightning:
+                    from objects import LightningEffect
                     chain_range = config.ATTRIBUTE_SKILL_SETTINGS["LIGHTNING"]["chain_range"]
                     chain_damage = bullet.damage * config.ATTRIBUTE_SKILL_SETTINGS["LIGHTNING"]["damage_ratio"]
                     chain_count = player.lightning_chain_count
@@ -773,7 +791,12 @@ def update_game_objects(
                                     closest_distance = distance
 
                         if closest_enemy:
-                            # 번개 라인 그리기 (파티클로 시뮬레이션)
+                            # 번개 시각 효과 추가
+                            try:
+                                effects.append(LightningEffect(current_pos, closest_enemy.pos))
+                            except:
+                                pass  # LightningEffect가 없으면 무시
+
                             chained_enemies.append(closest_enemy)
                             closest_enemy.take_damage(chain_damage)
                             create_hit_particles((closest_enemy.pos.x, closest_enemy.pos.y), effects)
@@ -815,8 +838,18 @@ def update_game_objects(
 
                     # 속성 스킬: Explosive Bullets (적 사망 시 폭발)
                     if player.has_explosive:
+                        from objects import Shockwave
                         explosion_radius = config.ATTRIBUTE_SKILL_SETTINGS["EXPLOSIVE"]["radius"]
                         explosion_damage = bullet.damage * config.ATTRIBUTE_SKILL_SETTINGS["EXPLOSIVE"]["damage_ratio"]
+
+                        # 폭발 시각 효과 추가
+                        effects.append(Shockwave(
+                            center=(enemy.pos.x, enemy.pos.y),
+                            max_radius=explosion_radius,
+                            duration=0.4,
+                            color=(255, 150, 50),  # 주황색
+                            width=4
+                        ))
 
                         # 폭발 범위 내 적들에게 데미지
                         for other_enemy in enemies:
@@ -913,10 +946,18 @@ def update_game_objects(
                 effects.append(shockwave)
 
     # 5.2 적 vs 플레이어 충돌
+    # 먼저 모든 적의 화상 상태를 초기화
+    for enemy in enemies:
+        if enemy.is_alive:
+            enemy.is_burning = False
+
+    # 충돌 확인 및 화상 상태 설정
     for enemy in enemies:
         if not enemy.is_alive:
             continue
         if player.hitbox.colliderect(enemy.hitbox):
+            # 플레이어와 접촉 중 - 화상 이미지 활성화
+            enemy.is_burning = True
             # KAMIKAZE 타입: 자폭 처리
             if hasattr(enemy, 'explode_on_contact') and enemy.explode_on_contact and not enemy.has_exploded:
                 explosion_damage = getattr(enemy, 'explosion_damage', 20.0)
@@ -1620,10 +1661,14 @@ def create_time_slow_effect(effects: List) -> None:
 
 def update_visual_effects(effects: List, dt: float, screen_size: Tuple[int, int] = None, enemies: List = None) -> None:
     """모든 시각 효과 업데이트 (파티클, 충격파, 텍스트 등)"""
-    from objects import Particle, Shockwave, DynamicTextEffect, SpawnEffect, TimeSlowEffect, StaticField, ScreenFlash, WaveTransitionEffect, PlayerVictoryAnimation, ReviveTextEffect
+    from objects import Particle, Shockwave, DynamicTextEffect, SpawnEffect, TimeSlowEffect, StaticField, ScreenFlash, WaveTransitionEffect, PlayerVictoryAnimation, ReviveTextEffect, LightningEffect
 
     for effect in effects[:]:
         if isinstance(effect, (Particle, Shockwave, SpawnEffect)):
+            effect.update(dt)
+            if not effect.is_alive:
+                effects.remove(effect)
+        elif isinstance(effect, LightningEffect):
             effect.update(dt)
             if not effect.is_alive:
                 effects.remove(effect)
@@ -1665,15 +1710,157 @@ def update_visual_effects(effects: List, dt: float, screen_size: Tuple[int, int]
                 effects.remove(effect)
 
 
+# =========================================================
+# 터렛 자동 배치 함수 (wave_mode, story_mode 공통)
+# =========================================================
+
+def calculate_turret_positions(turret_count: int, screen_size: Tuple[int, int], turret_spacing: int = 100) -> List[Tuple[float, float]]:
+    """
+    터렛 배치 위치 계산 (쿨다운 UI 상단, 좌우 균형)
+
+    Args:
+        turret_count: 배치할 터렛 총 개수
+        screen_size: 화면 크기 (width, height)
+        turret_spacing: 터렛 간 간격 (기본 100)
+
+    Returns:
+        터렛 위치 리스트 [(x1, y1), (x2, y2), ...]
+    """
+    if turret_count <= 0:
+        return []
+
+    base_x = screen_size[0] // 2
+    base_y = screen_size[1] - 60 - 100  # 쿨다운 UI 상단
+
+    positions = []
+    for i in range(turret_count):
+        if turret_count == 1:
+            pos_x = base_x
+        elif turret_count == 2:
+            pos_x = base_x - turret_spacing // 2 + i * turret_spacing
+        else:
+            half_width = (turret_count - 1) * turret_spacing / 2
+            pos_x = base_x - half_width + i * turret_spacing
+
+        positions.append((pos_x, base_y))
+
+    return positions
+
+
+def auto_place_turrets(turrets: List, game_data: Dict, screen_size: Tuple[int, int],
+                       turret_class, sound_manager=None) -> int:
+    """
+    터렛을 쿨다운 UI 상단에 자동 배치
+
+    Args:
+        turrets: 터렛 리스트 (수정됨)
+        game_data: 게임 데이터 딕셔너리
+        screen_size: 화면 크기
+        turret_class: Turret 클래스 (from objects import Turret)
+        sound_manager: 사운드 매니저 (옵션)
+
+    Returns:
+        배치된 터렛 수
+    """
+    pending = game_data.get("pending_turrets", 0)
+    if pending <= 0:
+        return 0
+
+    # 새 터렛 추가
+    for _ in range(pending):
+        turrets.append(turret_class(pos=(0, 0)))  # 임시 위치
+
+    # 전체 터렛 위치 재계산
+    total_count = len(turrets)
+    positions = calculate_turret_positions(total_count, screen_size)
+
+    for i, turret in enumerate(turrets):
+        if i < len(positions):
+            turret.pos.x = positions[i][0]
+            turret.pos.y = positions[i][1]
+
+    game_data["pending_turrets"] = 0
+
+    if sound_manager:
+        sound_manager.play_sfx("turret_place")
+
+    print(f"INFO: {pending} turret(s) auto-placed. Total: {total_count}")
+    return pending
+
+
+# =========================================================
+# Ship Ability 발동 처리 (wave_mode, story_mode 공통)
+# =========================================================
+
+def trigger_ship_ability(player, enemies: List, effects: List,
+                        effect_system=None, sound_manager=None,
+                        silent: bool = False) -> bool:
+    """
+    함선 특수 능력 발동 및 시각/사운드 효과 처리
+
+    Args:
+        player: Player 객체
+        enemies: 적 리스트
+        effects: 이펙트 리스트
+        effect_system: EffectSystem 인스턴스 (시각 효과용, 옵션)
+        sound_manager: SoundManager 인스턴스 (사운드용, 옵션)
+        silent: True면 로그 출력 안함
+
+    Returns:
+        능력 발동 성공 여부
+    """
+    if not player or not hasattr(player, 'use_ship_ability'):
+        return False
+
+    ability_type = getattr(player, 'ship_ability_type', None)
+
+    if not player.use_ship_ability(enemies, effects):
+        return False
+
+    # 시각 효과 생성 (effect_system이 있는 경우만)
+    if effect_system:
+        if ability_type == "bomb_drop":
+            effect_system.create_bomb_explosion(
+                effects, player.pos.copy(),
+                getattr(player, 'bomb_radius', 200)
+            )
+        elif ability_type == "shield":
+            effect_system.create_shield_effect(effects, player.pos.copy())
+        elif ability_type == "cloaking":
+            effect_system.create_cloak_effect(effects, player.pos.copy())
+        elif ability_type == "evasion_boost":
+            effect_system.create_evasion_effect(effects, player.pos.copy())
+
+    # 사운드 재생
+    if sound_manager:
+        ability_sounds = {
+            "bomb_drop": "ability_bomb",
+            "shield": "ability_shield",
+            "cloaking": "ability_cloak",
+            "evasion_boost": "ability_evasion"
+        }
+        sfx_name = ability_sounds.get(ability_type)
+        if sfx_name:
+            sound_manager.play_sfx(sfx_name)
+
+    # 로그 출력
+    if not silent:
+        ability_info = player.get_ship_ability_info() if hasattr(player, 'get_ship_ability_info') else None
+        ability_name = ability_info['name'] if ability_info else ability_type
+        print(f"INFO: Ship ability '{ability_name}' activated!")
+
+    return True
+
+
 def draw_visual_effects(screen: pygame.Surface, effects: List, screen_offset: pygame.math.Vector2 = None) -> None:
     """모든 시각 효과 그리기"""
-    from objects import Particle, Shockwave, DynamicTextEffect, SpawnEffect, TimeSlowEffect, StaticField, ScreenFlash, WaveTransitionEffect, ReviveTextEffect
+    from objects import Particle, Shockwave, DynamicTextEffect, SpawnEffect, TimeSlowEffect, StaticField, ScreenFlash, WaveTransitionEffect, ReviveTextEffect, LightningEffect
 
     if screen_offset is None:
         screen_offset = pygame.math.Vector2(0, 0)
 
     for effect in effects:
-        if isinstance(effect, (Particle, Shockwave, SpawnEffect, AnimatedEffect, StaticField, ScreenFlash, WaveTransitionEffect, ReviveTextEffect)):
+        if isinstance(effect, (Particle, Shockwave, SpawnEffect, AnimatedEffect, StaticField, ScreenFlash, WaveTransitionEffect, ReviveTextEffect, LightningEffect)):
             effect.draw(screen)
         elif isinstance(effect, DynamicTextEffect):
             effect.draw(screen, screen_offset)

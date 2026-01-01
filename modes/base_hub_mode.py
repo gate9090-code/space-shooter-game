@@ -342,6 +342,11 @@ class BaseHubMode(GameMode):
         self.animation_time = 0.0
         self.fade_alpha = 255
 
+        # 웨이브 계속 진행 선택지
+        self.show_wave_continue_choice = False
+        self.saved_wave_data = None
+        self.wave_choice_button_rects = {}
+
         # 배경 (facility_bg 이미지 사용)
         self.background = self._load_facility_background()
         self.particle_system = ParticleSystem(self.screen_size, count=25)
@@ -379,6 +384,13 @@ class BaseHubMode(GameMode):
 
         # 커스텀 커서 로드
         self.custom_cursor = self._load_custom_cursor()
+
+        # 커스텀 커서 사용 시 기본 커서 즉시 숨김
+        if self.custom_cursor:
+            pygame.mouse.set_visible(False)
+
+        # 우주선 진입 애니메이션
+        self.arrival_animation = None
 
         print("INFO: BaseHubMode initialized (Unified Flow)")
 
@@ -741,6 +753,13 @@ class BaseHubMode(GameMode):
         else:
             self.launch_glow = max(0.0, self.launch_glow - dt * 3)
 
+        # 진입 애니메이션 업데이트
+        if self.arrival_animation:
+            self.arrival_animation.update(dt)
+            if self.arrival_animation.is_complete():
+                self.arrival_animation = None
+                print("INFO: Base arrival animation completed")
+
     # =========================================================================
     # 렌더링
     # =========================================================================
@@ -786,11 +805,25 @@ class BaseHubMode(GameMode):
             elif hasattr(self.active_cutscene, 'draw'):
                 self.active_cutscene.draw(screen)
 
-        # 11. 커스텀 커서 (최상단에 렌더링)
+        # 11. 웨이브 계속 진행 선택지 (최상단에 렌더링)
+        if self.show_wave_continue_choice:
+            self._render_wave_continue_choice(screen)
+
+        # 12. 진입 애니메이션 (최상단에 렌더링)
+        if self.arrival_animation:
+            self.arrival_animation.draw(screen)
+
+        # 13. 커스텀 커서 (최상단에 렌더링)
         if self.custom_cursor:
             mouse_pos = pygame.mouse.get_pos()
-            # 커서 핫스팟을 중앙으로 조정
-            cursor_rect = self.custom_cursor.get_rect(center=mouse_pos)
+            # 커서 핫스팟을 좌상단에서 약간 이동 (중앙보다 위쪽)
+            cursor_size = self.custom_cursor.get_size()
+            offset_x = cursor_size[0] * 0.35  # 중앙(0.5)보다 왼쪽
+            offset_y = cursor_size[1] * 0.35  # 중앙(0.5)보다 위쪽
+            cursor_rect = self.custom_cursor.get_rect(topleft=(
+                mouse_pos[0] - offset_x,
+                mouse_pos[1] - offset_y
+            ))
             screen.blit(self.custom_cursor, cursor_rect)
 
     def _render_carrier(self, screen: pygame.Surface):
@@ -1084,6 +1117,11 @@ class BaseHubMode(GameMode):
     # =========================================================================
 
     def handle_event(self, event: pygame.event.Event):
+        # 웨이브 계속 진행 선택지 활성화 중이면 선택지 이벤트 처리
+        if self.show_wave_continue_choice:
+            self._handle_wave_choice_event(event)
+            return
+
         # 오프닝 컷씬 활성화 중이면 컷씬 이벤트 처리
         if self.active_cutscene:
             self._handle_cutscene_event(event)
@@ -1136,6 +1174,41 @@ class BaseHubMode(GameMode):
             if event.key == pygame.K_RETURN:
                 self._on_launch_click()
                 return
+
+    def _handle_wave_choice_event(self, event: pygame.event.Event):
+        """웨이브 계속 진행 선택 이벤트 처리"""
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_c or event.key == pygame.K_RETURN:
+                # C키 또는 Enter: 저장된 진행 상황에서 계속
+                pygame.mouse.set_visible(False)
+                self.show_wave_continue_choice = False
+                self._launch_continue_wave()
+            elif event.key == pygame.K_n or event.key == pygame.K_ESCAPE:
+                # N키 또는 ESC: 새로운 웨이브 시작
+                pygame.mouse.set_visible(False)
+                self.show_wave_continue_choice = False
+                self._launch_new_wave()
+
+        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            mouse_pos = event.pos
+
+            # Continue 버튼 클릭
+            if "continue" in self.wave_choice_button_rects:
+                if self.wave_choice_button_rects["continue"].collidepoint(mouse_pos):
+                    # 즉시 커서 숨김
+                    pygame.mouse.set_visible(False)
+                    self.show_wave_continue_choice = False
+                    self._launch_continue_wave()
+                    return
+
+            # New 버튼 클릭
+            if "new" in self.wave_choice_button_rects:
+                if self.wave_choice_button_rects["new"].collidepoint(mouse_pos):
+                    # 즉시 커서 숨김
+                    pygame.mouse.set_visible(False)
+                    self.show_wave_continue_choice = False
+                    self._launch_new_wave()
+                    return
 
     def _handle_cutscene_event(self, event: pygame.event.Event):
         """오프닝 컷씬 이벤트 처리"""
@@ -1201,16 +1274,146 @@ class BaseHubMode(GameMode):
             from modes.archive_mode import ArchiveMode
             self.request_push_mode(ArchiveMode)
 
+    def _render_wave_continue_choice(self, screen: pygame.Surface):
+        """웨이브 계속 진행 선택 화면"""
+        SCREEN_WIDTH, SCREEN_HEIGHT = self.screen_size
+
+        # 반투명 오버레이
+        overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 180))
+        screen.blit(overlay, (0, 0))
+
+        # 중앙 패널
+        panel_width = 450
+        panel_height = 250
+        panel_x = (SCREEN_WIDTH - panel_width) // 2
+        panel_y = (SCREEN_HEIGHT - panel_height) // 2
+
+        # 패널 배경
+        panel_bg = pygame.Surface((panel_width, panel_height), pygame.SRCALPHA)
+        panel_bg.fill((*config.STATE_COLORS["SUCCESS_DIM"], 220))
+        pygame.draw.rect(panel_bg, config.STATE_COLORS["SUCCESS"],
+                        (0, 0, panel_width, panel_height), 3, border_radius=8)
+        screen.blit(panel_bg, (panel_x, panel_y))
+
+        # 타이틀
+        title_font = self.fonts.get("large")
+        title_text = title_font.render("Saved Progress Found!", True, config.STATE_COLORS["SUCCESS"])
+        title_rect = title_text.get_rect(center=(SCREEN_WIDTH // 2, panel_y + 40))
+        screen.blit(title_text, title_rect)
+
+        # 정보 텍스트
+        if self.saved_wave_data:
+            info_font = self.fonts.get("medium")
+            wave_num = self.saved_wave_data.get('wave', 1)
+            info_text = info_font.render(f"Continue from Wave {wave_num}?", True, config.TEXT_LEVELS["PRIMARY"])
+            info_rect = info_text.get_rect(center=(SCREEN_WIDTH // 2, panel_y + 85))
+            screen.blit(info_text, info_rect)
+
+        # 버튼 설정
+        button_width = 300
+        button_height = 40
+        button_x = (SCREEN_WIDTH - button_width) // 2
+
+        # "Continue" 버튼
+        continue_y = panel_y + 130
+        continue_rect = pygame.Rect(button_x, continue_y, button_width, button_height)
+
+        mouse_pos = pygame.mouse.get_pos()
+        is_continue_hover = continue_rect.collidepoint(mouse_pos)
+
+        continue_color = config.STATE_COLORS["SUCCESS"] if is_continue_hover else (*config.STATE_COLORS["SUCCESS_DIM"], 180)
+        continue_surface = pygame.Surface((button_width, button_height), pygame.SRCALPHA)
+        continue_surface.fill(continue_color)
+        screen.blit(continue_surface, (button_x, continue_y))
+        pygame.draw.rect(screen, config.STATE_COLORS["SUCCESS"],
+                        (button_x, continue_y, button_width, button_height), 2, border_radius=6)
+
+        continue_font = self.fonts.get("medium")
+        continue_text = continue_font.render("[C] Continue from Save", True, config.TEXT_LEVELS["PRIMARY"])
+        continue_text_rect = continue_text.get_rect(center=(button_x + button_width // 2, continue_y + button_height // 2))
+        screen.blit(continue_text, continue_text_rect)
+
+        # "New Game" 버튼
+        new_y = panel_y + 185
+        new_rect = pygame.Rect(button_x, new_y, button_width, button_height)
+
+        is_new_hover = new_rect.collidepoint(mouse_pos)
+
+        new_color = config.STATE_COLORS["WARNING"] if is_new_hover else (*config.STATE_COLORS["WARNING_DIM"], 180)
+        new_surface = pygame.Surface((button_width, button_height), pygame.SRCALPHA)
+        new_surface.fill(new_color)
+        screen.blit(new_surface, (button_x, new_y))
+        pygame.draw.rect(screen, config.STATE_COLORS["WARNING"],
+                        (button_x, new_y, button_width, button_height), 2, border_radius=6)
+
+        new_font = self.fonts.get("medium")
+        new_text = new_font.render("[N] Start New Wave", True, config.TEXT_LEVELS["PRIMARY"])
+        new_text_rect = new_text.get_rect(center=(button_x + button_width // 2, new_y + button_height // 2))
+        screen.blit(new_text, new_text_rect)
+
+        # 버튼 영역 저장
+        self.wave_choice_button_rects = {
+            "continue": continue_rect,
+            "new": new_rect
+        }
+
     def _on_launch_click(self):
         """출격 버튼 클릭"""
-        print("INFO: Launching mission!")
+        import json
+        from pathlib import Path
+
+        # 저장된 웨이브 진행 상황 체크 및 미리 로드
+        save_path = Path("saves/wave_progress.json")
+        if save_path.exists():
+            try:
+                # 파일을 미리 로드 (선택지 표시 전)
+                with open(save_path, 'r', encoding='utf-8') as f:
+                    self.saved_wave_data = json.load(f)
+
+                # 선택지 표시
+                self.show_wave_continue_choice = True
+                saved_wave = self.saved_wave_data.get('wave', 1)
+                print(f"INFO: Found saved wave progress (Wave {saved_wave})")
+                return
+            except Exception as e:
+                print(f"ERROR: Failed to load wave progress: {e}")
+                self.saved_wave_data = None
+
+        # 저장된 진행 없으면 바로 시작
+        print("INFO: Launching new mission!")
+        # 커서를 즉시 숨김
+        pygame.mouse.set_visible(False)
+        self._launch_new_wave()
+
+    def _launch_new_wave(self):
+        """새로운 웨이브 시작"""
+        # 커서를 즉시 숨김
+        pygame.mouse.set_visible(False)
 
         # shared_state에서 최신 데이터 사용 (Hangar에서 변경한 함선 반영)
         self.engine.shared_state['global_score'] = self.game_data.get('credits', 0)
         # current_ship은 이미 shared_state에 저장되어 있으므로 덮어쓰지 않음
 
+        # 진행 상황 삭제는 WaveMode 초기화에서 처리 (비동기)
         from modes.wave_mode import WaveMode
         self.request_switch_mode(WaveMode)
+
+    def _launch_continue_wave(self):
+        """저장된 웨이브 계속 진행"""
+        # saved_wave_data는 이미 _on_launch_click에서 로드됨
+        if not self.saved_wave_data:
+            print("WARNING: No saved wave data, starting new wave")
+            self._launch_new_wave()
+            return
+
+        # shared_state에 저장된 데이터 설정
+        self.engine.shared_state['global_score'] = self.game_data.get('credits', 0)
+        self.engine.shared_state['continue_wave_data'] = self.saved_wave_data
+
+        from modes.wave_mode import WaveMode
+        self.request_switch_mode(WaveMode)
+        print(f"INFO: Continuing from Wave {self.saved_wave_data.get('wave', 1)}")
 
     # =========================================================================
     # 라이프사이클
@@ -1225,12 +1428,17 @@ class BaseHubMode(GameMode):
         if self.custom_cursor:
             pygame.mouse.set_visible(False)
 
+        # 기지 복귀 애니메이션 시작 (shared_state 플래그 확인)
+        if self.engine.shared_state.get('start_arrival_animation', False):
+            self.engine.shared_state['start_arrival_animation'] = False
+            self._start_arrival_animation()
+
     def on_exit(self):
         elapsed = time.time() - self.play_start_time
         self.engine.shared_state['total_play_time'] = self.total_play_time + elapsed
 
-        # 기본 커서 복원
-        pygame.mouse.set_visible(True)
+        # 커서는 다음 모드에서 설정하도록 함 (딜레이 방지)
+        # pygame.mouse.set_visible(True)
 
         super().on_exit()
 
@@ -1242,6 +1450,35 @@ class BaseHubMode(GameMode):
         # 커스텀 커서 복원
         if self.custom_cursor:
             pygame.mouse.set_visible(False)
+
+    def _start_arrival_animation(self):
+        """기지 진입 애니메이션 시작"""
+        from objects import BaseArrivalAnimation
+
+        # 플레이어 이미지 로드
+        try:
+            import config
+            player_image = pygame.image.load(str(config.PLAYER_SHIP_IMAGE_PATH)).convert_alpha()
+
+            # 기지 중앙 위치 (carrier_rect 사용)
+            if self.carrier_rect:
+                base_center = self.carrier_rect.center
+            else:
+                # carrier_rect가 없으면 화면 중앙
+                base_center = (self.screen_size[0] // 2, self.screen_size[1] // 2)
+
+            # 애니메이션 생성
+            self.arrival_animation = BaseArrivalAnimation(
+                player_image,
+                self.screen_size,
+                base_center
+            )
+
+            print("INFO: Base arrival animation started")
+
+        except Exception as e:
+            print(f"ERROR: Failed to start arrival animation: {e}")
+            self.arrival_animation = None
 
 
 print("INFO: base_hub_mode.py loaded (Modern Circular Design)")

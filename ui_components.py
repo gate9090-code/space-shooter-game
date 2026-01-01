@@ -99,7 +99,7 @@ class UILayoutManager:
         return bg
 
     # =========================================================================
-    # 타이틀 렌더링
+    # 타이틀 렌더링 (프리미엄 디자인)
     # =========================================================================
 
     def render_title(
@@ -109,25 +109,21 @@ class UILayoutManager:
         glow_color: Tuple[int, int, int] = None,
         glow_intensity: float = 0.5
     ):
-        """통일된 타이틀 렌더링"""
-        if glow_color is None:
-            glow_color = config.STATE_COLORS["INFO"]
-
+        """통일된 타이틀 렌더링 - 미니멀 디자인"""
         center_x = self.screen_size[0] // 2
         title_y = self.layout["TITLE_Y"]
 
-        # 글로우 효과
-        glow_alpha = int(60 + 40 * glow_intensity)
-        glow_surf = pygame.Surface((300, 45), pygame.SRCALPHA)
-        pygame.draw.ellipse(glow_surf, (*glow_color, glow_alpha), (30, 8, 240, 28))
-        screen.blit(glow_surf, (center_x - 150, title_y - 18))
+        # 타이틀 텍스트 (글로우 제거, 단순 그림자만)
+        shadow = self.fonts["large"].render(title_text, True, (0, 0, 0))
+        shadow.set_alpha(80)
+        screen.blit(shadow, shadow.get_rect(center=(center_x + 1, title_y + 1)))
 
         # 타이틀 텍스트
         title = self.fonts["large"].render(title_text, True, config.TEXT_LEVELS["PRIMARY"])
         screen.blit(title, title.get_rect(center=(center_x, title_y)))
 
     # =========================================================================
-    # 크레딧 박스 렌더링
+    # 크레딧 박스 렌더링 (프리미엄 디자인)
     # =========================================================================
 
     def render_credit_box(
@@ -136,7 +132,7 @@ class UILayoutManager:
         credits: int,
         flash_intensity: float = 0.0
     ):
-        """통일된 크레딧 표시"""
+        """통일된 크레딧 표시 - 미니멀 디자인"""
         box_width = self.layout["CREDIT_BOX_WIDTH"]
         box_height = self.layout["CREDIT_BOX_HEIGHT"]
         margin = self.layout["SCREEN_MARGIN"]
@@ -144,34 +140,42 @@ class UILayoutManager:
         box_x = self.screen_size[0] - box_width - margin
         box_y = margin
 
-        # 배경
+        # 외부 글로우 제거 - 미니멀 디자인
+
+        # 배경 (단색)
         box_surf = pygame.Surface((box_width, box_height), pygame.SRCALPHA)
 
         if flash_intensity > 0:
-            # 구매 시 플래시 효과
-            flash_alpha = int(80 * flash_intensity)
-            box_surf.fill((*config.STATE_COLORS["SUCCESS"][:3], flash_alpha + 150))
+            # 구매 성공 시 골드 플래시
+            flash_alpha = int(100 * flash_intensity)
+            box_surf.fill((*config.STATE_COLORS["GOLD_DIM"], flash_alpha + 160))
+        elif flash_intensity < 0:
+            # 구매 실패 시 빨간 플래시
+            flash_alpha = int(100 * abs(flash_intensity))
+            box_surf.fill((*config.STATE_COLORS["DANGER_DIM"], flash_alpha + 160))
         else:
-            box_surf.fill(config.UI_COLORS["PANEL_BG"])
+            box_surf.fill((*config.BG_LEVELS["PANEL"], 200))
 
         screen.blit(box_surf, (box_x, box_y))
 
         # 테두리
-        border_color = config.STATE_COLORS["GOLD"] if flash_intensity > 0 else (85, 95, 115)
+        border_color = config.STATE_COLORS["GOLD"] if flash_intensity != 0 else (95, 105, 125)
         pygame.draw.rect(screen, border_color, (box_x, box_y, box_width, box_height), 2,
                         border_radius=self.layout["TAB_BORDER_RADIUS"])
 
-        # 코인 아이콘 + 금액
-        coin_text = render_text_with_emoji(
-            f"$ {credits:,}",
-            self.fonts["medium"],
-            config.STATE_COLORS["GOLD"],
-            "MEDIUM"
-        )
-        screen.blit(coin_text, coin_text.get_rect(center=(box_x + box_width // 2, box_y + box_height // 2)))
+        # 코인 아이콘 (원형)
+        coin_x = box_x + 28
+        coin_y = box_y + box_height // 2
+        pygame.draw.circle(screen, config.STATE_COLORS["GOLD"], (coin_x, coin_y), 10)
+        pygame.draw.circle(screen, (255, 240, 180), (coin_x - 2, coin_y - 2), 4)
+        pygame.draw.circle(screen, (0, 0, 0), (coin_x, coin_y), 10, 1)
+
+        # 금액 텍스트
+        credit_text = self.fonts["medium"].render(f"{credits:,}", True, config.STATE_COLORS["GOLD"])
+        screen.blit(credit_text, (coin_x + 18, box_y + (box_height - credit_text.get_height()) // 2))
 
     # =========================================================================
-    # 가로 탭 렌더링
+    # 가로 탭 렌더링 (프리미엄 디자인)
     # =========================================================================
 
     def render_horizontal_tabs(
@@ -183,7 +187,7 @@ class UILayoutManager:
         tab_width: int = 95
     ) -> Dict[str, pygame.Rect]:
         """
-        통일된 가로 탭 렌더링
+        통일된 가로 탭 렌더링 - 네온 글로우 + 그라데이션 효과
 
         Returns:
             Dict[str, pygame.Rect]: 탭 ID별 rect (클릭 감지용)
@@ -210,9 +214,10 @@ class UILayoutManager:
             is_selected = tab.id == selected_id
             hover = state.hover_progress
 
-            # 확장 효과
-            expand = int(hover * 3)
-            draw_rect = rect.inflate(expand, expand // 2)
+            # 크기 고정 (호버 시 확장 제거 - 떨림 방지)
+            draw_rect = rect
+
+            # 글로우 효과 제거 - 미니멀 디자인
 
             # 탭 배경
             tab_surf = pygame.Surface((draw_rect.width, draw_rect.height), pygame.SRCALPHA)
@@ -222,31 +227,36 @@ class UILayoutManager:
                 border_color = config.INTERACTION_STATES["DISABLED"]["border"]
                 text_color = config.INTERACTION_STATES["DISABLED"]["text"]
             elif is_selected:
-                # 선택됨: 카테고리 색상 사용
+                # 선택됨: 단색 배경 (그라데이션 제거)
                 tab_surf.fill((*tab.color, 200))
-                border_color = tuple(min(255, c + 50) for c in tab.color)
+                border_color = tuple(min(255, c + 40) for c in tab.color)
                 text_color = config.TEXT_LEVELS["PRIMARY"]
             elif hover > 0:
-                # 호버
+                # 호버: 색상 변화만 (크기 변화 없음)
                 alpha = int(160 + 60 * hover)
-                tab_surf.fill((*config.BG_LEVELS["ELEVATED"], alpha))
+                brightness = int(50 + 20 * hover)
+                tab_surf.fill((brightness, brightness + 5, brightness + 12, alpha))
                 border_color = tab.color
                 text_color = config.TEXT_LEVELS["PRIMARY"]
             else:
                 # 일반
-                tab_surf.fill(config.UI_COLORS["TAB_BG_NORMAL"])
-                border_color = config.UI_COLORS["TAB_BORDER_NORMAL"]
+                tab_surf.fill((*config.BG_LEVELS["CARD"], 180))
+                border_color = (65, 72, 88)
                 text_color = config.TEXT_LEVELS["SECONDARY"]
 
             screen.blit(tab_surf, draw_rect.topleft)
+
+            # 하이라이트 제거 - 미니멀 디자인
+
+            # 테두리
             pygame.draw.rect(screen, border_color, draw_rect,
                            2 if is_selected else 1, border_radius=border_radius)
 
-            # 선택 표시 바 (하단)
+            # 선택 표시 바 (하단) - 글로우 제거
             if is_selected:
-                bar_width = draw_rect.width - 20
+                bar_width = draw_rect.width - 16
                 pygame.draw.rect(screen, tab.color,
-                               (draw_rect.x + 10, draw_rect.bottom - 3, bar_width, 3),
+                               (draw_rect.x + 8, draw_rect.bottom - 4, bar_width, 3),
                                border_radius=2)
 
             # 아이콘 (이모지)
@@ -262,7 +272,7 @@ class UILayoutManager:
         return tab_rects
 
     # =========================================================================
-    # 콘텐츠 패널 렌더링
+    # 콘텐츠 패널 렌더링 (프리미엄 디자인)
     # =========================================================================
 
     def render_content_panel(
@@ -272,7 +282,7 @@ class UILayoutManager:
         header_color: Tuple[int, int, int] = None
     ) -> pygame.Rect:
         """
-        통일된 콘텐츠 패널 배경 렌더링
+        통일된 콘텐츠 패널 배경 렌더링 - 미니멀 디자인
 
         Returns:
             pygame.Rect: 패널 영역
@@ -282,24 +292,25 @@ class UILayoutManager:
         if header_color is None:
             header_color = config.STATE_COLORS["INFO"]
 
-        # 글래스모피즘 배경
+        # 글로우/그림자 제거 - 미니멀 디자인
+
+        # 단색 배경 (더 어둡게 - 텍스트 가시성 향상)
         panel_surf = pygame.Surface((panel_rect.width, panel_rect.height), pygame.SRCALPHA)
-        panel_surf.fill(config.UI_COLORS["PANEL_BG"])
+        panel_surf.fill((15, 18, 25, 210))
         screen.blit(panel_surf, panel_rect.topleft)
 
         # 테두리
-        pygame.draw.rect(screen, config.UI_COLORS["PANEL_BORDER"], panel_rect, 1,
-                        border_radius=12)
+        pygame.draw.rect(screen, (55, 62, 78), panel_rect, 1, border_radius=12)
 
-        # 헤더 바
-        pygame.draw.rect(screen, header_color,
-                        (panel_rect.x, panel_rect.y, panel_rect.width, 3),
-                        border_radius=2)
+        # 헤더 바 (단일 라인)
+        pygame.draw.line(screen, header_color,
+                        (panel_rect.x + 2, panel_rect.y),
+                        (panel_rect.x + panel_rect.width - 2, panel_rect.y), 2)
 
-        # 헤더 텍스트
+        # 헤더 텍스트 (글로우 제거)
         if header_text:
             header_surf = self.fonts["medium"].render(header_text.upper(), True, header_color)
-            screen.blit(header_surf, (panel_rect.x + 20, panel_rect.y + 12))
+            screen.blit(header_surf, (panel_rect.x + 20, panel_rect.y + 14))
 
         return panel_rect
 
@@ -324,9 +335,8 @@ class UILayoutManager:
         if header_color is None:
             header_color = config.STATE_COLORS["INFO"]
 
-        # 확장 효과
-        expand = int(hover_progress * 5)
-        draw_rect = rect.inflate(expand, expand // 2)
+        # 크기 고정 (호버 시 확장 제거 - 떨림 방지)
+        draw_rect = rect
 
         # 배경 색상 결정
         card_surf = pygame.Surface((draw_rect.width, draw_rect.height), pygame.SRCALPHA)
@@ -356,14 +366,16 @@ class UILayoutManager:
         name_text = render_text_with_emoji(name, self.fonts["medium"], name_color, "MEDIUM")
         screen.blit(name_text, (draw_rect.x + 12, draw_rect.y + 10))
 
-        # 설명
+        # 설명 (Light 폰트 - 가독성 향상)
         desc_color = config.TEXT_LEVELS["TERTIARY"] if is_affordable or is_maxed else config.LOCKED_COLORS["TEXT"]
-        desc_text = self.fonts["small"].render(description, True, desc_color)
+        desc_font = self.fonts.get("light_small", self.fonts["small"])
+        desc_text = desc_font.render(description, True, desc_color)
         screen.blit(desc_text, (draw_rect.x + 12, draw_rect.y + 38))
 
-        # 레벨 정보
+        # 레벨 정보 (Regular 폰트)
         if level_info:
-            level_text = self.fonts["small"].render(level_info, True, config.TEXT_LEVELS["TERTIARY"])
+            level_font = self.fonts.get("regular_small", self.fonts["small"])
+            level_text = level_font.render(level_info, True, config.TEXT_LEVELS["TERTIARY"])
             screen.blit(level_text, (draw_rect.x + 12, draw_rect.y + 58))
 
         # 비용 (우측)
@@ -393,7 +405,7 @@ class UILayoutManager:
             screen.blit(max_text, max_text.get_rect(center=(badge_x + 26, badge_y + 11)))
 
     # =========================================================================
-    # 버튼 렌더링
+    # 버튼 렌더링 (프리미엄 디자인)
     # =========================================================================
 
     def render_back_button(
@@ -402,7 +414,7 @@ class UILayoutManager:
         hover: bool = False,
         text: str = "BACK"
     ) -> pygame.Rect:
-        """통일된 뒤로가기 버튼 (우측 하단)"""
+        """통일된 뒤로가기 버튼 (우측 하단) - 미니멀 글래스 스타일"""
         btn_width = self.layout["BTN_BACK_WIDTH"]
         btn_height = self.layout["BTN_HEIGHT"]
         margin = self.layout["SCREEN_MARGIN"]
@@ -414,22 +426,49 @@ class UILayoutManager:
             btn_height
         )
 
-        # 버튼 배경
-        btn_surf = pygame.Surface((btn_width, btn_height), pygame.SRCALPHA)
-        if hover:
-            btn_surf.fill(config.UI_COLORS["BTN_BACK_HOVER"])
-            border_color = (120, 128, 155)
-        else:
-            btn_surf.fill(config.UI_COLORS["BTN_BACK_NORMAL"])
-            border_color = (85, 92, 112)
+        # 크기 고정 (호버 시 확장 제거 - 떨림 방지)
+        draw_rect = rect
 
-        screen.blit(btn_surf, rect.topleft)
-        pygame.draw.rect(screen, border_color, rect, 2,
+        # 그림자
+        if hover:
+            shadow_surf = pygame.Surface((draw_rect.width + 6, draw_rect.height + 6), pygame.SRCALPHA)
+            pygame.draw.rect(shadow_surf, (0, 0, 0, 40), (3, 4, draw_rect.width, draw_rect.height),
+                           border_radius=self.layout["BTN_BORDER_RADIUS"])
+            screen.blit(shadow_surf, (draw_rect.x - 2, draw_rect.y - 1))
+
+        # 버튼 배경 (그라데이션)
+        btn_surf = pygame.Surface((draw_rect.width, draw_rect.height), pygame.SRCALPHA)
+        for y in range(draw_rect.height):
+            ratio = y / draw_rect.height
+            if hover:
+                brightness = int(72 + 15 * (1 - ratio))
+                alpha = 225
+            else:
+                brightness = int(48 + 10 * (1 - ratio))
+                alpha = 200
+            pygame.draw.line(btn_surf, (brightness, brightness + 4, brightness + 12, alpha),
+                           (0, y), (draw_rect.width, y))
+
+        screen.blit(btn_surf, draw_rect.topleft)
+
+        # 상단 하이라이트
+        highlight_alpha = 50 if hover else 30
+        highlight_surf = pygame.Surface((draw_rect.width - 16, 2), pygame.SRCALPHA)
+        highlight_surf.fill((255, 255, 255, highlight_alpha))
+        screen.blit(highlight_surf, (draw_rect.x + 8, draw_rect.y + 3))
+
+        # 테두리
+        border_color = (130, 140, 165) if hover else (90, 98, 118)
+        pygame.draw.rect(screen, border_color, draw_rect, 2,
                         border_radius=self.layout["BTN_BORDER_RADIUS"])
 
-        # 텍스트
-        text_surf = self.fonts["medium"].render(text, True, config.TEXT_LEVELS["SECONDARY"])
-        screen.blit(text_surf, text_surf.get_rect(center=rect.center))
+        # 화살표 아이콘 + 텍스트
+        text_color = config.TEXT_LEVELS["PRIMARY"] if hover else config.TEXT_LEVELS["SECONDARY"]
+        arrow = self.fonts["small"].render("◀", True, text_color)
+        screen.blit(arrow, (draw_rect.x + 12, draw_rect.centery - arrow.get_height() // 2))
+
+        text_surf = self.fonts["medium"].render(text, True, text_color)
+        screen.blit(text_surf, (draw_rect.x + 32, draw_rect.centery - text_surf.get_height() // 2))
 
         return rect
 
@@ -441,7 +480,7 @@ class UILayoutManager:
         enabled: bool = True,
         danger: bool = False
     ) -> pygame.Rect:
-        """통일된 액션 버튼 (좌측 하단)"""
+        """통일된 액션 버튼 (좌측 하단) - 글로우 효과"""
         btn_width = self.layout["BTN_ACTION_WIDTH"]
         btn_height = self.layout["BTN_HEIGHT"]
         margin = self.layout["SCREEN_MARGIN"]
@@ -453,36 +492,41 @@ class UILayoutManager:
             btn_height
         )
 
-        # 버튼 배경
-        btn_surf = pygame.Surface((btn_width, btn_height), pygame.SRCALPHA)
+        # 크기 고정 (호버 시 확장 제거 - 떨림 방지)
+        draw_rect = rect
 
+        # 색상 결정
         if not enabled:
-            btn_surf.fill(config.INTERACTION_STATES["DISABLED"]["bg"])
-            border_color = config.INTERACTION_STATES["DISABLED"]["border"]
-            text_color = config.INTERACTION_STATES["DISABLED"]["text"]
+            base_color = config.LOCKED_COLORS["BG"]
+            glow_color = None
+            border_color = config.LOCKED_COLORS["BORDER"]
+            text_color = config.LOCKED_COLORS["TEXT"]
         elif danger:
-            if hover:
-                btn_surf.fill(config.UI_COLORS["BTN_DANGER_HOVER"])
-            else:
-                btn_surf.fill(config.UI_COLORS["BTN_DANGER_NORMAL"])
+            base_color = config.STATE_COLORS["DANGER_DIM"]
+            glow_color = config.STATE_COLORS["DANGER"]
             border_color = config.STATE_COLORS["DANGER"]
             text_color = config.TEXT_LEVELS["PRIMARY"]
         else:
-            if hover:
-                btn_surf.fill(config.UI_COLORS["BTN_ACTION_HOVER"])
-                border_color = config.STATE_COLORS["SUCCESS"]
-            else:
-                btn_surf.fill(config.UI_COLORS["BTN_ACTION_NORMAL"])
-                border_color = (72, 145, 115)
+            base_color = config.STATE_COLORS["SUCCESS_DIM"]
+            glow_color = config.STATE_COLORS["SUCCESS"]
+            border_color = config.STATE_COLORS["SUCCESS"]
             text_color = config.TEXT_LEVELS["PRIMARY"]
 
-        screen.blit(btn_surf, rect.topleft)
-        pygame.draw.rect(screen, border_color, rect, 2,
+        # 글로우/그림자 제거 - 미니멀 디자인
+
+        # 버튼 배경 (단색)
+        btn_surf = pygame.Surface((draw_rect.width, draw_rect.height), pygame.SRCALPHA)
+        alpha = 220 if enabled else 160
+        btn_surf.fill((*base_color, alpha))
+        screen.blit(btn_surf, draw_rect.topleft)
+
+        # 테두리 (호버 시 밝게)
+        border_width = 2 if hover else 1
+        pygame.draw.rect(screen, border_color, draw_rect, border_width,
                         border_radius=self.layout["BTN_BORDER_RADIUS"])
 
-        # 텍스트
         text_surf = self.fonts["medium"].render(text, True, text_color)
-        screen.blit(text_surf, text_surf.get_rect(center=rect.center))
+        screen.blit(text_surf, text_surf.get_rect(center=draw_rect.center))
 
         return rect
 
@@ -495,10 +539,11 @@ class UILayoutManager:
         screen: pygame.Surface,
         hints: str
     ):
-        """통일된 키보드 힌트 (하단 중앙)"""
+        """통일된 키보드 힌트 (하단 중앙) - Light 폰트"""
         hint_y = self.screen_size[1] - self.layout["HINT_Y_OFFSET"]
 
-        hint_text = self.fonts["small"].render(hints, True, config.TEXT_LEVELS["MUTED"])
+        hint_font = self.fonts.get("light_small", self.fonts["small"])
+        hint_text = hint_font.render(hints, True, config.TEXT_LEVELS["MUTED"])
         screen.blit(hint_text, hint_text.get_rect(center=(self.screen_size[0] // 2, hint_y)))
 
     # =========================================================================

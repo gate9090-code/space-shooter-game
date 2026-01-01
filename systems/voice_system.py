@@ -792,12 +792,6 @@ CHARACTER_VOICE_PRESETS = {
         "pitch": "-5Hz",  # 약간 낮은 피치로 로봇 느낌 강화
         "static_effect": True,  # 치지직 정적 잡음 효과 활성화
     },
-    # 시스템: 기계적 음성
-    "SYSTEM": {
-        "adapter": "pyttsx3",
-        "rate": 180,
-        "volume": 0.8,
-    },
 }
 
 

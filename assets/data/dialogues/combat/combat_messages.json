@@ -42,7 +42,7 @@
         }
       ]
     },
-    "speaker": "SYSTEM"
+    "speaker": "NARRATOR"
   },
   "hp_thresholds": {
     "message": {
@@ -52,7 +52,7 @@
           "text": "조심해! 쉴드가 약해지고 있어!"
         },
         {
-          "speaker": "SYSTEM",
+          "speaker": "NARRATOR",
           "text": "[경고: 선체 손상 50%]"
         }
       ],
@@ -77,7 +77,7 @@
         }
       ]
     },
-    "speaker": "SYSTEM"
+    "speaker": "NARRATOR"
   },
   "enemy_spawn": {
     "message": {
@@ -132,13 +132,13 @@
         }
       ]
     },
-    "speaker": "SYSTEM"
+    "speaker": "NARRATOR"
   },
   "objective_progress": {
     "message": {
       "defense_50": [
         {
-          "speaker": "SYSTEM",
+          "speaker": "NARRATOR",
           "text": "[방어 진행률 50% - 계속 버텨라!]"
         },
         {
@@ -187,6 +187,6 @@
         }
       ]
     },
-    "speaker": "SYSTEM"
+    "speaker": "NARRATOR"
   }
 }

@@ -361,12 +361,8 @@ def _load_episode_from_json(episode_id: str) -> Optional[EpisodeData]:
     if episode_id in _json_episode_cache:
         return _json_episode_cache[episode_id]
 
-    # JSON 파일 경로 (새 구조: data/episodes/{ep_id}/{ep_id}.json)
+    # JSON 파일 경로: data/episodes/{ep_id}/{ep_id}.json
     json_path = Path("assets/data/episodes") / episode_id / f"{episode_id}.json"
-
-    # 레거시 경로 폴백 (data/episodes/{ep_id}.json)
-    if not json_path.exists():
-        json_path = Path("assets/data/episodes") / f"{episode_id}.json"
 
     if not json_path.exists():
         return None

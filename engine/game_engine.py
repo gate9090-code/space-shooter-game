@@ -66,11 +66,46 @@ class GameEngine:
         """폰트 초기화"""
         screen_height = self.screen_size[1]
 
+        # =========================================================
+        # 폰트 카테고리 시스템
+        # =========================================================
+        # 1. Bold (제목/강조): huge, large, medium, small
+        # 2. Regular (일반): regular_*, 상태 정보용
+        # 3. Light (설명/본문): light_*, desc_*, 가독성 향상
+        # =========================================================
         self.fonts = {
+            # === Bold 폰트 (제목, 레이블, 강조) ===
             "huge": self.asset_manager.get_font(int(screen_height * config.FONT_SIZE_RATIOS["HUGE"])),
             "large": self.asset_manager.get_font(int(screen_height * config.FONT_SIZE_RATIOS["LARGE"])),
             "medium": self.asset_manager.get_font(int(screen_height * config.FONT_SIZE_RATIOS["MEDIUM"])),
             "small": self.asset_manager.get_font(int(screen_height * config.FONT_SIZE_RATIOS["SMALL"])),
+            "tiny": self.asset_manager.get_font(int(screen_height * config.FONT_SIZE_RATIOS["TINY"])),
+            "micro": self.asset_manager.get_font(int(screen_height * config.FONT_SIZE_RATIOS["MICRO"])),
+
+            # === 효과/특수 폰트 (게임 이펙트용) ===
+            "mega": self.asset_manager.get_font(int(screen_height * config.FONT_SIZE_RATIOS["MEGA"])),
+            "ultra": self.asset_manager.get_font(int(screen_height * config.FONT_SIZE_RATIOS["ULTRA"])),
+            "icon": self.asset_manager.get_font(int(screen_height * config.FONT_SIZE_RATIOS["ICON"])),
+
+            # === Regular 폰트 (일반 텍스트) ===
+            "regular_large": self.asset_manager.get_regular_font(int(screen_height * config.FONT_SIZE_RATIOS["LARGE"])),
+            "regular_medium": self.asset_manager.get_regular_font(int(screen_height * config.FONT_SIZE_RATIOS["MEDIUM"])),
+            "regular_small": self.asset_manager.get_regular_font(int(screen_height * config.FONT_SIZE_RATIOS["SMALL"])),
+
+            # === Light 폰트 (설명, 본문 - 가독성 향상) ===
+            "light_large": self.asset_manager.get_light_font(int(screen_height * config.FONT_SIZE_RATIOS["LARGE"])),
+            "light_medium": self.asset_manager.get_light_font(int(screen_height * config.FONT_SIZE_RATIOS["MEDIUM"])),
+            "light_small": self.asset_manager.get_light_font(int(screen_height * config.FONT_SIZE_RATIOS["SMALL"])),
+            "light_tiny": self.asset_manager.get_light_font(int(screen_height * config.FONT_SIZE_RATIOS["TINY"])),
+            "light_micro": self.asset_manager.get_light_font(int(screen_height * config.FONT_SIZE_RATIOS["MICRO"])),
+
+            # === 대화창 전용 (더 작은 크기) ===
+            "dialogue_medium": self.asset_manager.get_light_font(int(screen_height * config.FONT_SIZE_RATIOS["SMALL"])),
+            "dialogue_small": self.asset_manager.get_light_font(int(screen_height * config.FONT_SIZE_RATIOS["TINY"])),
+
+            # === 설명 텍스트 전용 별칭 (가독성 코드용) ===
+            "desc": self.asset_manager.get_light_font(int(screen_height * config.FONT_SIZE_RATIOS["SMALL"])),
+            "desc_medium": self.asset_manager.get_light_font(int(screen_height * config.FONT_SIZE_RATIOS["MEDIUM"])),
         }
 
         # 이모지 폰트 (config에 저장)
@@ -86,6 +121,9 @@ class GameEngine:
         config.EMOJI_FONTS["HUGE"] = self.asset_manager.get_emoji_font(
             int(screen_height * config.FONT_SIZE_RATIOS["HUGE"])
         )
+
+        # UI 폰트 캐시 (ui.py에서 인라인 폰트 대신 사용)
+        config.UI_FONTS = self.fonts.copy()
 
     @property
     def current_mode(self) -> Optional["GameMode"]:
@@ -144,6 +182,9 @@ class GameEngine:
             mode_class: 전환할 모드 클래스
             **kwargs: 모드 초기화 인자
         """
+        # 전환 중 커서 깜빡임 방지 - 숨긴 상태 유지
+        pygame.mouse.set_visible(False)
+
         # 모든 모드 정리
         while self.mode_stack:
             mode = self.mode_stack.pop()
@@ -206,21 +247,29 @@ class GameEngine:
                 import traceback
                 traceback.print_exc()
 
-        print("INFO: Game loop ended")
+        # 종료 원인 디버깅
+        if not self.running:
+            print("INFO: Game loop ended (running=False)")
+        elif not self.current_mode:
+            print("INFO: Game loop ended (current_mode=None)")
+        else:
+            print("INFO: Game loop ended (unknown reason)")
 
     def load_shared_state(self):
         """저장된 공유 상태 로드"""
-        from main_new import load_game_data  # 순환 참조 방지
+        from main import load_game_data  # 순환 참조 방지
 
-        upgrades, score = load_game_data()
+        upgrades, score, ship, inventory = load_game_data()
         self.shared_state["player_upgrades"] = upgrades
         self.shared_state["global_score"] = score
+        self.shared_state["current_ship"] = ship
+        self.shared_state["player_inventory"] = inventory
 
         print(f"INFO: Loaded shared state - Score: {score}")
 
     def save_shared_state(self):
         """공유 상태 저장"""
-        from main_new import save_game_data  # 순환 참조 방지
+        from main import save_game_data  # 순환 참조 방지
 
         save_game_data(
             self.shared_state.get("global_score", 0),

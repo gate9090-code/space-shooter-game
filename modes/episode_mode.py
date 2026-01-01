@@ -383,13 +383,59 @@ class EpisodeMode(GameMode):
         self._return_to_hub()
 
     def _return_to_hub(self):
-        """BaseHub로 귀환"""
-        # current_episode 정리
-        if "current_episode" in self.engine.shared_state:
-            del self.engine.shared_state["current_episode"]
+        """BaseHub로 귀환 (애니메이션 포함)"""
+        # 복귀 애니메이션 시작
+        if not hasattr(self, 'return_animation'):
+            from objects import ReturnToBaseAnimation
+            from asset_manager import AssetManager
 
-        from modes.base_hub_mode import BaseHubMode
-        self.request_switch_mode(BaseHubMode)
+            # 플레이어 이미지 가져오기
+            player_image = None
+
+            # 1. player가 있으면 player 이미지 사용
+            if hasattr(self, 'player') and self.player and hasattr(self.player, 'original_image'):
+                player_image = self.player.original_image
+            # 2. player가 없으면 직접 로드
+            else:
+                try:
+                    import pygame
+                    import config
+                    loaded_image = pygame.image.load(str(config.PLAYER_SHIP_IMAGE_PATH)).convert_alpha()
+                    # 이미지 크기 축소 (원본의 45% - 워프 포탈 확대에 맞춰 조정)
+                    original_size = loaded_image.get_size()
+                    new_size = (int(original_size[0] * 0.45), int(original_size[1] * 0.45))
+                    player_image = pygame.transform.scale(loaded_image, new_size)
+                    print(f"INFO: Loaded player image from {config.PLAYER_SHIP_IMAGE_PATH} (scaled to {new_size})")
+                except Exception as e:
+                    print(f"ERROR: Failed to load player image: {e}")
+                    player_image = None
+
+            if player_image:
+                # 화면 중앙 하단 시작 (전투 종료 후 위치)
+                screen_width, screen_height = self.screen_size
+                start_x = screen_width / 2
+                start_y = screen_height - 150
+                start_pos = (start_x, start_y)
+
+                self.return_animation = ReturnToBaseAnimation(
+                    player_image,
+                    start_pos,
+                    self.screen_size
+                )
+
+                # current_episode 정리는 애니메이션 완료 후
+                self.should_clear_episode = True
+                print("INFO: Starting return to hub animation")
+            else:
+                # 플레이어 이미지가 없으면 바로 복귀
+                if "current_episode" in self.engine.shared_state:
+                    del self.engine.shared_state["current_episode"]
+                from modes.base_hub_mode import BaseHubMode
+                self.request_switch_mode(BaseHubMode)
+                print("INFO: Returning to Base Hub (no animation)")
+        else:
+            # 이미 애니메이션 시작된 경우
+            pass
 
     def _save_progress(self):
         """진행 상황 저장"""
@@ -607,6 +653,22 @@ class EpisodeMode(GameMode):
             self._update_intro_video(dt)
             return
 
+        # 복귀 애니메이션 진행 중
+        if hasattr(self, 'return_animation'):
+            self.return_animation.update(dt)
+            if self.return_animation.is_complete():
+                # 애니메이션 완료 시 기지로 전환
+                if self.should_clear_episode:
+                    self.engine.shared_state["current_episode"] = None
+                    self.should_clear_episode = False
+                from modes.base_hub_mode import BaseHubMode
+                # 기지 진입 애니메이션을 위한 플래그 설정
+                self.engine.shared_state['start_arrival_animation'] = True
+                self.request_switch_mode(BaseHubMode)
+                print("INFO: Returning to Base Hub after animation")
+                return
+            return
+
         # 첫 세그먼트 시작 (init에서 플래그 설정됨)
         if getattr(self, '_needs_first_segment_start', False):
             self._needs_first_segment_start = False
@@ -628,6 +690,19 @@ class EpisodeMode(GameMode):
         # 인트로 동영상 재생 중
         if not self.intro_video_finished:
             self._render_intro_video(screen)
+            return
+
+        # 복귀 애니메이션 진행 중
+        if hasattr(self, 'return_animation') and self.return_animation:
+            # 배경 렌더링
+            if self.current_background:
+                screen.blit(self.current_background, (0, 0))
+            else:
+                screen.fill((10, 10, 20))
+            # 애니메이션 그리기 (워프 포탈은 배경 위에 오버레이)
+            self.return_animation.draw(screen)
+            # 애니메이션 중에는 커서 숨김
+            pygame.mouse.set_visible(False)
             return
 
         # 배경

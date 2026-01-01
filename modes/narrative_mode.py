@@ -71,9 +71,6 @@ class NarrativeMode(GameMode):
         "ARTEMIS": "아르테미스",
         "PILOT": "파일럿",
         "NARRATOR": "나레이터",
-        "ANDROID": "안드로이드",
-        "SYSTEM": "시스템",
-        "ENEMY": "적",
         "UNKNOWN": "???",
     }
 
@@ -82,9 +79,6 @@ class NarrativeMode(GameMode):
         "ARTEMIS": (255, 180, 180),
         "PILOT": (180, 200, 255),
         "NARRATOR": (180, 255, 180),
-        "ANDROID": (200, 200, 220),
-        "SYSTEM": (255, 220, 100),
-        "ENEMY": (255, 100, 100),
         "UNKNOWN": (180, 180, 180),
     }
 
@@ -222,6 +216,11 @@ class NarrativeMode(GameMode):
 
         # 커스텀 커서
         self.custom_cursor = self._load_base_cursor()
+
+        # 대화 중 우주선 애니메이션 (DIALOGUE, BRIEFING 타입에서만)
+        self.dialogue_ship_animation = None
+        if self.narrative_type in ("DIALOGUE", "BRIEFING"):
+            self._init_dialogue_ship_animation()
 
         # 대화 시작 (위임 효과가 없을 때만 intro로 설정)
         if self.dialogue_state != "delegate":
@@ -428,6 +427,7 @@ class NarrativeMode(GameMode):
                             portrait = pygame.image.load(str(resolved_path)).convert_alpha()
                             self.portraits[name.upper()] = pygame.transform.smoothscale(portrait, target_size)
                             loaded = True
+                            print(f"INFO: Loaded portrait {name.upper()} from episode: {resolved_path}")
                             break
 
                 # 2순위: 레거시 경로
@@ -441,9 +441,19 @@ class NarrativeMode(GameMode):
                         if path.exists():
                             portrait = pygame.image.load(str(path)).convert_alpha()
                             self.portraits[name.upper()] = pygame.transform.smoothscale(portrait, target_size)
+                            loaded = True
+                            print(f"INFO: Loaded portrait {name.upper()} from legacy: {path}")
                             break
+
+                if not loaded:
+                    print(f"WARNING: Portrait not found for {name.upper()}")
             except Exception as e:
-                pass  # 포트레이트 없으면 무시
+                print(f"ERROR: Failed to load portrait {name.upper()}: {e}")
+
+        # NARRATOR는 ANDROID 이미지 사용
+        if "ANDROID" in self.portraits:
+            self.portraits["NARRATOR"] = self.portraits["ANDROID"]
+            print(f"INFO: Mapped portrait NARRATOR → ANDROID")
 
     def _init_voice_system(self):
         """음성 시스템 초기화"""
@@ -500,6 +510,26 @@ class NarrativeMode(GameMode):
             print(f"WARNING: Voice system init failed: {e}")
             self.voice_system = None
 
+    def _init_dialogue_ship_animation(self):
+        """대화 중 우주선 회전 애니메이션 초기화"""
+        try:
+            from objects import DialogueShipAnimation
+            import config
+
+            # 플레이어 우주선 이미지 로드
+            ship_image = pygame.image.load(str(config.PLAYER_SHIP_IMAGE_PATH)).convert_alpha()
+
+            # 대화 중 우주선 애니메이션 생성 (135% 크기, 중간 타원 궤도)
+            self.dialogue_ship_animation = DialogueShipAnimation(
+                player_image=ship_image,
+                screen_size=self.screen_size,
+                scale=1.35  # 120-150% 범위에서 135% 선택
+            )
+            print(f"INFO: Dialogue ship animation initialized")
+        except Exception as e:
+            print(f"WARNING: Failed to initialize dialogue ship animation: {e}")
+            self.dialogue_ship_animation = None
+
     def _speak_dialogue(self, speaker: str, text: str):
         """대사 음성 재생"""
         if self.voice_system and self.voice_system.enabled:
@@ -550,6 +580,10 @@ class NarrativeMode(GameMode):
     def update(self, dt: float, current_time: float):
         """업데이트"""
         self.time_elapsed += dt
+
+        # 대화 중 우주선 애니메이션 업데이트
+        if self.dialogue_ship_animation:
+            self.dialogue_ship_animation.update(dt)
 
         # 배경 미세 움직임 (REFLECTION 타입)
         if self.narrative_type == "REFLECTION":
@@ -1086,6 +1120,10 @@ class NarrativeMode(GameMode):
             overlay.set_alpha(self.overlay_alpha)
             screen.blit(overlay, (0, 0))
 
+        # 대화 중 우주선 애니메이션 (배경 후, UI 전)
+        if self.dialogue_ship_animation and self.dialogue_state not in ("intro", "outro", "delegate"):
+            self.dialogue_ship_animation.draw(screen)
+
         # 타이틀/위치 표시 (BRIEFING 타입)
         if self.narrative_type == "BRIEFING" and self.dialogue_state != "outro":
             self._render_briefing_header(screen)
@@ -1146,9 +1184,19 @@ class NarrativeMode(GameMode):
             if portrait_key in self.portraits:
                 portrait = self.portraits[portrait_key]
                 has_portrait = True
+            else:
+                # 디버그: 포트레이트가 없을 때만 출력 (한 번만)
+                if not hasattr(self, '_missing_portraits'):
+                    self._missing_portraits = set()
+                if portrait_key not in self._missing_portraits:
+                    self._missing_portraits.add(portrait_key)
+                    print(f"DEBUG: Portrait not found for speaker '{portrait_key}'. Available: {list(self.portraits.keys())}")
 
         # 타이핑 진행률 계산
         typing_progress = len(self.displayed_text) if self.displayed_text else 0
+
+        # 클릭 대기 여부 (자동 진행이 아닌 경우에만 표시)
+        waiting_for_click = (self.dialogue_state == "waiting" and not self.auto_advance)
 
         # render_dialogue_box 호출 (인트로와 동일한 스타일)
         render_dialogue_box(
@@ -1158,7 +1206,7 @@ class NarrativeMode(GameMode):
             dialogue=current_dialogue,
             dialogue_text=self.current_text or "",
             typing_progress=typing_progress,
-            _waiting_for_click=False,
+            waiting_for_click=waiting_for_click,
             has_portrait=has_portrait,
             portrait=portrait
         )

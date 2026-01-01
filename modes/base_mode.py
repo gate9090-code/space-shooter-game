@@ -708,11 +708,13 @@ class GameMode(ABC):
         current_state = self.game_data.get("game_state", config.GAME_STATE_RUNNING)
 
         if event.type == pygame.KEYDOWN:
-            # ESC: 종료 확인
+            # ESC: 종료 확인 (BOSS_CLEAR 상태에서는 특별 처리)
             if event.key == pygame.K_ESCAPE:
-                self.game_data["previous_game_state"] = current_state
-                self.game_data["game_state"] = config.GAME_STATE_QUIT_CONFIRM
-                return True
+                # BOSS_CLEAR 상태에서는 ESC를 개별 핸들러에서 처리
+                if current_state != config.GAME_STATE_BOSS_CLEAR:
+                    self.game_data["previous_game_state"] = current_state
+                    self.game_data["game_state"] = config.GAME_STATE_QUIT_CONFIRM
+                    return True
 
             # P: 일시정지
             if event.key == pygame.K_p:

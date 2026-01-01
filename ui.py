@@ -9,6 +9,33 @@ from utils import get_next_level_threshold
 if TYPE_CHECKING:
     from objects import Player
 
+
+# =========================================================
+# 폰트 헬퍼 함수 - 인라인 폰트 대신 중앙 관리 폰트 사용
+# =========================================================
+def get_font(size_key: str) -> pygame.font.Font:
+    """
+    중앙 관리 폰트를 반환합니다.
+    config.UI_FONTS가 초기화되지 않았으면 인라인 폰트 생성 (폴백)
+
+    size_key: "huge", "large", "medium", "small", "tiny", "micro",
+              "mega", "ultra", "icon",
+              "light_large", "light_medium", "light_small", etc.
+    """
+    if config.UI_FONTS and size_key in config.UI_FONTS:
+        return config.UI_FONTS[size_key]
+
+    # 폴백: 아직 초기화 안됐으면 기본 폰트 사용
+    fallback_sizes = {
+        "ultra": 100, "mega": 72, "icon": 50, "huge": 48,
+        "large": 36, "medium": 24, "small": 20, "tiny": 18, "micro": 15
+    }
+    # light_ 접두사 제거 후 크기 찾기
+    base_key = size_key.replace("light_", "").replace("regular_", "")
+    size = fallback_sizes.get(base_key, 24)
+    return pygame.font.Font(None, size)
+
+
 # =========================================================
 # 0. 이모지 렌더링 헬퍼 함수
 # =========================================================
@@ -212,7 +239,7 @@ def draw_shop_screen(
     screen.blit(title_text, title_text.get_rect(center=(center_x, y_start + 20)))
 
     # 코인 표시 (크기 축소)
-    coin_font = pygame.font.Font(None, 24)
+    coin_font = get_font("small")
     coin_text = render_text_with_emoji(
         f"{config.UI_ICONS['COIN']} Your Coins: {current_score}",
         coin_font,
@@ -274,7 +301,7 @@ def draw_shop_screen(
         )
 
         # 번호 텍스트
-        number_font = pygame.font.Font(None, 36)
+        number_font = get_font("large")
         number_text = number_font.render(str(i + 1), True, config.BLACK)
         number_rect = number_text.get_rect(
             center=(number_box_x + number_box_size // 2, number_box_y + number_box_size // 2)
@@ -285,13 +312,13 @@ def draw_shop_screen(
         info_x = card_x + number_box_size + 20
         icon = upgrade_icons.get(key, config.UI_ICONS["LEVEL_UP"])
 
-        name_font = pygame.font.Font(None, 26)
+        name_font = get_font("medium")
         name_text = render_text_with_emoji(f"{icon} {name}", name_font, config.WHITE, "SMALL")
         screen.blit(name_text, (info_x, card_y + 8))
 
         # 레벨 바 (별 모양)
         stars = "★" * current_level + "☆" * (max_level - current_level)
-        level_font = pygame.font.Font(None, 20)
+        level_font = get_font("small")
         level_text = render_text_with_emoji(
             f"{stars} LV {current_level}/{max_level}",
             level_font,
@@ -311,7 +338,7 @@ def draw_shop_screen(
             cost_text_content = f"Need: {cost - current_score} more"
             cost_color = config.UI_COLORS["DANGER"]
 
-        cost_font = pygame.font.Font(None, 22)
+        cost_font = get_font("small")
         cost_text = cost_font.render(cost_text_content, True, cost_color)
         cost_rect = cost_text.get_rect(
             midright=(card_x + card_width - 15, card_y + card_height // 2)
@@ -320,7 +347,7 @@ def draw_shop_screen(
 
     # 하단 안내
     instruction_y = cards_start_y + len(upgrade_items) * card_spacing + 20
-    exit_font = pygame.font.Font(None, 22)
+    exit_font = get_font("small")
     # render_text_with_emoji 대신 일반 렌더링 사용 (글자 깨짐 방지)
     exit_text = exit_font.render("Press 'C' to Close Shop | Press 'ESC' to Quit Game", True, config.UI_COLORS["TEXT_SECONDARY"])
     screen.blit(exit_text, exit_text.get_rect(center=(center_x, instruction_y)))
@@ -385,7 +412,7 @@ def draw_pause_and_over_screens(
             ("quit", "Quit (ESC)", config.UI_COLORS["DANGER"])
         ]
 
-        button_font = pygame.font.Font(None, 24)
+        button_font = get_font("medium")
         for i, (btn_id, text, color) in enumerate(buttons):
             btn_text = render_text_with_emoji(text, button_font, color, "SMALL")
             btn_rect = btn_text.get_rect(center=(center_x, button_start_y + i * button_spacing))
@@ -430,7 +457,7 @@ def draw_pause_and_over_screens(
         screen.blit(title_text, title_rect)
 
         # 최종 점수 (강조)
-        score_font = pygame.font.Font(None, 28)
+        score_font = get_font("medium")
         score_text = render_text_with_emoji(
             f"{config.UI_ICONS['COIN']} FINAL COINS: {game_data['score']}",
             score_font,
@@ -447,16 +474,17 @@ def draw_pause_and_over_screens(
         screen.blit(score_text, score_rect)
 
         # 버튼 영역
-        button_start_y = menu_y + 195
-        button_spacing = 50
+        button_start_y = menu_y + 180
+        button_spacing = 40
 
         # 버튼 리스트 (ID, 텍스트, 색상)
         buttons = [
             ("restart", "Restart (R)", config.TEXT_LEVELS["PRIMARY"]),
+            ("return_base", "Return to Base (B)", config.STATE_COLORS["WARNING"]),
             ("quit", "Quit (ESC)", config.STATE_COLORS["DANGER"])
         ]
 
-        button_font = pygame.font.Font(None, 24)
+        button_font = get_font("medium")
         for i, (btn_id, text, color) in enumerate(buttons):
             btn_text = render_text_with_emoji(text, button_font, color, "SMALL")
             btn_rect = btn_text.get_rect(center=(center_x, button_start_y + i * button_spacing))
@@ -539,7 +567,7 @@ def draw_tactical_menu(
     screen.blit(level_text, level_text.get_rect(center=(center_x, header_y + 20)))
 
     # 서브타이틀 (레벨 + 웨이브 정보) - 크기 축소
-    subtitle_font = pygame.font.Font(None, 24)  # 작은 폰트
+    subtitle_font = get_font("small")  # 작은 폰트
     subtitle_text = render_text_with_emoji(
         f"Level {current_level} | Wave {current_wave}",
         subtitle_font,
@@ -615,13 +643,13 @@ def draw_tactical_menu(
         screen.blit(name_text, (name_x, card_y + 8))
 
         # 효과 설명 (크기 축소) - 통일된 색상
-        effect_font = pygame.font.Font(None, 22)  # 32 → 22 (축소)
+        effect_font = get_font("small")  # 효과 설명
         effect_text = effect_font.render(effect_str, True, config.STATE_COLORS["GOLD"])
         screen.blit(effect_text, (name_x, card_y + 35))
 
         # 설명 텍스트 (크기 축소) - 통일된 색상
         if description:
-            desc_font = pygame.font.Font(None, 18)  # 24 → 18 (축소)
+            desc_font = get_font("light_tiny")  # 설명 텍스트 (Light)
             desc_text = desc_font.render(description, True, config.TEXT_LEVELS["SECONDARY"])
             screen.blit(desc_text, (name_x, card_y + 58))
 
@@ -843,7 +871,7 @@ def draw_hud(
             pygame.draw.polygon(screen, color, points)
 
     # 중앙 아이콘 (더 크게)
-    icon_font = pygame.font.Font(None, 50)
+    icon_font = get_font("icon")
     icon_text = render_text_with_emoji(config.UI_ICONS["GUN"], icon_font, config.WHITE, "MEDIUM")
     icon_rect = icon_text.get_rect(center=(indicator_x, indicator_y))
     screen.blit(icon_text, icon_rect)
@@ -901,13 +929,13 @@ def draw_hud(
                 pygame.draw.polygon(screen, ability_color, points)
 
         # 능력 아이콘 (E키 표시)
-        ability_font = pygame.font.Font(None, 32)
+        ability_font = get_font("large")
         ability_icon_text = ability_font.render("E", True, config.WHITE)
         ability_icon_rect = ability_icon_text.get_rect(center=(ability_indicator_x, ability_indicator_y - 5))
         screen.blit(ability_icon_text, ability_icon_rect)
 
         # 능력 이름 (아이콘 아래)
-        ability_name_font = pygame.font.Font(None, 18)
+        ability_name_font = get_font("tiny")
         ability_name = ability_info.get('name', 'Ability')[:8]  # 최대 8글자
         ability_name_text = ability_name_font.render(ability_name, True, config.WHITE)
         ability_name_rect = ability_name_text.get_rect(center=(ability_indicator_x, ability_indicator_y + ability_radius + 12))
@@ -915,7 +943,7 @@ def draw_hud(
 
         # 쿨다운 시간 표시 (쿨다운 중일 때만)
         if not ability_ready and ability_remaining > 0:
-            cooldown_font = pygame.font.Font(None, 20)
+            cooldown_font = get_font("small")
             cooldown_text = cooldown_font.render(f"{ability_remaining:.1f}s", True, config.WHITE)
             cooldown_rect = cooldown_text.get_rect(center=(ability_indicator_x, ability_indicator_y + 10))
             screen.blit(cooldown_text, cooldown_rect)
@@ -939,7 +967,7 @@ def draw_hud(
             pygame.draw.circle(screen, (0, 0, 0, 150), (icon_x + icon_size // 2, icon_y + icon_size // 2), icon_size // 2 + 2)
 
             # 환생 아이콘
-            reincarnation_font = pygame.font.Font(None, 36)
+            reincarnation_font = get_font("large")
             reincarnation_icon = render_text_with_emoji(
                 config.UI_ICONS["REINCARNATION"],
                 reincarnation_font,
@@ -996,7 +1024,7 @@ def draw_wave_prepare_screen(
     screen.blit(wave_num_text, wave_num_text.get_rect(center=(center_x, panel_y + 60)))
 
     # 웨이브 설명 (크기 축소) - 통일된 색상
-    desc_font = pygame.font.Font(None, 24)
+    desc_font = get_font("light_small")
     desc_text = render_text_with_emoji(
         wave_desc,
         desc_font,
@@ -1007,7 +1035,7 @@ def draw_wave_prepare_screen(
 
     # 목표 킬 수 (크기 축소) - 통일된 색상
     target_kills = game_data.get("wave_target_kills", 20)
-    target_font = pygame.font.Font(None, 22)
+    target_font = get_font("small")
     target_text = render_text_with_emoji(
         f"{config.UI_ICONS['SWORD']} Target: {target_kills} Kills",
         target_font,
@@ -1019,7 +1047,7 @@ def draw_wave_prepare_screen(
     # 시작 안내 (깜빡이는 효과, 크기 축소) - 통일된 색상
     import math
     alpha = int(127 + 128 * math.sin(pygame.time.get_ticks() / 500))
-    start_font = pygame.font.Font(None, 26)
+    start_font = get_font("medium")
     start_text = render_text_with_emoji(
         "Click to Start!",
         start_font,
@@ -1074,7 +1102,7 @@ def draw_wave_clear_screen(
     total_kills = game_data.get("kill_count", 0)
 
     stats_y = panel_y + 140
-    stats_font = pygame.font.Font(None, 24)
+    stats_font = get_font("small")
     kills_text = render_text_with_emoji(
         f"{config.UI_ICONS['SWORD']} Kills This Wave: {kills}",
         stats_font,
@@ -1083,7 +1111,7 @@ def draw_wave_clear_screen(
     )
     screen.blit(kills_text, kills_text.get_rect(center=(center_x, stats_y)))
 
-    total_font = pygame.font.Font(None, 22)
+    total_font = get_font("small")
     total_text = render_text_with_emoji(
         f"Total Kills: {total_kills}",
         total_font,
@@ -1095,7 +1123,7 @@ def draw_wave_clear_screen(
     # 크레딧 보상 표시 (Option B: 정비소 통합) - 통일된 색상
     credit_reward = game_data.get("last_wave_credits", 0)
     if credit_reward > 0:
-        credit_font = pygame.font.Font(None, 28)
+        credit_font = get_font("medium")
         credit_text = render_text_with_emoji(
             f"{config.UI_ICONS['COIN']} +{credit_reward} Credits!",
             credit_font,
@@ -1108,7 +1136,7 @@ def draw_wave_clear_screen(
     import math
     alpha = int(127 + 128 * math.sin(pygame.time.get_ticks() / 500))
 
-    next_font = pygame.font.Font(None, 26)
+    next_font = get_font("medium")
     if current_wave < config.TOTAL_WAVES:
         next_text = render_text_with_emoji(
             "Click for Next Wave!",
@@ -1194,7 +1222,7 @@ def draw_boss_health_bar(
     bar_y = 150  # HUD 아래 위치
 
     # 보스 이름 표시
-    name_font = pygame.font.Font(None, 32)
+    name_font = get_font("large")
     name_text = render_text_with_emoji(
         f"👹 {boss.boss_name} 👹",
         name_font,
@@ -1256,7 +1284,7 @@ def draw_boss_health_bar(
         _draw_default_boss_bar(screen, bar_x, bar_y, bar_width, bar_height, boss)
 
     # HP 텍스트 (중앙)
-    hp_text_font = pygame.font.Font(None, 24)
+    hp_text_font = get_font("small")
     hp_text = hp_text_font.render(
         f"{int(boss.hp):,} / {int(boss.max_hp):,} HP",
         True,
@@ -1349,7 +1377,7 @@ def draw_victory_screen(
     screen.blit(victory_text, victory_rect)
 
     # 부제목 (크기 축소) - 통일된 색상
-    subtitle_font = pygame.font.Font(None, 26)
+    subtitle_font = get_font("medium")
     subtitle_text = render_text_with_emoji(
         "ALL WAVES CLEARED!",
         subtitle_font,
@@ -1382,7 +1410,7 @@ def draw_victory_screen(
     ]
 
     # 스탯용 폰트 (크기 축소)
-    stat_font = pygame.font.Font(None, 24)
+    stat_font = get_font("small")
 
     for i, (label, value) in enumerate(stats):
         y_pos = stat_start_y + i * stat_spacing
@@ -1419,7 +1447,7 @@ def draw_victory_screen(
     pygame.draw.rect(screen, config.STATE_COLORS["SUCCESS"],
                     (base_button_x, base_button_y, base_button_width, base_button_height), 3, border_radius=8)
 
-    base_btn_font = pygame.font.Font(None, 28)
+    base_btn_font = get_font("medium")
     base_btn_text = base_btn_font.render("[H] Return to Base", True, config.TEXT_LEVELS["PRIMARY"])
     base_btn_rect = base_btn_text.get_rect(center=(center_x, base_button_y + base_button_height // 2))
     screen.blit(base_btn_text, base_btn_rect)
@@ -1428,7 +1456,7 @@ def draw_victory_screen(
     boss_rush_y = panel_y + panel_height - 75
 
     # 제안 텍스트
-    proposal_font = pygame.font.Font(None, 22)
+    proposal_font = get_font("light_small")
     proposal_text = render_text_with_emoji(
         "Or challenge Boss Rush Mode?",
         proposal_font,
@@ -1441,7 +1469,7 @@ def draw_victory_screen(
     # 하단 안내 메시지 - 통일된 색상
     instruction_y = panel_y + panel_height - 45
 
-    instruction_font = pygame.font.Font(None, 20)
+    instruction_font = get_font("tiny")
     instruction_text = render_text_with_emoji(
         "B: Boss Rush | R: Restart | Q: Quit",
         instruction_font,
@@ -1452,7 +1480,7 @@ def draw_victory_screen(
     screen.blit(instruction_text, instruction_rect)
 
     # 감사 메시지 (패널 외부 하단) - 통일된 색상
-    thanks_font = pygame.font.Font(None, 20)
+    thanks_font = get_font("light_tiny")
     thanks_text = render_text_with_emoji(
         "Thank you for playing!",
         thanks_font,
@@ -1461,6 +1489,87 @@ def draw_victory_screen(
     )
     thanks_rect = thanks_text.get_rect(center=(center_x, SCREEN_HEIGHT - 30))
     screen.blit(thanks_text, thanks_rect)
+
+
+def draw_boss_clear_choice(
+    screen: pygame.Surface,
+    game_data: Dict,
+    fonts: Dict[str, pygame.font.Font]
+) -> Dict[str, pygame.Rect]:
+    """보스 클리어 후 선택 화면 (우상단에 선택 박스 표시)"""
+    SCREEN_WIDTH, SCREEN_HEIGHT = screen.get_size()
+
+    # 우상단 위치 설정
+    choice_width = 320
+    choice_height = 160
+    choice_x = SCREEN_WIDTH - choice_width - 30
+    choice_y = 30
+
+    # 반투명 배경
+    choice_bg = pygame.Surface((choice_width, choice_height), pygame.SRCALPHA)
+    choice_bg.fill((*config.STATE_COLORS["SUCCESS_DIM"], 220))
+    pygame.draw.rect(choice_bg, config.STATE_COLORS["SUCCESS"],
+                    (0, 0, choice_width, choice_height), 3, border_radius=8)
+    screen.blit(choice_bg, (choice_x, choice_y))
+
+    # 타이틀
+    title_font = get_font("medium")
+    title_text = render_text_with_emoji(
+        "🏆 Boss Cleared!",
+        title_font,
+        config.STATE_COLORS["SUCCESS"],
+        "MEDIUM"
+    )
+    title_rect = title_text.get_rect(center=(choice_x + choice_width // 2, choice_y + 30))
+    screen.blit(title_text, title_rect)
+
+    # 버튼 설정
+    button_width = 260
+    button_height = 35
+    button_x = choice_x + (choice_width - button_width) // 2
+
+    # "Continue Wave" 버튼
+    continue_y = choice_y + 65
+    continue_rect = pygame.Rect(button_x, continue_y, button_width, button_height)
+
+    mouse_pos = pygame.mouse.get_pos()
+    is_continue_hover = continue_rect.collidepoint(mouse_pos)
+
+    continue_color = config.STATE_COLORS["SUCCESS"] if is_continue_hover else (*config.STATE_COLORS["SUCCESS_DIM"], 180)
+    continue_surface = pygame.Surface((button_width, button_height), pygame.SRCALPHA)
+    continue_surface.fill(continue_color)
+    screen.blit(continue_surface, (button_x, continue_y))
+    pygame.draw.rect(screen, config.STATE_COLORS["SUCCESS"],
+                    (button_x, continue_y, button_width, button_height), 2, border_radius=6)
+
+    continue_font = get_font("small")
+    continue_text = continue_font.render("[C] Continue Wave", True, config.TEXT_LEVELS["PRIMARY"])
+    continue_text_rect = continue_text.get_rect(center=(button_x + button_width // 2, continue_y + button_height // 2))
+    screen.blit(continue_text, continue_text_rect)
+
+    # "Return to Base" 버튼
+    return_y = choice_y + 110
+    return_rect = pygame.Rect(button_x, return_y, button_width, button_height)
+
+    is_return_hover = return_rect.collidepoint(mouse_pos)
+
+    return_color = config.STATE_COLORS["WARNING"] if is_return_hover else (*config.STATE_COLORS["WARNING_DIM"], 180)
+    return_surface = pygame.Surface((button_width, button_height), pygame.SRCALPHA)
+    return_surface.fill(return_color)
+    screen.blit(return_surface, (button_x, return_y))
+    pygame.draw.rect(screen, config.STATE_COLORS["WARNING"],
+                    (button_x, return_y, button_width, button_height), 2, border_radius=6)
+
+    return_font = get_font("small")
+    return_text = return_font.render("[B] Return to Base", True, config.TEXT_LEVELS["PRIMARY"])
+    return_text_rect = return_text.get_rect(center=(button_x + button_width // 2, return_y + button_height // 2))
+    screen.blit(return_text, return_text_rect)
+
+    # 버튼 영역 반환
+    return {
+        "continue": continue_rect,
+        "return_base": return_rect
+    }
 
 
 # =========================================================
@@ -1485,7 +1594,7 @@ def draw_skill_indicators(
 
     # 이모지 폰트 가져오기
     emoji_font = config.EMOJI_FONTS.get("MEDIUM")
-    text_font = pygame.font.Font(None, 16)
+    text_font = get_font("micro")
     if not emoji_font:
         return  # 이모지 폰트 없으면 스킵
 
@@ -1642,7 +1751,7 @@ def _draw_single_skill_box(
             screen.blit(star_surf, star_rect)
 
     # 하단에 스킬명 표시 (밝은 흰색, 더 크게)
-    name_font = pygame.font.Font(None, settings["text_size"])
+    name_font = get_font("micro")
     name_surf = name_font.render(skill_name_text, True, (255, 255, 255))
     name_rect = name_surf.get_rect(center=(pos_x, pos_y + box_size // 2 + settings["text_offset_y"]))
     screen.blit(name_surf, name_rect)
@@ -1692,8 +1801,8 @@ def draw_random_event_ui(screen: pygame.Surface, screen_size: Tuple[int, int], g
 
     # 2. 이벤트 알림 (처음 3초간 표시)
     if game_data.get("event_notification_timer", 0) > 0:
-        notification_font = pygame.font.Font(None, 48)
-        small_font = pygame.font.Font(None, 28)
+        notification_font = get_font("huge")
+        small_font = get_font("medium")
 
         # 이벤트 이름
         name_text = f"{event_data['icon']} {event_data['name']}"
@@ -1827,14 +1936,14 @@ def draw_random_event_ui(screen: pygame.Surface, screen_size: Tuple[int, int], g
         pygame.draw.rect(screen, event_data["color"], filled_rect, border_radius=6)
 
     # 이벤트 아이콘과 이름
-    event_font = pygame.font.Font(None, 24)
+    event_font = get_font("small")
     event_text = f"{event_data['icon']} {event_data['name']}"
     event_surf = event_font.render(event_text, True, (255, 255, 255))
     event_rect = event_surf.get_rect(center=(bar_x + bar_width // 2, bar_y + bar_height // 2))
     screen.blit(event_surf, event_rect)
 
     # 남은 시간 표시 (우측)
-    time_font = pygame.font.Font(None, 20)
+    time_font = get_font("tiny")
     time_text = f"{int(remaining_time)}s"
     time_surf = time_font.render(time_text, True, (200, 200, 200))
     time_rect = time_surf.get_rect(midleft=(bar_x + bar_width + 10, bar_y + bar_height // 2))
@@ -1898,7 +2007,7 @@ def draw_settings_menu(screen: pygame.Surface, screen_size: Tuple[int, int],
     icon_text = render_text_with_emoji("🎵", font_title, config.STATE_COLORS["SUCCESS"], "LARGE")
     screen.blit(icon_text, (bgm_card_x + 20, bgm_card_y + 10))
 
-    label_font = pygame.font.Font(None, 28)
+    label_font = get_font("medium")
     label_text = label_font.render("Music (BGM)", True, config.TEXT_LEVELS["PRIMARY"])
     screen.blit(label_text, (bgm_card_x + 80, bgm_card_y + 15))
 

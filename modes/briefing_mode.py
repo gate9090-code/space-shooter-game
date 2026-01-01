@@ -114,6 +114,10 @@ class BriefingMode(GameMode):
         # 커스텀 커서
         self.custom_cursor = self._load_base_cursor()
 
+        # 기본 마우스 커서 숨김
+        if self.custom_cursor:
+            pygame.mouse.set_visible(False)
+
         print("INFO: BriefingMode initialized (Episode System)")
 
     def _load_episodes_data(self):
@@ -184,18 +188,14 @@ class BriefingMode(GameMode):
             return False
 
         # 첫 번째 에피소드는 항상 가능
-        if episode.act == 1:
+        if episode_id == "ep1":
             return True
 
-        # 이전 Act 에피소드가 완료되어야 함
-        prev_act = episode.act - 1
-        for ep_id in self.EPISODE_IDS:
-            ep = self.episodes_data.get(ep_id)
-            if ep and ep.act == prev_act:
-                if ep_id in self.completed_episodes:
-                    return True
+        # 이전 에피소드가 완료되어야 함
+        episode_num = int(episode_id.replace("ep", ""))
+        prev_episode_id = f"ep{episode_num - 1}"
 
-        return False
+        return prev_episode_id in self.completed_episodes
 
     def _get_current_episodes(self) -> Dict[str, EpisodeData]:
         """현재 탭의 에피소드 목록"""
@@ -285,7 +285,7 @@ class BriefingMode(GameMode):
 
         # 콘텐츠 패널
         panel_rect = self.ui_manager.render_content_panel(
-            screen, f"Act {self.current_act} - Story Episodes", tab_color
+            screen, "Story Episodes", tab_color
         )
 
         # 에피소드 카드 영역
@@ -361,98 +361,140 @@ class BriefingMode(GameMode):
         is_available: bool, is_completed: bool, is_selected: bool,
         hover_progress: float
     ):
-        """에피소드 카드 렌더링"""
-        # 확장 효과
-        expand = int(hover_progress * 4)
-        draw_rect = rect.inflate(expand, expand // 2)
-
-        # 카드 배경
-        card_surf = pygame.Surface((draw_rect.width, draw_rect.height), pygame.SRCALPHA)
-
-        # Act별 색상
-        act_colors = {
+        """에피소드 카드 렌더링 - Web Button 스타일"""
+        # Episode별 색상 (에피소드 번호 추출: ep1 -> 1)
+        episode_num = int(episode_id.replace("ep", ""))
+        episode_colors = {
             1: (80, 160, 255),   # 파랑
             2: (80, 200, 140),   # 녹색
             3: (255, 180, 80),   # 주황
             4: (200, 100, 150),  # 분홍
             5: (150, 100, 220),  # 보라
         }
-        type_color = act_colors.get(episode.act, (80, 160, 255))
+        type_color = episode_colors.get(episode_num, (80, 160, 255))
+
+        # === Web Button 스타일: 좌측 컬러 박스 + 우측 밝은 텍스트 영역 ===
+
+        icon_box_width = 140  # 좌측 박스 너비
+
+        # 좌측 EPISODE 박스 (Episode 컬러)
+        icon_rect = pygame.Rect(rect.x, rect.y, icon_box_width, rect.height)
 
         if not is_available:
-            card_surf.fill((40, 40, 50, 180))
-            border_color = (70, 70, 80)
+            icon_color = (100, 100, 120)  # 회색
+        elif is_completed:
+            icon_color = (40, 180, 100)  # 녹색
         elif is_selected:
-            card_surf.fill((type_color[0] // 3, type_color[1] // 3, type_color[2] // 3, 220))
-            border_color = type_color
-        elif hover_progress > 0:
-            alpha = int(160 + 55 * hover_progress)
-            card_surf.fill((35, 45, 65, alpha))
-            border_color = (95, 115, 155)
+            # 선택 시 더 밝게
+            icon_color = tuple(min(255, int(c * 1.3)) for c in type_color)
         else:
-            card_surf.fill((25, 35, 55, 200))
-            border_color = (60, 75, 100)
+            icon_color = type_color
 
-        screen.blit(card_surf, draw_rect.topleft)
-        pygame.draw.rect(screen, border_color, draw_rect, 2, border_radius=10)
+        # 호버 시 약간 밝아짐
+        if hover_progress > 0 and is_available:
+            icon_color = tuple(min(255, int(c + 25 * hover_progress)) for c in icon_color)
 
-        # 왼쪽: Act 번호
-        act_x = draw_rect.x + 25
-        act_y = draw_rect.centery
+        pygame.draw.rect(screen, icon_color, icon_rect, border_radius=8)
 
-        act_font = self.fonts.get("large", self.fonts["medium"])
-        act_text = f"ACT {episode.act}"
-        act_color = type_color if is_available else (80, 80, 90)
-        act_surf = act_font.render(act_text, True, act_color)
-        act_rect = act_surf.get_rect(center=(act_x + 30, act_y - 10))
-        screen.blit(act_surf, act_rect)
+        # EPISODE 번호 및 텍스트 (좌측 박스 내부)
+        ep_font = self.fonts.get("xlarge", self.fonts["large"])
+        ep_num_text = f"{episode_num}"
+        ep_num_surf = ep_font.render(ep_num_text, True, (255, 255, 255))
+        ep_num_rect = ep_num_surf.get_rect(center=(icon_rect.centerx, icon_rect.centery - 15))
+        screen.blit(ep_num_surf, ep_num_rect)
+
+        # "EP" 라벨
+        ep_label_font = self.fonts.get("small", self.fonts["tiny"])
+        ep_label_surf = ep_label_font.render("EP", True, (240, 240, 240))
+        ep_label_rect = ep_label_surf.get_rect(center=(icon_rect.centerx, icon_rect.centery + 18))
+        screen.blit(ep_label_surf, ep_label_rect)
+
+        # 우측 텍스트 영역 (밝은 배경)
+        text_rect = pygame.Rect(rect.x + icon_box_width, rect.y,
+                               rect.width - icon_box_width, rect.height)
+
+        # 텍스트 영역 배경
+        if not is_available:
+            text_bg_color = (200, 200, 210)  # 어두운 회색
+            name_color = (100, 100, 120)
+        elif is_completed:
+            text_bg_color = (230, 245, 235)  # 녹색 톤
+            name_color = (40, 100, 60)
+        elif is_selected:
+            text_bg_color = (235, 240, 250)  # 밝은 파랑 톤
+            name_color = (30, 50, 80)
+        else:
+            text_bg_color = (240, 242, 245)  # 밝은 회색
+            name_color = (40, 45, 55)
+
+        pygame.draw.rect(screen, text_bg_color, text_rect, border_radius=8)
+
+        # 전체 테두리
+        border_color = icon_color if is_available else (150, 150, 160)
+        if is_selected:
+            pygame.draw.rect(screen, border_color, rect, 3, border_radius=8)  # 선택 시 두껍게
+        else:
+            pygame.draw.rect(screen, border_color, rect, 2, border_radius=8)
 
         # 에피소드 제목 (한글)
-        text_x = draw_rect.x + 100
-        name_color = (255, 255, 255) if is_available else (100, 100, 110)
+        text_x = text_rect.x + 20
         title_font = self.fonts.get("medium", self.fonts["small"])
         title_surf = title_font.render(episode.title, True, name_color)
-        screen.blit(title_surf, (text_x, draw_rect.y + 15))
+        screen.blit(title_surf, (text_x, text_rect.y + 12))
 
         # 영문 제목
         title_en = getattr(episode, 'title_en', '') or episode_id.upper()
-        subtitle_color = type_color if is_available else (60, 60, 70)
-        subtitle_font = self.fonts.get("small", self.fonts["small"])
+        subtitle_color = type_color if is_available else (120, 120, 130)
+        if not is_available:
+            subtitle_color = (120, 120, 130)
+        subtitle_font = self.fonts.get("small", self.fonts["tiny"])
         subtitle_surf = subtitle_font.render(title_en, True, subtitle_color)
-        screen.blit(subtitle_surf, (text_x, draw_rect.y + 42))
+        screen.blit(subtitle_surf, (text_x, text_rect.y + 38))
 
         # 설명
-        desc_color = (160, 170, 190) if is_available else (80, 85, 95)
-        desc = episode.description[:60] + "..." if len(episode.description) > 60 else episode.description
-        desc_font = self.fonts.get("light_small", self.fonts["small"])
+        desc_color = (80, 90, 110) if is_available else (120, 120, 130)
+        desc = episode.description[:55] + "..." if len(episode.description) > 55 else episode.description
+        desc_font = self.fonts.get("light_small", self.fonts["tiny"])
         desc_surf = desc_font.render(desc, True, desc_color)
-        screen.blit(desc_surf, (text_x, draw_rect.y + 68))
+        screen.blit(desc_surf, (text_x, text_rect.y + 62))
 
-        # 오른쪽: 상태
-        right_x = draw_rect.right - 100
+        # 우측 상태 영역
+        right_x = text_rect.right - 100
 
         if is_completed:
-            # 완료 뱃지
-            badge_surf = pygame.Surface((70, 24), pygame.SRCALPHA)
-            badge_surf.fill((40, 140, 80, 200))
-            screen.blit(badge_surf, (right_x, draw_rect.centery - 12))
-            pygame.draw.rect(screen, (80, 200, 120), (right_x, draw_rect.centery - 12, 70, 24), 1, border_radius=4)
-            clear_text = self.fonts["small"].render("CLEAR", True, (140, 255, 180))
-            screen.blit(clear_text, clear_text.get_rect(center=(right_x + 35, draw_rect.centery)))
+            # 완료 뱃지 (우측 상단)
+            badge_x = text_rect.right - 75
+            badge_y = text_rect.y + 10
+            badge_surf = pygame.Surface((70, 26), pygame.SRCALPHA)
+            badge_surf.fill((60, 200, 120, 220))
+            screen.blit(badge_surf, (badge_x, badge_y))
+            pygame.draw.rect(screen, (40, 160, 90), (badge_x, badge_y, 70, 26), 2, border_radius=6)
+            clear_text = self.fonts["medium"].render("CLEAR", True, (255, 255, 255))
+            screen.blit(clear_text, clear_text.get_rect(center=(badge_x + 35, badge_y + 13)))
 
-            # 재도전 표시
-            retry_text = self.fonts["small"].render("REPLAY", True, (180, 200, 220))
-            screen.blit(retry_text, (right_x + 5, draw_rect.centery + 15))
+            # 재도전 표시 (작게)
+            retry_font = self.fonts.get("tiny", self.fonts["small"])
+            retry_text = retry_font.render("REPLAY", True, (100, 120, 140))
+            screen.blit(retry_text, (badge_x + 10, badge_y + 30))
         elif is_available:
-            # 보상 표시
+            # 보상 표시 (우측 하단)
             rewards = episode.rewards
             if rewards and rewards.get("credits", 0) > 0:
-                reward_text = self.fonts["small"].render(f"+{rewards['credits']}", True, (255, 220, 100))
-                screen.blit(reward_text, (right_x + 10, draw_rect.centery - 8))
+                coin_x = text_rect.right - 110
+                coin_y = text_rect.bottom - 28
+
+                # 코인 아이콘
+                pygame.draw.circle(screen, (255, 200, 60), (coin_x, coin_y + 8), 8)
+
+                # 보상 금액
+                reward_text = self.fonts["medium"].render(f"+{rewards['credits']}", True, (200, 150, 30))
+                screen.blit(reward_text, (coin_x + 16, coin_y))
         else:
-            # 잠금
-            lock_text = self.fonts["small"].render("LOCKED", True, (100, 100, 110))
-            screen.blit(lock_text, (right_x + 5, draw_rect.centery - 8))
+            # 잠금 표시 (우측 중앙)
+            lock_font = self.fonts.get("small", self.fonts["tiny"])
+            lock_text = lock_font.render("LOCKED", True, (130, 130, 140))
+            lock_rect = lock_text.get_rect(center=(text_rect.right - 50, text_rect.centery))
+            screen.blit(lock_text, lock_rect)
 
     def _render_episode_detail(self, screen: pygame.Surface):
         """선택된 에피소드 상세 정보"""
@@ -475,8 +517,11 @@ class BriefingMode(GameMode):
         pygame.draw.rect(screen, (60, 80, 120), detail_rect, 1, border_radius=8)
 
         # 에피소드 정보
+        # 에피소드 번호 추출
+        episode_num = int(self.selected_episode.replace("ep", ""))
+
         # 제목
-        title_text = f"ACT {episode.act}: {episode.title}"
+        title_text = f"Episode {episode_num}: {episode.title}"
         title_surf = self.fonts["medium"].render(title_text, True, (255, 255, 255))
         screen.blit(title_surf, (detail_rect.x + 20, detail_rect.y + 15))
 
@@ -606,7 +651,8 @@ class BriefingMode(GameMode):
             self._enable_custom_cursor()
 
     def on_exit(self):
-        self._disable_custom_cursor()
+        # 커서는 다음 모드에서 설정 (딜레이 방지)
+        # self._disable_custom_cursor()
         super().on_exit()
 
 

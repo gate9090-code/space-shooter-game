@@ -36,8 +36,7 @@ CHARACTER_COLORS = {
     "ARTEMIS": (255, 220, 150),       # 아르테미스(지구인): 따뜻한 금색
     "PILOT": (150, 200, 255),         # 파일럿(안드로메다인): 차가운 푸른색
     "BOSS": (255, 100, 100),          # 보스/카오스: 붉은색
-    "NARRATOR": (200, 200, 200),      # 나레이션: 회색
-    "SYSTEM": (100, 255, 200),        # 시스템 메시지: 청록색
+    "NARRATOR": (200, 200, 200),      # 나레이터(안드로이드): 회색
 }
 
 CHARACTER_NAMES = {
@@ -45,13 +44,13 @@ CHARACTER_NAMES = {
     "PILOT": "파일럿",
     "BOSS": "???",
     "NARRATOR": "",
-    "SYSTEM": "SYSTEM",
 }
 
 # 캐릭터 초상화 경로
 CHARACTER_PORTRAITS = {
-    "ARTEMIS": "assets/story_mode/portraits/portrait_artemis.jpg",
+    "ARTEMIS": "assets/story_mode/portraits/portrait_artemis.png",
     "PILOT": "assets/story_mode/portraits/portrait_pilot.png",
+    "NARRATOR": "assets/story_mode/portraits/portrait_android.png",  # 나레이터는 안드로이드 이미지 사용
 }
 
 # =========================================================
@@ -151,7 +150,7 @@ ACT_CUTSCENE_DATA = {
         },
         # 철학 반영: 이방인의 연대, 희망의 전염
         "dialogue_after": [
-            {"speaker": "SYSTEM", "text": "[홀로그램 기록 재생 완료 - 데이터 손상률 34% - 복구 가능한 정보 한계 도달]"},
+            {"speaker": "NARRATOR", "text": "[홀로그램 기록 재생 완료 - 데이터 손상률 34% - 복구 가능한 정보 한계 도달]"},
             {"speaker": "ARTEMIS", "text": "차원 게이트... 시공간을 접어 순간 이동을 가능케 하는 이 기술을... 지구인들이 직접 개발한 거야?"},
             {"speaker": "PILOT", "text": "완전히 독자 개발은 아니야. 우리 안드로메다가 핵심 이론과 기술을 제공했어... 하지만 그것을 현실로 구현한 건 지구인들의 의지였다."},
             {"speaker": "ARTEMIS", "text": "적이라고 철석같이 믿었던 외계 문명에서 온 기술로... 인류의 탈출 경로를 개척했다고? 선입견이란 게 얼마나 어리석은 건지..."},
@@ -180,7 +179,7 @@ ACT_CUTSCENE_DATA = {
         },
         # 철학 반영: 기다림과 찾음의 만남, 희망의 전염
         "dialogue_after": [
-            {"speaker": "SYSTEM", "text": "[암호화된 장거리 통신 신호 복호화 완료 - 38만 킬로미터 송신원 확인 - 음성 데이터 무결성 검증 완료]"},
+            {"speaker": "NARRATOR", "text": "[암호화된 장거리 통신 신호 복호화 완료 - 38만 킬로미터 송신원 확인 - 음성 데이터 무결성 검증 완료]"},
             {"speaker": "ARTEMIS", "text": "통신이 잡혔어... 저 잡음 사이로 사람의 목소리가 들려! 10년 만에 듣는 인류의 숨소리야!"},
             {"speaker": "NARRATOR", "text": "'...여기는 아크 시티... 달 궤도 정착지... 생존자 532명이 새 문명을 건설 중... 지구의 형제자매들을 기다리고 있습니다...'"},
             {"speaker": "PILOT", "text": "532명... 절망적인 탈출 속에서도 그만큼의 영혼들이 살아남았어. 그리고 10년 동안 달에서 새 도시를 세우며 희망을 지켜왔군."},
@@ -518,7 +517,7 @@ ANDROMEDA_STORY_DATA = {
         "cutscene_type": "andromeda_world",
         "dialogues": [
             {"speaker": "NARRATOR", "text": "[통신 화면에 안드로메다 위원회 - 사이버펑크 고대 도시를 배경으로, 홀로그램으로 투영된 무표정한 형상들]"},
-            {"speaker": "SYSTEM", "text": "[안드로메다 위원회 연결 - 암호화 통신]"},
+            {"speaker": "NARRATOR", "text": "[안드로메다 위원회 연결 - 암호화 통신]"},
             {"speaker": "NARRATOR", "text": "(기계적인 음성) '파일럿 7-42. 너의 전송 데이터를 분석했다.'"},
             {"speaker": "NARRATOR", "text": "[화면에 지구 사계절 이미지들이 스캔됨 - 안드로메다 고대 문자로 분석 중]"},
             {"speaker": "NARRATOR", "text": "'...예상치 못한 변수다. 계절이라는 순환 패턴. 10만 년 전, 우리가 제거한 것과 동일한 구조.'"},
@@ -554,147 +553,13 @@ ANDROMEDA_STORY_DATA = {
 }
 
 # =========================================================
-# 전투 중 실시간 대사 시스템
+# 전투 중 실시간 대사 시스템 (DEPRECATED - JSON으로 이동)
 # =========================================================
-COMBAT_DIALOGUES = {
-    # 킬 마일스톤 대사
-    "kill_milestones": {
-        5: [
-            {"speaker": "ARTEMIS", "text": "좋아, 이 조로!"},
-            {"speaker": "PILOT", "text": "리듬을 잡고 있어."},
-        ],
-        10: [
-            {"speaker": "ARTEMIS", "text": "수가 많아... 하지만 멈출 수 없어!"},
-            {"speaker": "PILOT", "text": "좋아, 계속 밀어붙여!"},
-        ],
-        15: [
-            {"speaker": "PILOT", "text": "적의 수가 줄고 있어. 끝이 보인다."},
-            {"speaker": "ARTEMIS", "text": "거의 다 왔어!"},
-        ],
-        20: [
-            {"speaker": "ARTEMIS", "text": "이 정도면 충분해!"},
-            {"speaker": "PILOT", "text": "훌륭해. 역시 네 실력이야."},
-        ],
-    },
-    # HP 임계값 대사
-    "hp_thresholds": {
-        0.5: [  # HP 50% 이하
-            {"speaker": "PILOT", "text": "조심해! 쉴드가 약해지고 있어!"},
-            {"speaker": "SYSTEM", "text": "[경고: 선체 손상 50%]"},
-        ],
-        0.25: [  # HP 25% 이하
-            {"speaker": "ARTEMIS", "text": "버텨야 해... 여기서 끝날 순 없어!"},
-            {"speaker": "PILOT", "text": "긴급 회피 기동! 지금!"},
-        ],
-        0.1: [  # HP 10% 이하
-            {"speaker": "PILOT", "text": "위험 수위야! 후퇴를 고려해!"},
-            {"speaker": "ARTEMIS", "text": "아직... 아직이야!"},
-        ],
-    },
-    # 특수 적 등장 대사
-    "enemy_spawn": {
-        "TANK": [
-            {"speaker": "PILOT", "text": "탱크 타입이다! 화력을 집중해!"},
-            {"speaker": "ARTEMIS", "text": "저 거대한 녀석... 조심해야겠어."},
-        ],
-        "SUMMONER": [
-            {"speaker": "ARTEMIS", "text": "저놈을 빨리 잡아! 다른 놈들을 소환해!"},
-            {"speaker": "PILOT", "text": "소환사 타입! 우선 제거 대상이야!"},
-        ],
-        "KAMIKAZE": [
-            {"speaker": "PILOT", "text": "자폭병이다! 가까이 오기 전에 처리해!"},
-            {"speaker": "ARTEMIS", "text": "저건... 피해야 해!"},
-        ],
-        "SNIPER": [
-            {"speaker": "PILOT", "text": "저격수가 있어! 이동하면서 싸워!"},
-            {"speaker": "ARTEMIS", "text": "멈추면 안 돼!"},
-        ],
-        "HEALER": [
-            {"speaker": "ARTEMIS", "text": "힐러다! 먼저 잡지 않으면 끝이 없어!"},
-            {"speaker": "PILOT", "text": "적 치유 유닛 감지! 우선순위 변경!"},
-        ],
-    },
-    # 목표 진행률 대사
-    "objective_progress": {
-        "defense_50": [
-            {"speaker": "SYSTEM", "text": "[방어 진행률 50% - 계속 버텨라!]"},
-            {"speaker": "PILOT", "text": "절반이야! 조금만 더!"},
-        ],
-        "defense_75": [
-            {"speaker": "ARTEMIS", "text": "거의 다 됐어! 끝까지 버텨!"},
-            {"speaker": "PILOT", "text": "75%! 승리가 눈앞이야!"},
-        ],
-        "survival_half": [
-            {"speaker": "PILOT", "text": "절반 왔어! 조금만 더 버텨!"},
-            {"speaker": "ARTEMIS", "text": "시간이 우리 편이야!"},
-        ],
-        "data_collected": [
-            {"speaker": "ARTEMIS", "text": "데이터 코어 획득! 더 찾아야 해!"},
-            {"speaker": "PILOT", "text": "좋아, 계속해!"},
-        ],
-        "escort_half": [
-            {"speaker": "PILOT", "text": "호위 대상 절반 도달! 계속 보호해!"},
-            {"speaker": "ARTEMIS", "text": "거의 다 왔어! 포기하지 마!"},
-        ],
-    },
-}
-
-# =========================================================
-# 보스 페이즈별 대사
-# =========================================================
-BOSS_PHASE_DIALOGUES = {
-    # Act 1 보스: Shadow Scout (정찰자 - 숙주 탐색)
-    1: {
-        "appear": {"speaker": "BOSS", "text": "숙주 후보 감지... 융합 적합성 스캔 중..."},
-        "phase2": {"speaker": "BOSS", "text": "저항하는군... 의지가 강할수록 융합 후 더 강해진다!"},
-        "phase2_pilot": {"speaker": "PILOT", "text": "(분석) 적 에너지 패턴 변화 감지. 공격 주기가 빨라졌다."},
-        "phase3": {"speaker": "BOSS", "text": "수확 대상 확정! 카오스에 바쳐라!"},
-        "phase3_artemis": {"speaker": "ARTEMIS", "text": "내 의지는 네가 가져갈 수 없어!"},
-        "near_death": {"speaker": "PILOT", "text": "적 에너지 잔량 12%. 연산 결과: 승리 확률 94.7%."},
-        "defeat": {"speaker": "BOSS", "text": "스캔 데이터는... 이미 전송되었다... 본대가... 온다..."},
-    },
-    # Act 2 보스: Data Extractor (데이터 수집자 - 기억 수확)
-    2: {
-        "appear": {"speaker": "BOSS", "text": "2,847명의 기억 데이터 추출 완료... 네 기억도 수확하겠다..."},
-        "phase2": {"speaker": "BOSS", "text": "저항할수록 고통스럽다... 순순히 융합을 받아들여라..."},
-        "phase2_pilot": {"speaker": "PILOT", "text": "(분석) 적이 정신 간섭파를 방출 중. 집중력 유지 권장."},
-        "phase3": {"speaker": "BOSS", "text": "감정 데이터... 희망... 분석 불가 오류... 강제 추출!"},
-        "phase3_artemis": {"speaker": "ARTEMIS", "text": "이 기억들은 내 것이야! 네가 이해할 수 없는 것들!"},
-        "near_death": {"speaker": "PILOT", "text": "데이터 링크 손상률 87%. 완전 차단까지 예상 13초."},
-        "defeat": {"speaker": "BOSS", "text": "희망... 이라는 데이터... 형식 오류... 분석... 실패..."},
-    },
-    # Act 3 보스: Inferno Guardian (정화의 불꽃 - 감정 소각)
-    3: {
-        "appear": {"speaker": "BOSS", "text": "사랑이라는 결함... 불꽃으로 정화해주마..."},
-        "phase2": {"speaker": "BOSS", "text": "융합을 거부한 자들의 최후를 보여주겠다! 전부 태워버려!"},
-        "phase2_pilot": {"speaker": "PILOT", "text": "(분석) 화염 온도 상승 중. 현재 1,200°C. 쉴드 내열 한계 근접."},
-        "phase3": {"speaker": "BOSS", "text": "감정은 불순물! 카오스는 순수한 의지만 수확한다!"},
-        "phase3_artemis": {"speaker": "ARTEMIS", "text": "사랑은 불순물이 아니야! 내 힘의 원천이야!"},
-        "near_death": {"speaker": "PILOT", "text": "화염 출력 급감. 적 코어 온도 임계치 이하로 하락 중."},
-        "defeat": {"speaker": "BOSS", "text": "이 불길이... 꺼지지 않아... 네 안의 불꽃에..."},
-    },
-    # Act 4 보스: Memory Phantom (기억의 망령 - 융합 실패체)
-    4: {
-        "appear": {"speaker": "BOSS", "text": "우리는... 융합에 실패한 자들... 247명의 목소리가... 들리는가..."},
-        "phase2": {"speaker": "BOSS", "text": "카오스가 버린 껍데기들... 네 부모도 이렇게 될 것이다..."},
-        "phase2_pilot": {"speaker": "PILOT", "text": "(분석) 복수의 의식 패턴 감지. 추정 인원: 247명. 이것은... 비극이다."},
-        "phase3": {"speaker": "BOSS", "text": "희망은 고통을 연장할 뿐... 포기해라... 우리처럼..."},
-        "phase3_artemis": {"speaker": "ARTEMIS", "text": "부모님은 달라! 난 반드시 구할 거야!"},
-        "near_death": {"speaker": "PILOT", "text": "의식 결합 해체 중. 그들이... 해방되고 있다."},
-        "defeat": {"speaker": "BOSS", "text": "고마워... 드디어... 쉴 수 있어... 기다리고 있을게... 저 너머에서..."},
-    },
-    # Act 5 보스: Chaos Vanguard Commander (카오스 사령관 - 완전 융합체)
-    5: {
-        "appear": {"speaker": "BOSS", "text": "10년을 기다렸다... 가장 강인한 정신... 완벽한 숙주..."},
-        "appear_pilot": {"speaker": "PILOT", "text": "(분석) 에너지 수준: 측정 불가. 지금까지의 적과 차원이 다르다."},
-        "phase2": {"speaker": "BOSS", "text": "안드로메다인이 인간과 함께? 흥미롭군... 그 결함이 네 패배의 원인이다..."},
-        "phase2_pilot": {"speaker": "PILOT", "text": "결함이 아니다. 이것은 '선택'이다. 처음으로 내가 원해서 한 선택."},
-        "phase3": {"speaker": "BOSS", "text": "카오스는 완전함이다! 감정 따위 버리고 융합해라!"},
-        "phase3_artemis": {"speaker": "ARTEMIS", "text": "감정이 있기에 싸울 수 있어! 네가 이해 못 하는 힘이야!"},
-        "near_death": {"speaker": "PILOT", "text": "적 코어 붕괴 임박. 아르테미스... '가족'을 위해 끝내자."},
-        "defeat": {"speaker": "BOSS", "text": "불가능하다... 감정 없는 존재가... 감정으로 나를... 이것이 '희망'인가..."},
-    },
-}
+# COMBAT_DIALOGUES와 BOSS_PHASE_DIALOGUES는 assets/data/dialogues/로 이동되었습니다.
+# - assets/data/dialogues/combat/combat_messages.json
+# - assets/data/dialogues/combat/boss_phases.json
+# - assets/data/dialogues/bosses/boss_dialogues.json
+# 대화 데이터는 systems/dialogue_json_loader.py를 통해 로드됩니다.
 
 # =========================================================
 # 헬퍼 함수들
@@ -714,23 +579,59 @@ def get_andromeda_story(story_key: str) -> dict:
     return ANDROMEDA_STORY_DATA.get(story_key, {})
 
 
-def get_combat_dialogue(trigger_type: str, trigger_value) -> list:
-    """전투 중 대사 반환"""
-    if trigger_type == "kill":
-        return COMBAT_DIALOGUES["kill_milestones"].get(trigger_value, [])
-    elif trigger_type == "hp":
-        return COMBAT_DIALOGUES["hp_thresholds"].get(trigger_value, [])
-    elif trigger_type == "enemy":
-        return COMBAT_DIALOGUES["enemy_spawn"].get(trigger_value, [])
-    elif trigger_type == "objective":
-        return COMBAT_DIALOGUES["objective_progress"].get(trigger_value, [])
-    return []
+# DEPRECATED: 아래 함수들은 더 이상 사용되지 않습니다.
+# 대신 systems/dialogue_json_loader.py의 함수들을 사용하세요:
+#   - get_combat_message(key: str)
+#   - get_boss_phase_dialogue(boss_id: str, phase: str)
+#   - get_boss_dialogue(boss_id: int, phase: str)
 
 
-def get_boss_phase_dialogue(act: int, phase: str) -> dict:
-    """보스 페이즈별 대사 반환"""
-    boss_data = BOSS_PHASE_DIALOGUES.get(act, {})
-    return boss_data.get(phase, {})
+# =========================================================
+# 음성 시스템 설정
+# =========================================================
+
+# 전역 음성 시스템 설정
+VOICE_SYSTEM_SETTINGS = {
+    "enabled": True,  # 음성 활성화
+    "default_adapter": "edge",  # 기본 어댑터 (edge, pyttsx3, silent)
+}
+
+# 캐릭터별 음성 설정
+CHARACTER_VOICE_SETTINGS = {
+    # 아르테미스: 밝고 따뜻한 여성 음성
+    "ARTEMIS": {
+        "adapter": "edge",
+        "voice": "ko-KR-SunHiNeural",
+        "rate": "+5%",
+        "pitch": "+2Hz",
+        "auto_emotion": True,  # 자동 감정 감지
+    },
+    # 파일럿: 차분하고 기계적인 남성 음성
+    "PILOT": {
+        "adapter": "edge",
+        "voice": "ko-KR-InJoonNeural",
+        "rate": "-5%",
+        "pitch": "-3Hz",
+        "auto_emotion": True,
+    },
+    # 안드로이드 나레이터: 기계적 로봇 음성 (치지직 효과)
+    "NARRATOR": {
+        "adapter": "edge",
+        "voice": "ko-KR-InJoonNeural",
+        "rate": "+15%",
+        "pitch": "-5Hz",
+        "static_effect": True,  # 치지직 정적 잡음
+        "auto_emotion": True,
+    },
+    # 보스: 낮고 위협적인 음성
+    "BOSS": {
+        "adapter": "edge",
+        "voice": "ko-KR-BongJinNeural",  # 남성 깊은 목소리
+        "rate": "-10%",
+        "pitch": "-8Hz",
+        "auto_emotion": True,
+    },
+}
 
 
 print("INFO: config_story_dialogue.py loaded")

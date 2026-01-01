@@ -29,36 +29,70 @@ BLUE = (0, 100, 255)  # 레벨업 툴팁 색상
 
 UI_LAYOUT = {
     # 패널 크기
-    "CONTENT_PANEL_WIDTH": 600,
-    "CONTENT_PANEL_HEIGHT_RATIO": 0.60,  # 화면 높이의 60%
+    "CONTENT_PANEL_WIDTH": 620,
+    "CONTENT_PANEL_HEIGHT_RATIO": 0.62,  # 화면 높이의 62%
 
     # 탭 설정 (상단 가로 배치 통일)
-    "TAB_HEIGHT": 42,
-    "TAB_SPACING": 6,
-    "TAB_Y": 90,  # 타이틀 아래
-    "TAB_BORDER_RADIUS": 8,
+    "TAB_HEIGHT": 46,
+    "TAB_SPACING": 8,
+    "TAB_Y": 95,  # 타이틀 아래
+    "TAB_BORDER_RADIUS": 12,
 
     # 버튼 설정
-    "BTN_HEIGHT": 45,
+    "BTN_HEIGHT": 48,
     "BTN_MARGIN": 30,
-    "BTN_BACK_WIDTH": 100,
-    "BTN_ACTION_WIDTH": 140,
-    "BTN_BORDER_RADIUS": 10,
+    "BTN_BACK_WIDTH": 110,
+    "BTN_ACTION_WIDTH": 150,
+    "BTN_BORDER_RADIUS": 12,
 
     # 타이틀 설정
-    "TITLE_Y": 45,
-    "CREDIT_BOX_WIDTH": 180,
-    "CREDIT_BOX_HEIGHT": 42,
+    "TITLE_Y": 48,
+    "CREDIT_BOX_WIDTH": 190,
+    "CREDIT_BOX_HEIGHT": 46,
 
     # 마진/패딩
-    "SCREEN_MARGIN": 30,
-    "CONTENT_START_Y": 138,  # 탭 아래
-    "PANEL_PADDING": 15,
-    "ITEM_HEIGHT": 80,
-    "ITEM_SPACING": 6,
+    "SCREEN_MARGIN": 32,
+    "CONTENT_START_Y": 148,  # 탭 아래
+    "PANEL_PADDING": 18,
+    "ITEM_HEIGHT": 88,
+    "ITEM_SPACING": 10,
 
     # 키보드 힌트
-    "HINT_Y_OFFSET": 18,  # 화면 하단에서의 오프셋
+    "HINT_Y_OFFSET": 22,  # 화면 하단에서의 오프셋
+
+    # 신규: 카드 디자인 설정 (Hades/Dead Cells 스타일)
+    "CARD_ICON_SIZE": 42,
+    "CARD_GLOW_SIZE": 8,
+    "CARD_INNER_PADDING": 14,
+}
+
+# =========================================================
+# 1.1.1 프리미엄 UI 효과 설정 (심미적 디자인)
+# =========================================================
+
+UI_EFFECTS = {
+    # 글래스모피즘 효과
+    "GLASS_BLUR_ALPHA": 0.85,
+    "GLASS_BORDER_GLOW": 1.5,
+
+    # 네온 글로우 효과
+    "NEON_GLOW_RADIUS": 12,
+    "NEON_GLOW_ALPHA": 0.4,
+    "NEON_PULSE_SPEED": 2.5,
+
+    # 호버 애니메이션
+    "HOVER_SCALE_MAX": 1.04,
+    "HOVER_TRANSITION_SPEED": 8.0,
+    "HOVER_GLOW_INTENSITY": 0.6,
+
+    # 카드 효과
+    "CARD_SHADOW_OFFSET": (4, 6),
+    "CARD_SHADOW_ALPHA": 0.35,
+    "CARD_GRADIENT_STRENGTH": 0.15,
+
+    # 아이콘 효과
+    "ICON_GLOW_SIZE": 6,
+    "ICON_BG_ALPHA": 0.7,
 }
 
 # =========================================================
@@ -229,15 +263,55 @@ DAMAGE_NUMBER_CRIT_COLOR = (255, 100, 50)  # 주황색 (크리티컬용)
 
 # 폰트 크기 설정 (화면 높이 대비 비율)
 FONT_SIZE_RATIOS = {
-    "HUGE": 0.055,       # 메인 타이틀 (레벨업, 게임 오버)
-    "LARGE": 0.035,      # 서브 타이틀, 메뉴 제목
-    "MEDIUM": 0.020,     # 본문, 버튼, 화자 이름
-    "SMALL": 0.016,      # HUD 정보, 대화 텍스트
-    "TINY": 0.015,       # 상세 정보
+    # 기본 크기
+    "HUGE": 0.055,       # 메인 타이틀 (레벨업, 게임 오버) ~48px
+    "LARGE": 0.035,      # 서브 타이틀, 메뉴 제목 ~36px
+    "MEDIUM": 0.020,     # 본문, 버튼, 화자 이름 ~24px
+    "SMALL": 0.016,      # HUD 정보, 대화 텍스트 ~20px
+    "TINY": 0.015,       # 상세 정보 ~18px
+    # 확장 크기
+    "MICRO": 0.012,      # 세부 정보, 힌트 ~15px
+    "MEGA": 0.08,        # 레벨업 효과 ~72px
+    "ULTRA": 0.12,       # 웨이브 완료 ~100px
+    "ICON": 0.045,       # 아이콘 텍스트 ~50px
 }
 
-# 이모지 폰트 (main.py에서 초기화됨)
+# =========================================================
+# 폰트 디자인 철학 (Font Design Philosophy)
+# =========================================================
+# 1. Bold (NanumGothicBold) - 제목, 레이블, 강조
+#    - 타이틀/헤더: huge, large
+#    - 버튼 텍스트, 메뉴 항목: medium
+#    - 수치, 라벨: small
+#
+# 2. Regular (Malgun Gothic) - 일반 텍스트
+#    - 상태 정보, 일반 안내문
+#
+# 3. Light (Malgun Gothic Semilight) - 설명, 본문
+#    - 설명 텍스트, 도움말
+#    - 대화창 텍스트
+#    - 긴 문장의 가독성 향상
+# =========================================================
+
+# 폰트 카테고리별 시스템 폰트 설정
+FONT_SYSTEM = {
+    # Bold - 제목, 강조 (파일 폰트 사용)
+    "BOLD": None,  # FONT_PATH 사용
+
+    # Regular - 일반 텍스트 (시스템 폰트)
+    "REGULAR": "Malgun Gothic",
+
+    # Light - 설명, 본문 (시스템 폰트)
+    "LIGHT": "Malgun Gothic Semilight",
+    "LIGHT_FALLBACK": "Malgun Gothic",
+}
+
+# 이모지 폰트 (game_engine에서 초기화됨)
 EMOJI_FONTS = {}
+
+# UI 폰트 캐시 (game_engine에서 초기화됨)
+# ui.py 등에서 인라인 폰트 대신 사용
+UI_FONTS = {}
 
 # UI 아이콘 (이모지 - 이모지 폰트 필요)
 UI_ICONS = {
@@ -271,6 +345,7 @@ GAME_STATE_LEVEL_UP = 5  # 전술 레벨업 메뉴 (킬 기반)
 GAME_STATE_WAVE_CLEAR = 6  # 웨이브 클리어 (휴식 시간)
 GAME_STATE_WAVE_PREPARE = 7  # 웨이브 시작 대기 (클릭으로 시작)
 GAME_STATE_VICTORY = 8  # 게임 승리 (모든 웨이브 클리어)
+GAME_STATE_BOSS_CLEAR = 12  # 보스 클리어 (계속/복귀 선택)
 GAME_STATE_SETTINGS = 10  # 설정 메뉴 (F1 키로 열기/닫기)
 GAME_STATE_QUIT_CONFIRM = 11  # 종료 확인 (ESC 키로 열기)
 
@@ -314,6 +389,10 @@ ASSET_DIR = Path("assets")
 # 폰트 폴더 정의 및 경로
 FONT_DIR = ASSET_DIR / "fonts"
 FONT_PATH = FONT_DIR / "NanumGothicBold.ttf"
+
+# 대화창 폰트 설정 (가는 폰트)
+DIALOGUE_FONT_NAME = "Malgun Gothic Semilight"  # 시스템 폰트 이름
+DIALOGUE_FONT_FALLBACK = "Malgun Gothic"  # 폴백 폰트
 
 # 배경 이미지 전용 폴더 정의 및 경로
 BACKGROUND_DIR = ASSET_DIR / "images" / "backgrounds"
@@ -413,7 +492,7 @@ GEM_HP_IMAGE_PATH = IMAGE_DIR / "items" / "gem_hp.png"
 
 # 스킬 이미지 폴더
 SKILL_IMAGE_DIR = IMAGE_DIR / "skills"
-STATIC_FIELD_IMAGE_PATH = SKILL_IMAGE_DIR / "Static Field.png"
+STATIC_FIELD_IMAGE_PATH = SKILL_IMAGE_DIR / "static_field.png"
 
 # 메뉴 아이콘 폴더
 MENU_ICON_DIR = IMAGE_DIR / "ui"
@@ -774,8 +853,9 @@ INITIAL_CAMPAIGN_CREDITS = 500
 # =========================================================
 
 # 전체 웨이브 설정
-TOTAL_WAVES = 20  # 총 웨이브 수
-BOSS_WAVES = [5, 10, 15, 20]  # 보스 웨이브
+TOTAL_WAVES = 20  # 총 웨이브 수 (웨이브 모드)
+STORY_TOTAL_WAVES = 25  # 스토리 모드 총 웨이브 수
+BOSS_WAVES = [5, 10, 15, 20, 25]  # 보스 웨이브
 
 # 웨이브별 난이도 스케일링 (20 Wave System)
 WAVE_SCALING = {
@@ -798,7 +878,7 @@ WAVE_SCALING = {
     12: {"hp_mult": 8.0,  "speed_mult": 1.7,  "spawn_rate": 1.8,  "target_kills": 19,  "chase_prob": 0.88, "damage_mult": 1.2},   # +5
     13: {"hp_mult": 10.0, "speed_mult": 1.8,  "spawn_rate": 1.9,  "target_kills": 20,  "chase_prob": 0.9,  "damage_mult": 1.3},   # +5
     14: {"hp_mult": 12.5, "speed_mult": 1.9,  "spawn_rate": 2.0,  "target_kills": 21,  "chase_prob": 0.92, "damage_mult": 1.3},   # +5
-    15: {"hp_mult": 90.0, "speed_mult": 2.3,  "spawn_rate": 1.5,  "target_kills": 3,   "chase_prob": 1.0,  "damage_mult": 3.0},   # 강력보스 (유지)
+    15: {"hp_mult": 90.0, "speed_mult": 2.3,  "spawn_rate": 1.5,  "target_kills": 1,   "chase_prob": 1.0,  "damage_mult": 3.0},   # 강력보스 (유지)
 
     # === Act 4: 지옥 구간 (Wave 16-20) ===
     16: {"hp_mult": 15.0, "speed_mult": 2.0,  "spawn_rate": 2.1,  "target_kills": 23,  "chase_prob": 0.93, "damage_mult": 1.4},   # +5
@@ -806,6 +886,13 @@ WAVE_SCALING = {
     18: {"hp_mult": 22.0, "speed_mult": 2.2,  "spawn_rate": 2.3,  "target_kills": 27,  "chase_prob": 0.97, "damage_mult": 1.6},   # +5
     19: {"hp_mult": 27.0, "speed_mult": 2.3,  "spawn_rate": 2.4,  "target_kills": 30,  "chase_prob": 0.98, "damage_mult": 1.7},   # +5
     20: {"hp_mult": 120.0,"speed_mult": 2.5,  "spawn_rate": 1.0,  "target_kills": 1,   "chase_prob": 1.0,  "damage_mult": 3.5},   # 최종보스 (유지)
+
+    # === Act 5: 최종 구간 - 스토리 모드 전용 (Wave 21-25) ===
+    21: {"hp_mult": 30.0, "speed_mult": 2.4,  "spawn_rate": 2.5,  "target_kills": 32,  "chase_prob": 0.98, "damage_mult": 1.8},
+    22: {"hp_mult": 35.0, "speed_mult": 2.5,  "spawn_rate": 2.6,  "target_kills": 35,  "chase_prob": 0.99, "damage_mult": 1.9},
+    23: {"hp_mult": 40.0, "speed_mult": 2.6,  "spawn_rate": 2.7,  "target_kills": 38,  "chase_prob": 1.0,  "damage_mult": 2.0},
+    24: {"hp_mult": 50.0, "speed_mult": 2.7,  "spawn_rate": 2.8,  "target_kills": 40,  "chase_prob": 1.0,  "damage_mult": 2.2},
+    25: {"hp_mult": 150.0,"speed_mult": 2.8,  "spawn_rate": 1.0,  "target_kills": 1,   "chase_prob": 1.0,  "damage_mult": 4.0},   # 최종보스
 }
 
 
@@ -824,6 +911,8 @@ WAVE_CLEAR_CREDITS = {
     11: 500,  12: 600,  13: 700,  14: 800,  15: 2000, # 보스 보너스
     # Act 4: 지옥 구간 (Wave 16-20)
     16: 900,  17: 1000, 18: 1200, 19: 1500, 20: 3000, # 최종 보스 보너스
+    # Act 5: 최종 구간 - 스토리 모드 전용 (Wave 21-25)
+    21: 1800, 22: 2000, 23: 2500, 24: 3000, 25: 5000, # 스토리 최종 보스 보너스
 }
 
 # 크레딧 보상 배율 (난이도별)
@@ -879,6 +968,13 @@ WAVE_DESCRIPTIONS = {
     18: "⚫  Wave 18 - Void Abyss",
     19: "🌌  Wave 19 - Final Stand",
     20: "👿  FINAL BOSS - The Destroyer",
+
+    # Act 5: 최종 구간 (스토리 모드 전용)
+    21: "⭐  Wave 21 - Cosmic Ascent",
+    22: "🌟  Wave 22 - Stellar Onslaught",
+    23: "💫  Wave 23 - Nebula Storm",
+    24: "🌠  Wave 24 - Ultimate Test",
+    25: "🏆  FINAL BOSS - The Origin",
 }
 
 # =========================================================
@@ -961,7 +1057,8 @@ TIME_SLOW_SETTINGS = {
 
 # 히트 플래시 설정
 HIT_FLASH_DURATION = 0.1  # 히트 플래시 지속 시간 (초)
-HIT_FLASH_COLOR = (255, 255, 255)  # 흰색
+HIT_FLASH_COLOR = (180, 60, 60)  # 붉은색 (원본 이미지에 가미)
+FREEZE_FLASH_COLOR = (120, 140, 180)  # 푸른-흰색 (동결 효과)
 
 # 총알 트레일 설정
 BULLET_TRAIL_LENGTH = 4  # 트레일 잔상 개수
@@ -1049,6 +1146,93 @@ ATTRIBUTE_SKILL_SETTINGS = {
     },
     "DEEP_FREEZE": {
         "duration": 1.5,  # 프리즈 지속 시간 (초)
+    },
+}
+
+# Training Room 스킬 설정 (레벨업 시스템)
+TRAINING_SKILL_SETTINGS = {
+    "EXPLOSIVE": {
+        "base_radius": 100,          # 기본 반경
+        "radius_per_level": 20,      # 레벨당 증가
+        "max_radius": 300,           # 최대 반경
+        "damage_ratio": 0.5,         # 데미지 비율
+        "max_level": 10,
+    },
+    "LIGHTNING": {
+        "base_chain_count": 3,       # 기본 체인 수
+        "chain_per_level": 1,        # 레벨당 증가
+        "max_chains": 10,            # 최대 체인 수
+        "chain_range": 250,          # 체인 범위
+        "damage_ratio": 0.7,         # 데미지 비율
+        "max_level": 7,
+    },
+    "FROST": {
+        "base_slow_ratio": 0.3,      # 기본 슬로우
+        "slow_per_level": 0.1,       # 레벨당 증가
+        "max_slow_ratio": 0.7,       # 최대 슬로우
+        "base_freeze_chance": 0.1,   # 기본 동결 확률
+        "freeze_per_level": 0.1,     # 레벨당 증가
+        "max_freeze_chance": 0.5,    # 최대 동결 확률
+        "slow_duration": 2.0,        # 슬로우 지속시간
+        "freeze_duration": 1.5,      # 동결 지속시간
+        "max_level": 5,
+    },
+    "DRONE": {
+        "max_count": 5,              # 최대 드론 수
+    },
+    "TURRET": {
+        "max_count": 3,              # 최대 터렛 수
+    },
+    "REGENERATION": {
+        "base_rate": 2.0,            # 기본 회복률
+        "rate_per_level": 2.0,       # 레벨당 증가
+        "max_rate": 20.0,            # 최대 회복률
+        "max_level": 10,
+    },
+    # 추가 스킬 설정 (트레이닝 모드용)
+    "CHAIN_EXPLOSION": {
+        "max_chain_depth": 3,        # 최대 연쇄 깊이
+        "chain_chance": 0.3,         # 연쇄 확률
+        "max_level": 3,
+    },
+    "STATIC_FIELD": {
+        "base_radius": 180,          # 기본 반경
+        "radius_per_level": 20,      # 레벨당 증가
+        "max_radius": 280,           # 최대 반경
+        "base_damage": 10,           # 기본 초당 데미지
+        "damage_per_level": 5,       # 레벨당 증가
+        "tick_interval": 0.5,        # 틱 간격
+        "max_level": 5,
+    },
+    "DEEP_FREEZE": {
+        "base_chance": 0.1,          # 기본 동결 확률
+        "chance_per_level": 0.1,     # 레벨당 증가
+        "max_chance": 0.5,           # 최대 동결 확률
+        "duration": 1.5,             # 동결 지속시간
+        "max_level": 5,
+    },
+    "EXECUTE": {
+        "base_threshold": 0.1,       # 기본 처형 임계값 (HP 10%)
+        "threshold_per_level": 0.05, # 레벨당 증가
+        "max_threshold": 0.3,        # 최대 임계값 (HP 30%)
+        "max_level": 5,
+    },
+    "STARFALL": {
+        "base_count": 5,             # 기본 별 개수
+        "count_per_level": 2,        # 레벨당 증가
+        "max_count": 15,             # 최대 별 개수
+        "radius": 100,               # 폭발 반경
+        "damage": 50,                # 별당 데미지
+        "cooldown": 30.0,            # 쿨다운 (초)
+        "max_level": 5,
+    },
+    "PHOENIX": {
+        "revive_hp_ratio": 0.5,      # 부활 시 HP 비율
+        "base_cooldown": 60.0,       # 기본 쿨다운 (초)
+        "cooldown_per_level": -10.0, # 레벨당 쿨다운 감소
+        "min_cooldown": 30.0,        # 최소 쿨다운
+        "invincibility_duration": 2.0,  # 부활 후 무적 시간
+        "max_level": 3,
     },
 }
 

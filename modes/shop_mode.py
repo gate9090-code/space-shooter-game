@@ -237,7 +237,7 @@ class ShopMode(GameMode):
         self._render_base_cursor(screen, self.custom_cursor)
 
     def _render_items(self, screen: pygame.Surface):
-        """아이템 목록 렌더링"""
+        """아이템 목록 렌더링 - Web Button 디자인 스타일"""
         cat_data = SHOP_CATEGORIES[self.selected_category]
         header_color = cat_data["color"]
 
@@ -251,7 +251,7 @@ class ShopMode(GameMode):
         self.shop_items.clear()
 
         layout = config.UI_LAYOUT
-        item_height = layout["ITEM_HEIGHT"]
+        item_height = 100  # 높이 증가 (더 큰 아이콘 박스를 위해)
         item_spacing = layout["ITEM_SPACING"]
         item_width = panel_rect.width - 30
         content_start_y = panel_rect.y + 42
@@ -288,72 +288,92 @@ class ShopMode(GameMode):
                     hover_progress = si.hover_progress
                     break
 
-            # 아이템 확장 효과
-            expand = int(hover_progress * 5)
-            draw_rect = item_rect.inflate(expand, expand // 2)
+            # === Web Button 스타일: 좌측 컬러 아이콘 박스 + 우측 밝은 텍스트 영역 ===
 
-            # 아이템 배경 (통일된 색상)
-            item_surf = pygame.Surface((draw_rect.width, draw_rect.height), pygame.SRCALPHA)
+            icon_box_width = 120  # 좌측 아이콘 박스 너비
 
+            # 좌측 아이콘 박스 (카테고리 컬러)
+            icon_rect = pygame.Rect(item_rect.x, item_rect.y, icon_box_width, item_height)
             if is_maxed:
-                item_surf.fill((*config.STATE_COLORS["GOLD_DIM"], 200))
-                border_color = config.STATE_COLORS["GOLD"]
-                name_color = config.STATE_COLORS["GOLD"]
-            elif hover_progress > 0 and can_buy:
-                alpha = int(160 + 60 * hover_progress)
-                item_surf.fill((*config.BG_LEVELS["ELEVATED"], alpha))
-                border_color = header_color
-                name_color = config.TEXT_LEVELS["PRIMARY"]
-            elif not can_buy and not is_maxed:
-                item_surf.fill((*config.LOCKED_COLORS["BG"], 180))
-                border_color = config.LOCKED_COLORS["BORDER"]
-                name_color = config.LOCKED_COLORS["TEXT"]
+                icon_color = config.STATE_COLORS["GOLD"]
+            elif not can_buy:
+                icon_color = (100, 100, 120)  # 회색
             else:
-                item_surf.fill(config.UI_COLORS["CARD_BG"])
-                border_color = config.UI_COLORS["PANEL_BORDER"]
-                name_color = config.TEXT_LEVELS["SECONDARY"]
+                icon_color = header_color  # 카테고리 색상
 
-            screen.blit(item_surf, draw_rect.topleft)
-            pygame.draw.rect(screen, border_color, draw_rect, 1, border_radius=10)
+            # 호버 시 약간 밝아짐
+            if hover_progress > 0 and can_buy:
+                icon_color = tuple(min(255, int(c + 30 * hover_progress)) for c in icon_color)
 
-            # 아이템 이름
+            pygame.draw.rect(screen, icon_color, icon_rect, border_radius=8)
+
+            # 아이콘 박스 내부에 큰 이모지 표시
+            icon_emoji = cat_data["icon"]
+            icon_font = self.fonts.get("xlarge", self.fonts["large"])  # 큰 폰트
+            icon_surf = render_text_with_emoji(icon_emoji, icon_font, (255, 255, 255), "LARGE")
+            icon_surf_rect = icon_surf.get_rect(center=(icon_rect.centerx, icon_rect.centery))
+            screen.blit(icon_surf, icon_surf_rect)
+
+            # 우측 텍스트 영역 (밝은 배경)
+            text_rect = pygame.Rect(item_rect.x + icon_box_width, item_rect.y,
+                                   item_rect.width - icon_box_width, item_height)
+
+            # 텍스트 영역 배경 (밝은 회색)
+            if is_maxed:
+                text_bg_color = (235, 230, 220)  # 골드 톤
+                name_color = config.STATE_COLORS["GOLD"]
+            elif not can_buy:
+                text_bg_color = (200, 200, 210)  # 어두운 회색
+                name_color = (100, 100, 120)
+            else:
+                text_bg_color = (240, 242, 245)  # 밝은 회색
+                name_color = (40, 45, 55)  # 어두운 텍스트
+
+            pygame.draw.rect(screen, text_bg_color, text_rect, border_radius=8)
+
+            # 전체 테두리 (얇게)
+            border_color = icon_color if can_buy else (150, 150, 160)
+            pygame.draw.rect(screen, border_color, item_rect, 2, border_radius=8)
+
+            # 아이템 이름 (텍스트 영역 좌측)
+            name_x = text_rect.x + 18
+            name_y = text_rect.y + 12
             name_text = render_text_with_emoji(item["name"], self.fonts["medium"], name_color, "MEDIUM")
-            screen.blit(name_text, (draw_rect.x + 12, draw_rect.y + 10))
+            screen.blit(name_text, (name_x, name_y))
 
             # 설명 (Light 폰트 - 가독성 향상)
-            desc_color = config.TEXT_LEVELS["TERTIARY"] if (can_buy or is_maxed) else config.LOCKED_COLORS["TEXT"]
+            desc_color = (80, 90, 110) if (can_buy or is_maxed) else (120, 120, 130)
             desc_font = self.fonts.get("light_small", self.fonts["small"])
             desc_text = desc_font.render(item["desc"], True, desc_color)
-            screen.blit(desc_text, (draw_rect.x + 12, draw_rect.y + 38))
+            screen.blit(desc_text, (name_x, name_y + 28))
 
             # 보유량 표시
-            stock_color = config.STATE_COLORS["INFO"] if current_stock < max_stock else config.STATE_COLORS["GOLD"]
-            stock_text = self.fonts["small"].render(f"Stock: {current_stock}/{max_stock}", True, stock_color)
-            screen.blit(stock_text, (draw_rect.x + 12, draw_rect.y + 58))
+            stock_color = (60, 120, 200) if current_stock < max_stock else config.STATE_COLORS["GOLD"]
+            stock_text = self.fonts["tiny"].render(f"Stock: {current_stock}/{max_stock}", True, stock_color)
+            screen.blit(stock_text, (name_x, text_rect.bottom - 24))
 
-            # 비용 (우측)
+            # 비용 (우측 하단)
             if not is_maxed:
-                cost_x = draw_rect.right - 95
-                cost_y = draw_rect.y + 15
+                cost_x = text_rect.right - 110
+                cost_y = text_rect.bottom - 26
 
-                coin_color = config.STATE_COLORS["GOLD"] if can_afford else config.LOCKED_COLORS["ICON"]
-                pygame.draw.circle(screen, coin_color, (cost_x, cost_y + 6), 7)
+                coin_color = config.STATE_COLORS["GOLD"] if can_afford else (160, 100, 100)
+                pygame.draw.circle(screen, coin_color, (cost_x, cost_y + 8), 8)
 
-                cost_color = config.STATE_COLORS["GOLD"] if can_afford else config.STATE_COLORS["DANGER"]
-                cost_text = self.fonts["small"].render(f"{item['cost']:,}", True, cost_color)
-                screen.blit(cost_text, (cost_x + 14, cost_y))
+                cost_color = config.STATE_COLORS["GOLD"] if can_afford else (180, 80, 80)
+                cost_text = self.fonts["medium"].render(f"{item['cost']:,}", True, cost_color)
+                screen.blit(cost_text, (cost_x + 16, cost_y))
 
-            # MAX 뱃지
+            # MAX 뱃지 (우측 상단)
             if is_maxed:
-                badge_x = draw_rect.right - 62
-                badge_y = draw_rect.y + 28
-                badge_surf = pygame.Surface((52, 22), pygame.SRCALPHA)
-                badge_surf.fill((*config.STATE_COLORS["GOLD_DIM"], 200))
+                badge_x = text_rect.right - 70
+                badge_y = text_rect.y + 12
+                badge_surf = pygame.Surface((60, 26), pygame.SRCALPHA)
+                badge_surf.fill((255, 215, 0, 220))  # 골드 배경
                 screen.blit(badge_surf, (badge_x, badge_y))
-                pygame.draw.rect(screen, config.STATE_COLORS["GOLD"],
-                               (badge_x, badge_y, 52, 22), 1, border_radius=4)
-                max_text = self.fonts["small"].render("MAX", True, config.STATE_COLORS["GOLD"])
-                screen.blit(max_text, max_text.get_rect(center=(badge_x + 26, badge_y + 11)))
+                pygame.draw.rect(screen, (200, 160, 0), (badge_x, badge_y, 60, 26), 2, border_radius=6)
+                max_text = self.fonts["medium"].render("MAX", True, (40, 40, 40))
+                screen.blit(max_text, max_text.get_rect(center=(badge_x + 30, badge_y + 13)))
 
         # 스크롤바
         if self.max_scroll > 0:
