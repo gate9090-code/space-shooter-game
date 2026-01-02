@@ -57,9 +57,8 @@ class Player:
 
         # 함선 이미지 로드 시도
         ship_image_path = (
-            config.ASSET_DIR
-            / "images"
-            / "ships"
+            config.GAMEPLAY_DIR
+            / "player"
             / self.ship_data.get("image", "fighter_front.png")
         )
 
