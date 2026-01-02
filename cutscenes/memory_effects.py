@@ -98,6 +98,7 @@ class PolaroidMemoryEffect:
 
         # 폴라로이드 사진들
         self.polaroids = []
+        print(f"INFO: PolaroidMemoryEffect initialized with {len(photo_paths)} photos")
         self._prepare_polaroids()
 
         # 현재 표시 중인 사진 개수
@@ -193,10 +194,11 @@ class PolaroidMemoryEffect:
             # 이미지 로드
             photo_img = None
             try:
-                photo_img = pygame.image.load(path).convert_alpha()
-                # 크기 조정
+                loaded_img = pygame.image.load(path).convert_alpha()
+
+                # 모든 사진을 정사각형으로 리사이즈
                 photo_img = pygame.transform.smoothscale(
-                    photo_img, (photo_size, photo_size)
+                    loaded_img, (photo_size, photo_size)
                 )
             except Exception as e:
                 print(f"WARNING: Failed to load polaroid: {path} - {e}")
@@ -239,7 +241,7 @@ class PolaroidMemoryEffect:
                 {
                     "image": rotated,
                     "original_image": framed,  # 원본 보관 (스케일 조정용)
-                    "photo_image": photo_img,  # 원본 사진 (확대용)
+                    "photo_image": photo_img,  # 테두리 없는 순수 사진 이미지 (확대용)
                     "pos": [start_x, start_y],  # 현재 위치 (리스트로 변경 - 수정 가능)
                     "target_pos": (target_x, target_y),  # 목표 위치
                     "start_pos": (start_x, start_y),  # 시작 위치

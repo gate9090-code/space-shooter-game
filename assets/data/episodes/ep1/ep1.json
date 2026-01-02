@@ -108,11 +108,11 @@
           "memory_04.jpg",
           "memory_05.jpg",
           "memory_06.jpg",
-          "memory_ufo.jpg",
+          "memory_ufo.png",
           "memory_survive.jpg"
         ],
         "special_effects": {
-          "memory_ufo.jpg": { "effect": "flicker_then_zoom" },
+          "memory_ufo.png": { "effect": "flicker_then_zoom" },
           "memory_survive.jpg": { "effect": "fullscreen_fadeout" }
         }
       },

@@ -309,6 +309,50 @@ class BaseCutsceneEffect:
 # =========================================================
 # 공통 대화창 렌더링 헬퍼 함수
 # =========================================================
+
+# 대화창 바 이미지 캐시 (전역 변수)
+_dialogue_bar_cache = {}
+
+def _load_dialogue_bars():
+    """대화창 바 이미지 로드 (캐싱) - 모든 화자 동일"""
+    global _dialogue_bar_cache
+
+    if _dialogue_bar_cache:
+        return _dialogue_bar_cache
+
+    try:
+        import config
+        from pathlib import Path
+
+        bar_path = config.ASSET_DIR / "images" / "ui" / "dialogue_bar_basic.jpg"
+
+        if not bar_path.exists():
+            print(f"WARNING: Dialogue bar image not found: {bar_path}")
+            return {}
+
+        # 전체 이미지 로드
+        bar_image = pygame.image.load(str(bar_path))
+
+        # pygame display가 초기화되지 않았으면 그냥 로드, 초기화되었으면 convert
+        try:
+            bar_image = bar_image.convert()
+        except pygame.error:
+            pass  # display가 초기화되지 않은 경우 그냥 사용
+
+        # 모든 화자가 동일한 이미지 사용
+        _dialogue_bar_cache = {
+            "ARTEMIS": bar_image,
+            "PILOT": bar_image,
+            "NARRATOR": bar_image,
+        }
+
+        print(f"INFO: Dialogue bar loaded from {bar_path}")
+        return _dialogue_bar_cache
+
+    except Exception as e:
+        print(f"WARNING: Failed to load dialogue bar: {e}")
+        return {}
+
 def render_dialogue_box(
     screen: pygame.Surface,
     screen_size: tuple,
@@ -323,6 +367,7 @@ def render_dialogue_box(
     box_height: int = 180,
     has_portrait: bool = False,
     portrait: pygame.Surface = None,
+    textbox_expand = None,
 ):
     """
     공통 대화창 렌더링 함수 - StoryBriefingEffect 스타일 (인트로 기준)
@@ -341,6 +386,7 @@ def render_dialogue_box(
         box_height: 박스 높이 - 기본 180 (StoryBriefingEffect와 동일)
         has_portrait: 초상화 표시 여부
         portrait: 초상화 Surface (has_portrait=True일 때)
+        textbox_expand: TextBoxExpand 효과 객체 (선택 사항)
     """
     speaker = dialogue.get("speaker", "") if dialogue else ""
 
@@ -349,26 +395,45 @@ def render_dialogue_box(
     box_x = (screen_w - box_width) // 2  # 중앙 정렬
     box_y = screen_h - box_height - 40
 
-    # 박스 배경 및 테두리 (StoryBriefingEffect 스타일)
-    box_surf = pygame.Surface((box_width, box_height), pygame.SRCALPHA)
-    pygame.draw.rect(
-        box_surf, box_color, (0, 0, box_width, box_height), border_radius=10
-    )
-    border_col = border_color if len(border_color) == 4 else border_color + (200,)
-    pygame.draw.rect(
-        box_surf, border_col, (0, 0, box_width, box_height), 2, border_radius=10
-    )
-    screen.blit(box_surf, (box_x, box_y))
+    # TextBoxExpand 효과 적용
+    if textbox_expand and not textbox_expand.complete:
+        actual_width = int(textbox_expand.current_width)
+        actual_height = int(textbox_expand.current_height)
+    else:
+        actual_width = box_width
+        actual_height = box_height
+
+    # 대화창 바 이미지 로드
+    dialogue_bars = _load_dialogue_bars()
+
+    # 화자별 바 이미지 선택
+    bar_image = dialogue_bars.get(speaker.upper()) if dialogue_bars else None
+
+    if bar_image:
+        # 이미지를 대화창 크기에 맞게 스케일
+        scaled_bar = pygame.transform.smoothscale(bar_image, (actual_width, actual_height))
+        screen.blit(scaled_bar, (box_x, box_y))
+    else:
+        # 이미지가 없으면 기본 박스 그리기 (폴백)
+        box_surf = pygame.Surface((actual_width, actual_height), pygame.SRCALPHA)
+        pygame.draw.rect(
+            box_surf, box_color, (0, 0, actual_width, actual_height), border_radius=10
+        )
+        border_col = border_color if len(border_color) == 4 else border_color + (200,)
+        pygame.draw.rect(
+            box_surf, border_col, (0, 0, actual_width, actual_height), 2, border_radius=10
+        )
+        screen.blit(box_surf, (box_x, box_y))
 
     # 초상화 (StoryBriefingEffect 스타일: 200x200, 하단 왼쪽 정렬, 사각형)
     portrait_width = 0
     if has_portrait and portrait:
-        # 화자에 따라 초상화 크기 조정
+        # 화자에 따라 초상화 크기 조정 (30% 추가 확대)
         speaker = dialogue.get("speaker", "") if dialogue else ""
         if speaker == "ARTEMIS":
-            portrait_size = 280  # 아르테미스: 40% 확대 (200 * 1.4 = 280)
+            portrait_size = 364  # 아르테미스: 280 * 1.3
         else:
-            portrait_size = 260  # 기타 캐릭터: 30% 확대 (200 * 1.3 = 260)
+            portrait_size = 338  # 기타 캐릭터: 260 * 1.3
 
         portrait_x = box_x + 20
         portrait_y = box_y + box_height - portrait_size - 10  # bottomleft 정렬

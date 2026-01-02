@@ -30,6 +30,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from modes.base_mode import GameMode, ModeConfig
+from effects.visual_novel_effects import TextBoxExpand
 import config
 
 
@@ -104,6 +105,7 @@ class NarrativeMode(GameMode):
         self.char_index: int = 0
         self.char_timer: float = 0
         self.wait_timer: float = 0
+        self.last_typed_index: int = 0  # 타이핑 사운드용
 
         # 현재 배경 추적 (배경 전환 감지용)
         self.current_bg_name: str = ""
@@ -140,6 +142,9 @@ class NarrativeMode(GameMode):
 
         # 음성 시스템
         self.voice_system = None
+
+        # 대화창 펼침 효과
+        self.textbox_expand = None
 
         # 콜백
         self.on_complete: Optional[Callable] = None
@@ -213,9 +218,6 @@ class NarrativeMode(GameMode):
 
         # 포트레이트 로드 (실패해도 계속 진행)
         self._load_portraits()
-
-        # 커스텀 커서
-        self.custom_cursor = self._load_base_cursor()
 
         # 대화 중 우주선 애니메이션 (DIALOGUE, BRIEFING 타입에서만)
         self.dialogue_ship_animation = None
@@ -484,9 +486,6 @@ class NarrativeMode(GameMode):
                         voice=settings.get("voice", "ko-KR-SunHiNeural"),
                         rate=settings.get("rate", "+0%"),
                         pitch=settings.get("pitch", "+0Hz"),
-                        style=settings.get("style"),
-                        style_degree=settings.get("style_degree", 1.0),
-                        auto_emotion=settings.get("auto_emotion", True),
                         static_effect=settings.get("static_effect", False)
                     )
                 elif adapter_type == "pyttsx3":
@@ -636,6 +635,10 @@ class NarrativeMode(GameMode):
 
     def _update_typing(self, dt: float):
         """타이핑 효과 (Graceful 에러 처리)"""
+        # TextBoxExpand 업데이트
+        if self.textbox_expand and not self.textbox_expand.complete:
+            self.textbox_expand.update(dt)
+
         # 범위 체크
         if self.current_dialogue_index >= len(self.dialogues):
             self.dialogue_state = "outro"
@@ -656,6 +659,20 @@ class NarrativeMode(GameMode):
             self.char_index += 1
 
         self.displayed_text = full_text[:self.char_index]
+
+        # 타이핑 사운드 (NARRATOR일 때만)
+        if hasattr(self, 'sound_manager') and self.sound_manager:
+            if self.char_index > self.last_typed_index:
+                speaker = current.get("speaker", "")
+                if speaker == "NARRATOR":
+                    # 새로 추가된 글자들에 대해 사운드 재생
+                    for i in range(self.last_typed_index, self.char_index):
+                        if i < len(full_text):
+                            char = full_text[i]
+                            # 공백이 아닌 경우에만 사운드 재생
+                            if char.strip():
+                                self.sound_manager.play_sfx("typing", volume_override=0.3)
+                self.last_typed_index = self.char_index
 
         if self.char_index >= len(full_text):
             self.dialogue_state = "waiting"
@@ -821,6 +838,7 @@ class NarrativeMode(GameMode):
                     break
             else:
                 # 찾지 못하면 원본 이름 그대로 (효과 클래스에서 처리)
+                print(f"WARNING: Could not resolve image '{name}', using name as-is")
                 resolved.append(name)
 
         return resolved
@@ -1056,11 +1074,26 @@ class NarrativeMode(GameMode):
         self.displayed_text = ""
         self.auto_advance_timer = 0.0  # 타이머 리셋
         self.voice_finished = False  # 음성 완료 플래그 리셋
+        self.last_typed_index = 0  # 타이핑 사운드 인덱스 리셋
 
         # 대화별 배경 변경 (있는 경우)
         new_bg = current.get("background")
         if new_bg and new_bg != self.current_bg_name:
             self._load_background(new_bg)
+
+        # TextBoxExpand 효과 생성 (화자별 방향/속도)
+        # 대화창 크기는 render_dialogue_box와 동일하게 설정 (화면 절반 크기)
+        box_width = (self.screen_size[0] - 100) // 2  # 가로 1/2 크기
+        box_x = (self.screen_size[0] - box_width) // 2  # 중앙 정렬
+        box_y = self.screen_size[1] - 180 - 40  # box_height=180 기본값
+        box_rect = pygame.Rect(box_x, box_y, box_width, 180)
+
+        if self.current_speaker == "NARRATOR":
+            # NARRATOR: 좌→우 느리게 (0.8초)
+            self.textbox_expand = TextBoxExpand(box_rect, duration=0.8, direction="horizontal")
+        else:
+            # PILOT/ARTEMIS: 좌→우 빠르게 (0.2초)
+            self.textbox_expand = TextBoxExpand(box_rect, duration=0.2, direction="horizontal")
 
         # 음성 재생
         text = current.get("text", "")
@@ -1151,9 +1184,6 @@ class NarrativeMode(GameMode):
         if self.dialogue_state == "waiting":
             self._render_hint(screen)
 
-        # 커스텀 커서
-        self._render_base_cursor(screen, self.custom_cursor)
-
     def _render_briefing_header(self, screen: pygame.Surface):
         """브리핑 헤더 렌더링 (타이틀 + 위치)"""
         if not self.title and not self.location:
@@ -1217,7 +1247,8 @@ class NarrativeMode(GameMode):
             typing_progress=typing_progress,
             waiting_for_click=waiting_for_click,
             has_portrait=has_portrait,
-            portrait=portrait
+            portrait=portrait,
+            textbox_expand=self.textbox_expand
         )
 
     def _wrap_text(self, text: str, font: pygame.font.Font, max_width: int) -> List[str]:
@@ -1310,11 +1341,8 @@ class NarrativeMode(GameMode):
 
     def on_enter(self):
         super().on_enter()
-        if self.custom_cursor:
-            self._enable_custom_cursor()
 
     def on_exit(self):
-        self._disable_custom_cursor()
         super().on_exit()
 
 

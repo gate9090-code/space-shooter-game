@@ -6,6 +6,8 @@ Story briefing cutscene effects
 import pygame
 import math
 from pathlib import Path
+from effects.visual_novel_effects import TextBoxExpand
+from cutscenes.base import _load_dialogue_bars
 
 
 class StoryBriefingEffect:
@@ -32,6 +34,7 @@ class StoryBriefingEffect:
         background_path: str = None,
         title: str = "",
         location: str = "",
+        sound_manager=None,
     ):
         """
         Args:
@@ -40,11 +43,13 @@ class StoryBriefingEffect:
             background_path: 배경 이미지 경로 (None이면 어두운 배경)
             title: 타이틀 텍스트 (예: "ACT 1: RETURN TO RUINS")
             location: 위치 텍스트 (예: "DESTROYED CITY")
+            sound_manager: SoundManager 인스턴스 (타이핑 사운드용)
         """
         self.screen_size = screen_size
         self.dialogue_data = dialogue_data
         self.title = title
         self.location = location
+        self.sound_manager = sound_manager
 
         self.is_alive = True
         self.phase = self.PHASE_FADEIN
@@ -57,6 +62,7 @@ class StoryBriefingEffect:
         self.current_text = ""
         self.full_text = ""
         self.waiting_for_click = False
+        self.last_typed_index = 0  # 마지막으로 사운드 재생한 글자 인덱스
 
         # 페이드 타이밍
         self.fadein_duration = 0.8
@@ -86,6 +92,13 @@ class StoryBriefingEffect:
 
         # 콜백
         self.on_complete = None
+        self.on_dialogue_start = None  # 대사 시작 시 호출되는 콜백 (음성 재생용)
+
+        # 음성 시스템 (외부에서 설정)
+        self.voice_system = None
+
+        # 대화창 펼침 효과
+        self.textbox_expand = None
 
         # 첫 대사 준비
         if self.dialogue_data:
@@ -113,6 +126,27 @@ class StoryBriefingEffect:
             self.current_text = ""
             self.typing_progress = 0.0
             self.waiting_for_click = False
+            self.last_typed_index = 0  # 타이핑 사운드 인덱스 리셋
+
+            # 대화창 펼침 효과 시작 (화자에 따라 방향과 속도 다르게)
+            speaker = dialogue.get("speaker", "NARRATOR")
+            box_height = 180
+            box_width = (self.screen_size[0] - 100) // 2
+            box_x = (self.screen_size[0] - box_width) // 2
+            box_rect = pygame.Rect(
+                box_x, self.screen_size[1] - box_height - 40, box_width, box_height
+            )
+
+            # 모든 화자: 좌→우 (NARRATOR는 느리게 0.8초, 기타는 빠르게 0.2초)
+            if speaker == "NARRATOR":
+                self.textbox_expand = TextBoxExpand(box_rect, duration=0.8, direction="horizontal")
+            else:
+                self.textbox_expand = TextBoxExpand(box_rect, duration=0.2, direction="horizontal")
+
+            # 음성 재생 콜백 호출
+            if self.on_dialogue_start:
+                text = dialogue.get("text", "")
+                self.on_dialogue_start(speaker, text)
 
     def _get_portrait(self, speaker: str) -> pygame.Surface:
         """초상화 이미지 가져오기 (캐시 사용) - NARRATOR는 android 이미지 사용"""
@@ -182,6 +216,10 @@ class StoryBriefingEffect:
                 self.phase_timer = 0.0
 
         elif self.phase == self.PHASE_DIALOGUE:
+            # 대화창 펼침 효과 업데이트
+            if self.textbox_expand:
+                self.textbox_expand.update(dt)
+
             # 타이핑 효과
             if not self.waiting_for_click:
                 self.typing_progress += self.typing_speed * dt
@@ -192,6 +230,24 @@ class StoryBriefingEffect:
                     self.waiting_for_click = True
                 else:
                     self.current_text = self.full_text[:char_count]
+
+                    # 타이핑 사운드 재생 (NARRATOR일 때만)
+                    if self.sound_manager and char_count > self.last_typed_index:
+                        # 현재 화자 확인
+                        current_dialogue = self.dialogue_data[self.current_dialogue_index]
+                        speaker = current_dialogue.get("speaker", "")
+
+                        # NARRATOR일 때만 타이핑 사운드 재생
+                        if speaker == "NARRATOR":
+                            # 새로 추가된 글자들에 대해 사운드 재생
+                            for i in range(self.last_typed_index, char_count):
+                                if i < len(self.full_text):
+                                    char = self.full_text[i]
+                                    # 공백이 아닌 경우에만 사운드 재생
+                                    if char.strip():
+                                        self.sound_manager.play_sfx("typing", volume_override=0.3)
+
+                        self.last_typed_index = char_count
 
         elif self.phase == self.PHASE_FADEOUT:
             # 페이드아웃
@@ -308,35 +364,79 @@ class StoryBriefingEffect:
             box_x, self.screen_size[1] - box_height - 40, box_width, box_height
         )
 
-        # 박스 배경
-        box_surf = pygame.Surface((box_rect.width, box_rect.height), pygame.SRCALPHA)
-        pygame.draw.rect(
-            box_surf,
-            (20, 20, 40, 220),
-            (0, 0, box_rect.width, box_rect.height),
-            border_radius=10,
-        )
-        pygame.draw.rect(
-            box_surf,
-            (100, 100, 150, 200),
-            (0, 0, box_rect.width, box_rect.height),
-            2,
-            border_radius=10,
-        )
-        box_surf.set_alpha(alpha)
-        screen.blit(box_surf, box_rect.topleft)
+        # 대화창 바 이미지 로드
+        dialogue_bars = _load_dialogue_bars()
+        bar_image = dialogue_bars.get(speaker.upper()) if dialogue_bars else None
+
+        # 대화창 펼침 효과가 있으면 방향에 맞춰 렌더링
+        if self.textbox_expand and not self.textbox_expand.complete:
+            # 펼쳐지는 중
+            expand_rect = pygame.Rect(
+                box_rect.x,
+                box_rect.y,
+                int(self.textbox_expand.current_width),
+                int(self.textbox_expand.current_height)
+            )
+
+            # 너비와 높이가 모두 0보다 클 때만 그리기
+            if expand_rect.width > 0 and expand_rect.height > 0:
+                if bar_image:
+                    # 이미지 사용
+                    scaled_bar = pygame.transform.smoothscale(bar_image, (expand_rect.width, expand_rect.height))
+                    scaled_bar.set_alpha(alpha)
+                    screen.blit(scaled_bar, expand_rect.topleft)
+                else:
+                    # 기본 박스 (폴백)
+                    self.textbox_expand.render(screen, (20, 20, 40, int(220 * alpha / 255)))
+                    pygame.draw.rect(screen, (100, 100, 150, int(200 * alpha / 255)), expand_rect, 2, border_radius=10)
+
+            # 펼쳐지는 동안에는 나머지 UI 표시 안 함
+            return
+        else:
+            # 펼침 완료 - 박스 렌더링
+            if bar_image:
+                # 이미지 사용
+                scaled_bar = pygame.transform.smoothscale(bar_image, (box_rect.width, box_rect.height))
+                scaled_bar.set_alpha(alpha)
+                screen.blit(scaled_bar, box_rect.topleft)
+            else:
+                # 기본 박스 (폴백)
+                box_surf = pygame.Surface((box_rect.width, box_rect.height), pygame.SRCALPHA)
+                pygame.draw.rect(
+                    box_surf,
+                    (20, 20, 40, 220),
+                    (0, 0, box_rect.width, box_rect.height),
+                    border_radius=10,
+                )
+                pygame.draw.rect(
+                    box_surf,
+                    (100, 100, 150, 200),
+                    (0, 0, box_rect.width, box_rect.height),
+                    2,
+                    border_radius=10,
+                )
+                box_surf.set_alpha(alpha)
+                screen.blit(box_surf, box_rect.topleft)
 
         # 초상화 (모든 캐릭터 왼쪽 배치)
         portrait = self._get_portrait(speaker)
         portrait_width = 0
         if portrait:
-            portrait_rect = portrait.get_rect()
+            # 화자에 따라 초상화 크기 조정 (에피소드와 동일)
+            if speaker == "ARTEMIS":
+                portrait_size = 364  # 아르테미스: 280 * 1.3
+            else:
+                portrait_size = 338  # 기타 캐릭터: 260 * 1.3
+
+            # 초상화 스케일 및 표시
+            portrait_scaled = pygame.transform.smoothscale(portrait, (portrait_size, portrait_size))
+            portrait_rect = portrait_scaled.get_rect()
             portrait_rect.bottomleft = (box_rect.left + 20, box_rect.bottom - 10)
 
-            portrait_copy = portrait.copy()
+            portrait_copy = portrait_scaled.copy()
             portrait_copy.set_alpha(alpha)
             screen.blit(portrait_copy, portrait_rect)
-            portrait_width = portrait_rect.width + 30
+            portrait_width = portrait_size + 30
 
         # 화자 이름
         name_color = self.character_colors.get(speaker, (255, 255, 255))

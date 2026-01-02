@@ -10,11 +10,11 @@
       "memory_04.jpg",
       "memory_05.jpg",
       "memory_06.jpg",
-      "memory_ufo.jpg",
+      "memory_ufo.png",
       "memory_survive.jpg"
     ],
     "special_effects": {
-      "memory_ufo.jpg": {
+      "memory_ufo.png": {
         "effect": "flicker_then_zoom",
         "flicker_speed": 0.3
       },
@@ -63,7 +63,7 @@
       },
       {
         "speaker": "PILOT",
-        "text": "(독백) 10년간의 관찰 기록. 이 존재의 의지력은 논리적 예측을 초월한다. 안드로메다에서는 관찰된 적 없는 패턴이다."
+        "text": "10년간의 관찰 기록. 이 존재의 의지력은 논리적 예측을 초월한다. 안드로메다에서는 관찰된 적 없는 패턴이다."
       },
       {
         "speaker": "ARTEMIS",
@@ -71,7 +71,7 @@
       },
       {
         "speaker": "PILOT",
-        "text": "(생각) '가족'. 또 그 단어다. 안드로메다어에는 존재하지 않는 개념. 하지만 이 존재가 그 단어를 말할 때마다... 내 연산이 불안정해진다."
+        "text": "'가족'. 또 그 단어다. 안드로메다어에는 존재하지 않는 개념. 하지만 이 존재가 그 단어를 말할 때마다... 내 연산이 불안정해진다."
       },
       {
         "speaker": "ARTEMIS",
