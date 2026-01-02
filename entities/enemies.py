@@ -74,7 +74,7 @@ class Enemy:
         # Burn 이미지를 10% 작게 표시
         burn_size = int(image_size * 0.9)
         burn_image = AssetManager.get_image(
-            "assets/images/characters/enemies/enemy_ship_burn.png",
+            config.ENEMY_SHIP_BURN_IMAGE_PATH,
             (burn_size, burn_size),
         )
         # 화상 이미지는 불꽃 효과이므로 색상 tint를 적용하지 않음 (원본 그대로 사용)
@@ -607,7 +607,7 @@ class Boss(Enemy):
         # Burn 이미지를 10% 작게 표시
         burn_size = int(image_size * 0.9)
         burn_image = AssetManager.get_image(
-            "assets/images/characters/enemies/enemy_ship_burn.png",
+            config.ENEMY_SHIP_BURN_IMAGE_PATH,
             (burn_size, burn_size),
         )
         self.burn_image = burn_image  # 보스는 색상 tint 없이 원본 사용
