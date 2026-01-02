@@ -424,11 +424,11 @@ class BaseHubMode(GameMode):
             dialogues = opening_data.get("dialogues", [])
             title = opening_data.get("title", "PROLOGUE")
             location = opening_data.get("location", "MOTHERSHIP - ARK PRIME")
-            bg_path = config.ASSET_DIR / "images" / "backgrounds" / "bg_ruins.jpg"
+            bg_path = config.ASSET_DIR / "backgrounds" / "bg_ruins.jpg"
 
         # 배경 fallback
         if not bg_path.exists():
-            bg_path = config.ASSET_DIR / "images" / "backgrounds" / "bg_space.jpg"
+            bg_path = config.ASSET_DIR / "backgrounds" / "bg_space.jpg"
 
         # 오프닝 브리핑 효과 생성
         briefing = StoryBriefingEffect(
