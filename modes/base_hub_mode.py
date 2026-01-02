@@ -403,16 +403,16 @@ class BaseHubMode(GameMode):
         dialogue_loader = get_dialogue_loader()
         scene_data = dialogue_loader.load_scene("intro_opening")
 
-        if scene_data:
+        if scene_data and scene_data.get("dialogues"):
             # JSON에서 로드
             print("INFO: Loading intro cutscene from JSON")
             dialogues = scene_data.get("dialogues", [])
             title = scene_data.get("title", "ACT 1: REMNANTS OF EARTH")
             location = scene_data.get("location", "EARTH ORBIT - SECTOR 7")
             bg_filename = scene_data.get("background", "bg_ruins.jpg")
-            bg_path = config.ASSET_DIR / "story_mode" / "backgrounds" / bg_filename
+            bg_path = config.ASSET_DIR / "data" / "episodes" / "ep1" / "backgrounds" / bg_filename
             if not bg_path.exists():
-                bg_path = config.ASSET_DIR / "images" / "backgrounds" / bg_filename
+                bg_path = config.ASSET_DIR / "backgrounds" / bg_filename
         else:
             # Fallback: 기존 Python 설정에서 로드
             print("INFO: Loading intro cutscene from config (fallback)")
