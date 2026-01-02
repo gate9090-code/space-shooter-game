@@ -16,8 +16,8 @@ ASSET_DIR = Path("assets")
 FONT_DIR = ASSET_DIR / "fonts"
 FONT_PATH = FONT_DIR / "NanumGothicBold.ttf"
 
-# 배경 이미지 전용 폴더 정의 및 경로
-BACKGROUND_DIR = ASSET_DIR / "images" / "backgrounds"
+# 배경 이미지 전용 폴더 정의 및 경로 (최상위로 이동)
+BACKGROUND_DIR = ASSET_DIR / "backgrounds"
 BACKGROUND_IMAGE_PATH = BACKGROUND_DIR / "bg_default.png"
 
 # 스토리 모드 배경 이미지 (웨이브별 고유 배경)
@@ -84,31 +84,34 @@ BACKGROUND_TRANSITION_DURATION = 2.0
 CONTINUOUS_SLIDE_ENABLED = False  # 스크롤 비활성화
 BACKGROUND_SCROLL_SPEED = 600.0  # 스크롤 속도 (픽셀/초) - 매우 빠름
 
-# 일반 객체 이미지 폴더 및 경로
+# 일반 객체 이미지 폴더 및 경로 (재구성된 구조)
 IMAGE_DIR = ASSET_DIR / "images"
-PLAYER_SHIP_IMAGE_PATH = IMAGE_DIR / "characters" / "player" / "player_ship.png"
-ENEMY_SHIP_IMAGE_PATH = IMAGE_DIR / "characters" / "enemies" / "enemy_ship.png"
-ENEMY_SHIP_BURN_IMAGE_PATH = IMAGE_DIR / "characters" / "enemies" / "enemy_ship_burn.png"
-PLAYER_BULLET_IMAGE_PATH = IMAGE_DIR / "projectiles" / "player_bullet.png"
-IMPACT_FX_IMAGE_PATH = IMAGE_DIR / "effects" / "impact_fx.png"
-EXPLOSION_IMAGE_PATH = IMAGE_DIR / "effects" / "explosion.png"
-METEOR_HEAD_IMAGE_PATH = IMAGE_DIR / "effects" / "meteor_head.png"
-METEOR_TRAIL_IMAGE_PATH = IMAGE_DIR / "effects" / "meteor_trail.png"
-COIN_GEM_IMAGE_PATH = IMAGE_DIR / "items" / "coin_gem.png"
-GEM_HP_IMAGE_PATH = IMAGE_DIR / "items" / "gem_hp.png"
+
+# Gameplay 이미지 (플레이어, 적, 수집 아이템)
+GAMEPLAY_DIR = IMAGE_DIR / "gameplay"
+PLAYER_SHIP_IMAGE_PATH = GAMEPLAY_DIR / "player" / "player_ship.png"
+ENEMY_SHIP_IMAGE_PATH = GAMEPLAY_DIR / "enemies" / "enemy_ship.png"
+ENEMY_SHIP_BURN_IMAGE_PATH = GAMEPLAY_DIR / "enemies" / "enemy_ship_burn.png"
+PLAYER_BULLET_IMAGE_PATH = GAMEPLAY_DIR / "player" / "player_bullet.png"
+COIN_GEM_IMAGE_PATH = GAMEPLAY_DIR / "collectibles" / "coin_gem.png"
+GEM_HP_IMAGE_PATH = GAMEPLAY_DIR / "collectibles" / "gem_hp.png"
+
+# VFX 이미지 (시각 효과)
+VFX_DIR = IMAGE_DIR / "vfx"
+IMPACT_FX_IMAGE_PATH = VFX_DIR / "combat" / "impact_fx.png"
+EXPLOSION_IMAGE_PATH = VFX_DIR / "combat" / "explosion.png"
+METEOR_HEAD_IMAGE_PATH = VFX_DIR / "combat" / "meteor_head.png"
+METEOR_TRAIL_IMAGE_PATH = VFX_DIR / "combat" / "meteor_trail.png"
+WAVE_CLEAR_FIREWORKS_PATH = VFX_DIR / "combat" / "wave_clear_fireworks.png"
 
 # 스킬 이미지 폴더
-SKILL_IMAGE_DIR = IMAGE_DIR / "skills"
+SKILL_IMAGE_DIR = VFX_DIR / "skills"
 STATIC_FIELD_IMAGE_PATH = SKILL_IMAGE_DIR / "static_field.png"
 
-# 메뉴 아이콘 폴더
-MENU_ICON_DIR = IMAGE_DIR / "ui"
-
-# 웨이브 전환 이미지
-WAVE_HERO_IMAGE_PATH = IMAGE_DIR / "ui" / "wave_hero.jpg"
-
-# 웨이브 클리어 축하 이미지
-WAVE_CLEAR_FIREWORKS_PATH = IMAGE_DIR / "effects" / "wave_clear_fireworks.png"
+# UI 이미지 폴더
+UI_DIR = IMAGE_DIR / "ui"
+MENU_ICON_DIR = UI_DIR
+WAVE_HERO_IMAGE_PATH = UI_DIR / "wave_hero.jpg"
 
 # 화면 높이에 대한 객체 이미지 크기 비율 (0.0 ~ 1.0)
 IMAGE_SIZE_RATIOS = {
