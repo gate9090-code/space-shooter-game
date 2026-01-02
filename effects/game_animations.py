@@ -554,8 +554,9 @@ class BaseArrivalAnimation:
         self.is_alive = True
         self.is_complete_flag = False
 
-        # 크기 변화 (시작: 100%, 종료: 20% - 워프 포탈 대비 우주선 크기 조정)
-        self.start_scale = 1.0
+        # 크기 변화 (시작: 원본 크기 유지, 종료: 20% - 워프 포탈 대비 우주선 크기 조정)
+        # 원본 player_image는 이미 screen_height * 0.12 크기로 스케일되어 있음
+        self.start_scale = 1.0  # 원본 크기 유지 (ReturnToBase와 동일)
         self.end_scale = 0.2
 
         # 페이드 아웃 시작 시점 (80% 진행 시점부터)
@@ -563,9 +564,7 @@ class BaseArrivalAnimation:
 
         # 워프 포탈 이미지
         self.warp_portal_image = None
-        self.warp_portal_size = (
-            600  # 포탈 크기 (픽셀) - 기지 진입 시 더 크게 (50% 확대)
-        )
+        self.warp_portal_size = 520  # 포탈 크기 (픽셀) - ReturnToBase와 동일
         self.warp_portal_alpha = 0
         self._load_warp_portal_image()
 
