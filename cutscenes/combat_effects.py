@@ -595,7 +595,7 @@ class CombatMotionEffect:
         try:
             for i in range(5):
                 img_path = Path(
-                    f"assets/images/effects/combat_motion_0{i}.{extensions[i]}"
+                    f"assets/images/vfx/combat/combat_motion_0{i}.{extensions[i]}"
                 )
                 if img_path.exists():
                     img = pygame.image.load(str(img_path)).convert()
