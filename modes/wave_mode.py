@@ -512,12 +512,17 @@ class WaveMode(GameMode):
         self.effects.append(victory_anim)
 
         # 불꽃놀이 축하 효과 추가 (웨이브 완전 클리어 시에만 표시)
+        # 보스 웨이브 여부 확인
+        current_wave = self.game_data.get('current_wave', 1)
+        is_boss_wave = current_wave in config.BOSS_WAVES
+
         fireworks_effect = WaveClearFireworksEffect(
             screen_size=self.screen_size,
-            duration=5.5  # 승리 애니메이션 전체 시간 동안 표시 (3.5 + 2.0)
+            duration=5.5,  # 승리 애니메이션 전체 시간 동안 표시 (3.5 + 2.0)
+            is_boss=is_boss_wave  # 보스 웨이브면 3개, 일반 웨이브면 1개
         )
         self.effects.append(fireworks_effect)
-        print("INFO: Fireworks effect added to celebrate wave clear")
+        print(f"INFO: Fireworks effect added (boss={is_boss_wave}, wave={current_wave})")
 
     def _check_game_over(self):
         """게임 오버 체크"""

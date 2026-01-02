@@ -1,9 +1,10 @@
-'''
+"""
 Game Animations - Player victory, wave clear, base arrival animations
 게임 애니메이션 - 승리, 웨이브 클리어, 기지 도착 등
 
 Extracted from objects.py
-'''
+"""
+
 import pygame
 import math
 import random
@@ -15,6 +16,7 @@ import config
 # ============================================================
 # Player Victory Animation
 # ============================================================
+
 
 class PlayerVictoryAnimation:
     """플레이어 승리 애니메이션 - 화면 외곽을 시계방향으로 회전 후 하단 중앙으로 이동"""
@@ -131,53 +133,34 @@ class PlayerVictoryAnimation:
 # Wave Clear Fireworks Effect
 # ============================================================
 
-class WaveClearFireworksEffect:
-    """웨이브 클리어 축하 불꽃놀이 효과 - 화면 하단에서 fireworks 이미지 표시"""
 
-    def __init__(self, screen_size: Tuple[int, int], duration: float = 3.0):
+class WaveClearFireworksEffect:
+    """웨이브 클리어 축하 불꽃놀이 효과 - 쿨타임 근처에서 시작하여 위로 이동"""
+
+    def __init__(
+        self, screen_size: Tuple[int, int], duration: float = 3.5, is_boss: bool = False
+    ):
         """
         Args:
             screen_size: 화면 크기
             duration: 효과 지속 시간 (초)
+            is_boss: 보스전 여부 (True면 3개 불꽃, False면 1개만)
         """
         self.screen_size = screen_size
         self.duration = duration
         self.age = 0.0
         self.is_alive = True
+        self.is_boss = is_boss
 
-        # fireworks 이미지 로드
-        self.fireworks_image = None
+        # 원본 fireworks 이미지 로드
+        self.base_image = None
         try:
             if config.WAVE_CLEAR_FIREWORKS_PATH.exists():
-                img = pygame.image.load(
+                self.base_image = pygame.image.load(
                     str(config.WAVE_CLEAR_FIREWORKS_PATH)
                 ).convert_alpha()
-                # 화면 중앙에 표시하기 위해 적절한 크기로 조정
-                # 원본 크기를 유지하되, 화면보다 크면 화면에 맞춤
-                original_width, original_height = img.get_size()
-
-                # 화면 크기의 60%로 제한
-                max_width = int(screen_size[0] * 0.6)
-                max_height = int(screen_size[1] * 0.6)
-
-                # 비율 유지하면서 크기 조정
-                aspect_ratio = original_height / original_width
-                if original_width > max_width:
-                    target_width = max_width
-                    target_height = int(target_width * aspect_ratio)
-                else:
-                    target_width = original_width
-                    target_height = original_height
-
-                if target_height > max_height:
-                    target_height = max_height
-                    target_width = int(target_height / aspect_ratio)
-
-                self.fireworks_image = pygame.transform.smoothscale(
-                    img, (target_width, target_height)
-                )
                 print(
-                    f"INFO: Fireworks image loaded: {target_width}x{target_height} (original: {original_width}x{original_height})"
+                    f"INFO: Fireworks base image loaded: {self.base_image.get_size()}"
                 )
             else:
                 print(
@@ -185,15 +168,96 @@ class WaveClearFireworksEffect:
                 )
         except Exception as e:
             print(f"ERROR: Failed to load fireworks image: {e}")
-            self.fireworks_image = None
+            self.base_image = None
 
-        # 이미지 위치 (화면 중앙 하단)
-        if self.fireworks_image:
-            self.image_x = (screen_size[0] - self.fireworks_image.get_width()) // 2
-            # 화면 하단에서 50px 위에 배치
-            self.image_y = screen_size[1] - self.fireworks_image.get_height() - 50
+        # 불꽃 버스트 설정
+        self.fireworks_bursts = []
+        if self.base_image:
+            # 쿨타임 UI 위치 (화면 하단 중앙)
+            cooltime_y = screen_size[1] - 150  # 쿨타임 상부
+
+            if is_boss:
+                # 보스전: 3개 불꽃 (중앙 메인 + 좌우 보조) - 삼원색 적용
+                burst_configs = [
+                    # (delay, start_scale, end_scale, x_ratio, start_y, end_y_offset, rotation_speed, color_tint)
+                    (
+                        0.0,
+                        0.15,
+                        0.35,
+                        0.50,
+                        cooltime_y,
+                        -250,
+                        15,
+                        (255, 100, 100),
+                    ),  # 중앙 - 빨강
+                    (
+                        0.6,
+                        0.10,
+                        0.20,
+                        0.30,
+                        cooltime_y,
+                        -180,
+                        -12,
+                        (100, 255, 100),
+                    ),  # 좌측 - 초록
+                    (
+                        0.6,
+                        0.10,
+                        0.20,
+                        0.70,
+                        cooltime_y,
+                        -180,
+                        12,
+                        (100, 100, 255),
+                    ),  # 우측 - 파랑
+                ]
+            else:
+                # 일반 웨이브: 1개 불꽃만 (중앙) - 원본 색상
+                burst_configs = [
+                    (
+                        0.0,
+                        0.15,
+                        0.30,
+                        0.50,
+                        cooltime_y,
+                        -220,
+                        12,
+                        (255, 255, 255),
+                    ),  # 중앙만 - 흰색
+                ]
+
+            for (
+                delay,
+                start_scale,
+                end_scale,
+                x_ratio,
+                start_y,
+                end_y_offset,
+                rot_speed,
+                color_tint,
+            ) in burst_configs:
+                # 시작/종료 위치
+                x = int(screen_size[0] * x_ratio)
+                end_y = start_y + end_y_offset  # 위로 이동
+
+                self.fireworks_bursts.append(
+                    {
+                        "delay": delay,
+                        "start_scale": start_scale,
+                        "end_scale": end_scale,
+                        "x": x,
+                        "start_y": start_y,
+                        "end_y": end_y,
+                        "current_y": start_y,
+                        "current_scale": start_scale,
+                        "rotation": 0.0,
+                        "rotation_speed": rot_speed,
+                        "color_tint": color_tint,  # RGB 색상 틴트
+                    }
+                )
+
             print(
-                f"INFO: Fireworks position: ({self.image_x}, {self.image_y}), size: {self.fireworks_image.get_size()}, screen: {screen_size}"
+                f"INFO: Created {len(self.fireworks_bursts)} fireworks bursts (boss={is_boss})"
             )
 
     def update(self, dt: float):
@@ -206,45 +270,121 @@ class WaveClearFireworksEffect:
         # 지속 시간 경과 시 종료
         if self.age >= self.duration:
             self.is_alive = False
+            return
+
+        # 각 불꽃 버스트 업데이트 (위치 이동 + 크기 증가 + 회전)
+        for burst in self.fireworks_bursts:
+            if self.age >= burst["delay"]:
+                burst_age = self.age - burst["delay"]
+
+                # 이동 애니메이션 (1.5초 동안 위로 이동하며 커짐)
+                move_duration = 1.5
+                if burst_age < move_duration:
+                    # ease-out 적용 (빠르게 시작, 느리게 끝)
+                    progress = burst_age / move_duration
+                    eased = 1 - (1 - progress) ** 2
+
+                    # Y 위치 이동
+                    burst["current_y"] = (
+                        burst["start_y"] + (burst["end_y"] - burst["start_y"]) * eased
+                    )
+
+                    # 크기 증가
+                    burst["current_scale"] = (
+                        burst["start_scale"]
+                        + (burst["end_scale"] - burst["start_scale"]) * eased
+                    )
+                else:
+                    # 이동 완료 후 고정
+                    burst["current_y"] = burst["end_y"]
+                    burst["current_scale"] = burst["end_scale"]
+
+                # 회전 애니메이션
+                burst["rotation"] += burst["rotation_speed"] * dt
 
     def draw(self, screen: pygame.Surface):
         """효과 그리기"""
         if not self.is_alive:
-            print(
-                f"DEBUG: Fireworks not alive (age={self.age:.2f}, duration={self.duration})"
-            )
             return
 
-        if not self.fireworks_image:
-            print("DEBUG: Fireworks image is None")
+        if not self.base_image:
             return
 
-        # 페이드 인/아웃 효과
-        if self.age < 0.5:
-            # 페이드 인 (0.5초)
-            alpha = int(255 * (self.age / 0.5))
-        elif self.age > self.duration - 0.5:
-            # 페이드 아웃 (마지막 0.5초)
-            alpha = int(255 * ((self.duration - self.age) / 0.5))
-        else:
-            # 완전 불투명
-            alpha = 255
+        # 모든 불꽃 그리기 (작은 것부터 = 깊이감)
+        sorted_bursts = sorted(self.fireworks_bursts, key=lambda b: b["current_scale"])
 
-        # 알파 적용하여 그리기
-        temp_surface = self.fireworks_image.copy()
-        temp_surface.set_alpha(alpha)
-        screen.blit(temp_surface, (self.image_x, self.image_y))
+        for burst in sorted_bursts:
+            # 딜레이 체크 - 아직 시작 안 됨
+            if self.age < burst["delay"]:
+                continue
 
-        # 첫 프레임에만 디버그 출력
-        if self.age < 0.1:
-            print(
-                f"DEBUG: Drawing fireworks at ({self.image_x}, {self.image_y}) with alpha={alpha}"
+            burst_age = self.age - burst["delay"]
+
+            # 페이드 인/아웃 계산
+            fade_in_duration = 0.3
+            fade_out_start = 2.0
+            fade_out_duration = 0.8
+
+            if burst_age < fade_in_duration:
+                # 페이드 인
+                alpha = int(255 * (burst_age / fade_in_duration))
+            elif burst_age > fade_out_start:
+                # 페이드 아웃 (천천히)
+                alpha = int(
+                    255 * (1.0 - (burst_age - fade_out_start) / fade_out_duration)
+                )
+                alpha = max(0, alpha)
+            else:
+                alpha = 255
+
+            if alpha <= 0:
+                continue
+
+            # 현재 크기로 이미지 스케일
+            target_size = int(
+                min(self.screen_size[0], self.screen_size[1]) * burst["current_scale"]
             )
+            aspect_ratio = self.base_image.get_height() / self.base_image.get_width()
+            img_width = target_size
+            img_height = int(target_size * aspect_ratio)
+
+            if img_width <= 0 or img_height <= 0:
+                continue
+
+            # 이미지 스케일링
+            scaled_img = pygame.transform.smoothscale(
+                self.base_image, (img_width, img_height)
+            )
+
+            # 색상 틴트 적용 (RGB 곱셈)
+            color_tint = burst.get("color_tint", (255, 255, 255))
+            if color_tint != (255, 255, 255):
+                # 틴트용 임시 surface 생성
+                tinted_img = scaled_img.copy()
+                tint_surface = pygame.Surface(tinted_img.get_size()).convert_alpha()
+                tint_surface.fill(color_tint)
+                tinted_img.blit(
+                    tint_surface, (0, 0), special_flags=pygame.BLEND_RGB_MULT
+                )
+                scaled_img = tinted_img
+
+            # 회전 적용
+            rotated_img = pygame.transform.rotate(scaled_img, burst["rotation"])
+
+            # 알파 적용
+            rotated_img.set_alpha(alpha)
+
+            # 그리기 (중앙 정렬)
+            draw_x = burst["x"] - rotated_img.get_width() // 2
+            draw_y = int(burst["current_y"]) - rotated_img.get_height() // 2
+
+            screen.blit(rotated_img, (draw_x, draw_y))
 
 
 # ============================================================
 # Return to Base Animation
 # ============================================================
+
 
 class ReturnToBaseAnimation:
     """에피소드 종료 후 기지로 복귀하는 플레이어 우주선 애니메이션"""
@@ -415,6 +555,7 @@ class ReturnToBaseAnimation:
 # Base Arrival Animation
 # ============================================================
 
+
 class BaseArrivalAnimation:
     """기지 복귀 시 우주선이 화면에 진입하는 애니메이션
 
@@ -581,6 +722,7 @@ class BaseArrivalAnimation:
 # Dialogue Ship Animation
 # ============================================================
 
+
 class DialogueShipAnimation:
     """대화 중 우주선 회전 애니메이션
 
@@ -652,6 +794,7 @@ class DialogueShipAnimation:
 # Spawn Effect
 # ============================================================
 
+
 class SpawnEffect:
     """적 스폰 포털 효과"""
 
@@ -704,6 +847,7 @@ class SpawnEffect:
 # ============================================================
 # Meteor Effect
 # ============================================================
+
 
 class Meteor:
     """유성 효과 - 화면을 대각선으로 가로지르는 작은 유성 (웨이브당 1개)"""
@@ -889,6 +1033,7 @@ class Meteor:
 # ============================================================
 # Static Field
 # ============================================================
+
 
 class StaticField:
     """적 사망 시 생성되는 정전기장 (Static Field 스킬)"""
