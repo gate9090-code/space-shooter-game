@@ -436,8 +436,13 @@ class TrainingMode(GameMode):
         # 이펙트 업데이트 및 죽은 이펙트 제거
         for effect in self.effects[:]:
             if hasattr(effect, 'update'):
-                # AnimatedEffect는 (dt, current_time) 필요
-                effect.update(scaled_dt, current_time)
+                # update 메서드 시그니처 확인 (일부는 dt만, 일부는 dt+current_time)
+                import inspect
+                sig = inspect.signature(effect.update)
+                if len(sig.parameters) >= 2:  # update(self, dt, current_time)
+                    effect.update(scaled_dt, current_time)
+                else:  # update(self, dt)
+                    effect.update(scaled_dt)
             if hasattr(effect, 'is_alive') and not effect.is_alive:
                 self.effects.remove(effect)
 

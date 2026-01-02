@@ -475,7 +475,7 @@ class ReturnToBaseAnimation:
 
     def _load_warp_portal_image(self):
         """워프 포탈 이미지 로드 (warp_transition.png, 원형 포탈 크기로 스케일)"""
-        warp_image_path = Path("assets/images/effects/warp_transition.png")
+        warp_image_path = Path("assets/images/vfx/combat/warp_transition.png")
         if warp_image_path.exists():
             try:
                 loaded_img = pygame.image.load(str(warp_image_path)).convert_alpha()
@@ -571,7 +571,7 @@ class BaseArrivalAnimation:
 
     def _load_warp_portal_image(self):
         """워프 포탈 이미지 로드 (warp_transition.png)"""
-        warp_image_path = Path("assets/images/effects/warp_transition.png")
+        warp_image_path = Path("assets/images/vfx/combat/warp_transition.png")
         if warp_image_path.exists():
             try:
                 loaded_img = pygame.image.load(str(warp_image_path)).convert_alpha()
