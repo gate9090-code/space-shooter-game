@@ -526,8 +526,11 @@ class NarrativeMode(GameMode):
             ship_data = config.SHIP_TYPES.get(current_ship, config.SHIP_TYPES[config.DEFAULT_SHIP])
             ship_image_filename = ship_data.get('image', 'player_ship.png')
 
-            # 우주선 이미지 경로 구성
-            ship_image_path = config.IMAGE_DIR / "ships" / ship_image_filename
+            # 우주선 이미지 경로 구성 (임시로 player 폴더 사용)
+            ship_image_path = config.GAMEPLAY_DIR / "player" / ship_image_filename
+            # 함선별 이미지가 없으면 기본 이미지 사용
+            if not ship_image_path.exists():
+                ship_image_path = config.PLAYER_SHIP_IMAGE_PATH
 
             # 플레이어 우주선 이미지 로드
             ship_image = pygame.image.load(str(ship_image_path)).convert_alpha()

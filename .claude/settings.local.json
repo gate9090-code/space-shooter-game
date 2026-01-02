@@ -80,7 +80,9 @@
       "Bash(else echo \"✗ Missing\")",
       "Bash(if [ -d \"assets/modes/siege/enemies\" ])",
       "Bash(then echo \"✓ Siege enemies folder exists\")",
-      "Bash(timeout 12 python:*)"
+      "Bash(timeout 12 python:*)",
+      "Bash(if exist \"__pycache__\" rd /s /q \"__pycache__\")",
+      "Bash(xargs -0 rm:*)"
     ],
     "deny": [],
     "ask": []
