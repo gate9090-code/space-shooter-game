@@ -209,7 +209,10 @@ class HangarMode(GameMode):
 
     def _load_ship_images(self):
         """함선 이미지 로드"""
-        ships_dir = config.ASSET_DIR / "images" / "ships"
+        # 임시: ships 폴더 대신 player 폴더 사용
+        ships_dir = config.ASSET_DIR / "images" / "gameplay" / "player"
+        fallback_image = ships_dir / "player_ship.png"
+
         for ship_id, ship_data in config.SHIP_TYPES.items():
             image_name = ship_data.get("image", f"{ship_id.lower()}_front.png")
             image_path = ships_dir / image_name
@@ -218,6 +221,11 @@ class HangarMode(GameMode):
                     img = pygame.image.load(str(image_path)).convert_alpha()
                     self.ship_images[ship_id] = img
                     print(f"INFO: Loaded ship image: {image_name}")
+                elif fallback_image.exists():
+                    # 함선별 이미지가 없으면 기본 player_ship.png 사용
+                    img = pygame.image.load(str(fallback_image)).convert_alpha()
+                    self.ship_images[ship_id] = img
+                    print(f"INFO: Using fallback ship image for {ship_id}")
                 else:
                     print(f"WARNING: Ship image not found: {image_path}")
             except Exception as e:

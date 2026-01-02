@@ -135,9 +135,12 @@ class TrainingSpawnManager:
                 chase_probability=1.0,
                 enemy_type=enemy_type,
             )
+            print(f"DEBUG: Enemy spawned at {pos}, type={enemy_type}")
             return enemy
         except Exception as e:
-            print(f"WARNING: Failed to spawn enemy: {e}")
+            import traceback
+            print(f"ERROR: Failed to spawn enemy: {e}")
+            traceback.print_exc()
             return None
 
     def _select_enemy_type(self) -> str:
