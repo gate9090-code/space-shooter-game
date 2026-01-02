@@ -143,7 +143,7 @@ def main():
     print("INFO: Starting game loop")
     engine.run()
 
-    # 9. 종료 시 저장
+    # 9. 종료시 저장
     save_game_data(
         engine.shared_state.get("global_score", 0),
         engine.shared_state.get("player_upgrades", {}),

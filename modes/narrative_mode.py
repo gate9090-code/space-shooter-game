@@ -272,7 +272,7 @@ class NarrativeMode(GameMode):
         try:
             from systems.dialogue_loader import DialogueLoader
 
-            scripts_path = config.ASSET_DIR / "story_mode" / "scripts"
+            scripts_path = config.ASSET_DIR / "data" / "episodes" / "ep1" / "scripts"
 
             loader = DialogueLoader(scripts_path)
             scene_data = loader.load_scene(self.scene_id)
@@ -338,10 +338,10 @@ class NarrativeMode(GameMode):
             except Exception as e:
                 print(f"INFO: EpisodeResourceLoader background failed: {e}")
 
-        # 2순위: 레거시 경로들 시도
+        # 2순위: 레거시 경로들 시도 (에피소드 시스템으로 업데이트됨)
         paths = [
-            config.ASSET_DIR / "story_mode" / "backgrounds" / target_bg,
-            config.ASSET_DIR / "story_mode" / "reflection" / "backgrounds" / target_bg,
+            config.ASSET_DIR / "data" / "episodes" / "ep1" / "backgrounds" / target_bg,
+            config.ASSET_DIR / "data" / "episodes" / "ep1" / "backgrounds" / "reflection" / target_bg,
             config.ASSET_DIR / "images" / "backgrounds" / target_bg,
         ]
 
@@ -430,11 +430,11 @@ class NarrativeMode(GameMode):
                             print(f"INFO: Loaded portrait {name.upper()} from episode: {resolved_path}")
                             break
 
-                # 2순위: 레거시 경로
+                # 2순위: 레거시 경로 (에피소드 시스템으로 업데이트됨)
                 if not loaded:
                     paths = [
-                        config.ASSET_DIR / "story_mode" / "portraits" / f"portrait_{name}.png",
-                        config.ASSET_DIR / "story_mode" / "portraits" / f"portrait_{name}.jpg",
+                        config.ASSET_DIR / "data" / "episodes" / "ep1" / "portraits" / f"portrait_{name}.png",
+                        config.ASSET_DIR / "data" / "episodes" / "ep1" / "portraits" / f"portrait_{name}.jpg",
                     ]
 
                     for path in paths:
@@ -810,14 +810,9 @@ class NarrativeMode(GameMode):
                     resolved.append(str(path))
                     continue
 
-            # 2순위: 레거시 경로들
+            # 2순위: 레거시 경로들 (cutscene_images로 통합됨)
             legacy_paths = [
-                config.ASSET_DIR / "story_mode" / "polaroids" / name,
-                config.ASSET_DIR / "story_mode" / "documents" / name,
-                config.ASSET_DIR / "story_mode" / "holograms" / name,
-                config.ASSET_DIR / "story_mode" / "fragments" / name,
-                config.ASSET_DIR / "story_mode" / "starmap" / name,
-                config.ASSET_DIR / "story_mode" / "effects" / name,
+                config.ASSET_DIR / "data" / "episodes" / "ep1" / "cutscene_images" / name,
                 config.ASSET_DIR / "images" / "effects" / name,
             ]
             for lp in legacy_paths:
@@ -843,7 +838,7 @@ class NarrativeMode(GameMode):
 
         # 2순위: 레거시 경로들
         legacy_paths = [
-            config.ASSET_DIR / "story_mode" / "backgrounds" / bg_name,
+            config.ASSET_DIR / "data" / "episodes" / "ep1" / "backgrounds" / bg_name,
             config.ASSET_DIR / "images" / "backgrounds" / bg_name,
         ]
         for lp in legacy_paths:

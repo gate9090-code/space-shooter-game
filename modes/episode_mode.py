@@ -481,10 +481,10 @@ class EpisodeMode(GameMode):
     def _load_background(self, bg_name: str):
         """배경 이미지 로드"""
         try:
-            # 여러 경로 시도
+            # 여러 경로 시도 (에피소드 시스템)
             paths = [
-                f"assets/story_mode/backgrounds/{bg_name}",
-                f"assets/story_mode/reflection/backgrounds/{bg_name}",
+                f"assets/data/episodes/ep1/backgrounds/{bg_name}",
+                f"assets/data/episodes/ep1/backgrounds/reflection/{bg_name}",
                 f"assets/images/backgrounds/{bg_name}",
             ]
 

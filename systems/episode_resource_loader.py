@@ -1,20 +1,20 @@
 """
 에피소드 리소스 로더 시스템
 
-에피소드별로 모든 리소스(대화, 배경, 음향, 효과)를 통합 관리합니다.
+에피소드별로 모든 리소스(대화, 배경, 음향, 컷씬 이미지)를 통합 관리합니다.
 
 폴더 구조:
-assets/episodes/
+assets/data/episodes/
 ├── ep1/
-│   ├── ep1.json         # 메타데이터 + 모든 장면
-│   ├── backgrounds/     # 배경 이미지
-│   ├── audio/bgm/       # 배경 음악
-│   ├── audio/sfx/       # 효과음
-│   ├── effects/         # 특수 효과 이미지
-│   └── portraits/       # 에피소드 전용 캐릭터
+│   ├── ep1.json           # 메타데이터 + 모든 장면
+│   ├── backgrounds/       # 배경 이미지
+│   ├── audio/bgm/         # 배경 음악
+│   ├── audio/sfx/         # 효과음
+│   ├── cutscene_images/   # 컷씬 이미지 (메모리, 문서, 조각, 홀로그램 등)
+│   └── portraits/         # 캐릭터 초상화
 ├── ep2/
 │   └── ...
-└── shared/              # 공용 리소스
+└── shared/                # 공용 리소스
     ├── portraits/
     ├── audio/
     └── backgrounds/
@@ -125,7 +125,7 @@ class EpisodeResourceLoader:
         리소스 경로 해석 (에피소드 폴더 우선, shared 폴백)
 
         Args:
-            resource_type: "backgrounds", "portraits", "audio/bgm", "audio/sfx", "effects"
+            resource_type: "backgrounds", "portraits", "audio/bgm", "audio/sfx", "cutscene_images"
             filename: 파일명 (예: "bg_ruins.jpg")
             episode_id: 에피소드 ID (None이면 현재 에피소드)
 
@@ -169,8 +169,8 @@ class EpisodeResourceLoader:
         return self.resolve_path("audio/sfx", filename, episode_id)
 
     def get_effect(self, filename: str, episode_id: str = None) -> Optional[Path]:
-        """특수 효과 이미지 경로"""
-        return self.resolve_path("effects", filename, episode_id)
+        """컷씬 이미지 경로 (구 'effects', 현 'cutscene_images')"""
+        return self.resolve_path("cutscene_images", filename, episode_id)
 
     # === 장면 데이터 접근 ===
 

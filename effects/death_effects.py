@@ -1,9 +1,10 @@
-'''
+"""
 Death Effects - Enemy death animations and effects
 적 사망 효과 - 파편, 소용돌이, 픽셀화 등
 
 Extracted from objects.py
-'''
+"""
+
 import pygame
 import math
 import random
@@ -16,6 +17,7 @@ from .screen_effects import BurstParticle, DissolveEffect, FadeEffect, ImplodeEf
 # ============================================================
 # Shatter Fragment
 # ============================================================
+
 
 class ShatterFragment:
     """적 사망 시 생성되는 이미지 파편"""
@@ -85,6 +87,7 @@ class ShatterFragment:
 # ============================================================
 # Vortex Effect
 # ============================================================
+
 
 class VortexEffect:
     """소용돌이(차원 균열) 효과 - 확대→축소 회전하며 빨려들어감"""
@@ -254,6 +257,7 @@ class VortexEffect:
 # Pixelate Effect
 # ============================================================
 
+
 class PixelateEffect:
     """픽셀화(디지털 글리치) 효과 - 레트로 스타일로 분해"""
 
@@ -416,6 +420,7 @@ class PixelateEffect:
 # ============================================================
 # Death Effect Manager
 # ============================================================
+
 
 class DeathEffectManager:
     """적 사망 효과 관리 클래스"""

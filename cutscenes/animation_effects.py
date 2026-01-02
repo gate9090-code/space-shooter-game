@@ -145,8 +145,8 @@ class ShipEntranceEffect:
             path = CHARACTER_PORTRAITS.get(speaker)
         except ImportError:
             portrait_paths = {
-                "ARTEMIS": "assets/story_mode/portraits/portrait_artemis.jpg",
-                "PILOT": "assets/story_mode/portraits/portrait_pilot.png",
+                "ARTEMIS": "assets/data/episodes/ep1/portraits/portrait_artemis.jpg",
+                "PILOT": "assets/data/episodes/ep1/portraits/portrait_pilot.png",
             }
             path = portrait_paths.get(speaker)
 

@@ -56,11 +56,11 @@ class ClassifiedDocumentEffect:
         self.phase = self.PHASE_ZOOM_IN
         self.phase_timer = 0.0
 
-        # gate 이미지 경로 (기본값 - 실제 파일 기준)
+        # gate 이미지 경로 (에피소드 리소스 시스템)
         self.gate_image_paths = gate_image_paths or [
-            "assets/story_mode/documents/bunker_gate_01.jpg",
-            "assets/story_mode/documents/bunker_gate_02.jpg",
-            "assets/story_mode/documents/bunker_gate_03.jpg",
+            "assets/data/episodes/ep1/cutscene_images/bunker_gate_01.jpg",
+            "assets/data/episodes/ep1/cutscene_images/bunker_gate_02.jpg",
+            "assets/data/episodes/ep1/cutscene_images/bunker_gate_03.jpg",
         ]
 
         # 타이밍 설정 (모든 등장 천천히)
@@ -179,7 +179,7 @@ class ClassifiedDocumentEffect:
 
     def _load_cabinet(self):
         """캐비닛 이미지 로드"""
-        cabinet_path = "assets/story_mode/documents/doc_cabinet.png"
+        cabinet_path = "assets/data/episodes/ep1/cutscene_images/doc_cabinet.png"
         try:
             img = pygame.image.load(cabinet_path).convert_alpha()
             cabinet_height = int(self.screen_size[1] * 0.55)

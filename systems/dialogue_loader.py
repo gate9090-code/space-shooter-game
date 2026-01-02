@@ -5,7 +5,7 @@ DialogueLoader - JSON 기반 대화 스크립트 로더
 대화와 배경 이미지를 쉽게 편집할 수 있도록 JSON 파일에서 로드합니다.
 
 사용법:
-    loader = DialogueLoader(Path("assets/story_mode/scripts"))
+    loader = DialogueLoader(Path("assets/data/episodes/ep1/scripts"))
     scene = loader.load_scene("act1_opening")
     dialogues = scene.get("dialogues", [])
     background = scene.get("background")
@@ -176,9 +176,9 @@ def get_dialogue_loader(scripts_path: Path | str | None = None) -> DialogueLoade
 
     if _global_loader is None:
         if scripts_path is None:
-            # 기본 경로 사용
+            # 기본 경로 사용 (에피소드 시스템)
             import config
-            scripts_path = config.ASSET_DIR / "story_mode" / "scripts"
+            scripts_path = config.ASSET_DIR / "data" / "episodes" / "ep1" / "scripts"
         _global_loader = DialogueLoader(scripts_path)
 
     return _global_loader

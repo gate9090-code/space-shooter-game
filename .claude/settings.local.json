@@ -71,7 +71,15 @@
       "Bash(if exist burn_debug.log type burn_debug.log)",
       "Bash(if not exist \"c:\\\\Users\\\\gate9\\\\Desktop\\\\working\\\\assets\\\\images\\\\effects\" mkdir \"c:\\\\Users\\\\gate9\\\\Desktop\\\\working\\\\assets\\\\images\\\\effects\")",
       "Bash(do if [ \"$f\" != \"__init__.py\" ])",
-      "Bash(fi)"
+      "Bash(fi)",
+      "Bash(git commit:*)",
+      "Bash(git push)",
+      "Bash(timeout 8 py:*)",
+      "Bash(if [ -f \"assets/data/episodes/ep1/backgrounds/bg_ruins.jpg\" ])",
+      "Bash(then echo \"✓ Episode background exists\")",
+      "Bash(else echo \"✗ Missing\")",
+      "Bash(if [ -d \"assets/modes/siege/enemies\" ])",
+      "Bash(then echo \"✓ Siege enemies folder exists\")"
     ],
     "deny": [],
     "ask": []

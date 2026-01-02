@@ -176,55 +176,20 @@ class WaveClearFireworksEffect:
             # 쿨타임 UI 위치 (화면 하단 중앙)
             cooltime_y = screen_size[1] - 150  # 쿨타임 상부
 
-            if is_boss:
-                # 보스전: 3개 불꽃 (중앙 메인 + 좌우 보조) - 삼원색 적용
-                burst_configs = [
-                    # (delay, start_scale, end_scale, x_ratio, start_y, end_y_offset, rotation_speed, color_tint)
-                    (
-                        0.0,
-                        0.15,
-                        0.35,
-                        0.50,
-                        cooltime_y,
-                        -250,
-                        15,
-                        (255, 100, 100),
-                    ),  # 중앙 - 빨강
-                    (
-                        0.6,
-                        0.10,
-                        0.20,
-                        0.30,
-                        cooltime_y,
-                        -180,
-                        -12,
-                        (100, 255, 100),
-                    ),  # 좌측 - 초록
-                    (
-                        0.6,
-                        0.10,
-                        0.20,
-                        0.70,
-                        cooltime_y,
-                        -180,
-                        12,
-                        (100, 100, 255),
-                    ),  # 우측 - 파랑
-                ]
-            else:
-                # 일반 웨이브: 1개 불꽃만 (중앙) - 원본 색상
-                burst_configs = [
-                    (
-                        0.0,
-                        0.15,
-                        0.30,
-                        0.50,
-                        cooltime_y,
-                        -220,
-                        12,
-                        (255, 255, 255),
-                    ),  # 중앙만 - 흰색
-                ]
+            # 모든 웨이브: 1개 불꽃만 (중앙) - 원본 색상
+            burst_configs = [
+                # (delay, start_scale, end_scale, x_ratio, start_y, end_y_offset, rotation_speed, color_tint)
+                (
+                    0.0,
+                    0.15,
+                    0.30,
+                    0.50,
+                    cooltime_y,
+                    -220,
+                    12,
+                    (255, 255, 255),
+                ),  # 중앙만 - 원본 색상
+            ]
 
             for (
                 delay,
@@ -320,7 +285,7 @@ class WaveClearFireworksEffect:
 
             burst_age = self.age - burst["delay"]
 
-            # 페이드 인/아웃 계산
+            # 페이드 인/아웃 계산 .
             fade_in_duration = 0.3
             fade_out_start = 2.0
             fade_out_duration = 0.8

@@ -133,8 +133,8 @@ class StoryBriefingEffect:
             filename = "android" if speaker == "NARRATOR" else speaker.lower()
 
             portrait_paths = [
-                Path("assets/story_mode/portraits") / f"portrait_{filename}.png",
-                Path("assets/story_mode/portraits") / f"portrait_{filename}.jpg",
+                Path("assets/data/episodes/ep1/portraits") / f"portrait_{filename}.png",
+                Path("assets/data/episodes/ep1/portraits") / f"portrait_{filename}.jpg",
                 Path("assets/data/episodes/shared/portraits")
                 / f"portrait_{filename}.png",
                 Path("assets/data/episodes/shared/portraits")

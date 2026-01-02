@@ -225,8 +225,8 @@ def get_background_path(wave_num: int) -> Path:
         배경 이미지 경로
     """
     bg_filename = STORY_BACKGROUNDS.get(wave_num, "bg_hangar.jpg")
-    # 스토리 모드 전용 배경 폴더 사용
-    return Path(f"assets/story_mode/backgrounds/{bg_filename}")
+    # 에피소드 시스템 배경 폴더 사용
+    return Path(f"assets/data/episodes/ep1/backgrounds/{bg_filename}")
 
 
 # =========================================================

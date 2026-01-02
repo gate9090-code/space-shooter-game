@@ -51,12 +51,9 @@ class Player:
         # 사망 플래그 (HP가 0이 된 적 있으면 True, 부활 시 False로 리셋)
         self.is_dead = False
 
-        # 3. 이미지 및 히트박스 (함선 크기에 따라 조정)
-        ship_size = self.ship_stats.get("size", "medium")
-        size_ratio = config.SHIP_SIZE_RATIOS.get(
-            ship_size, config.IMAGE_SIZE_RATIOS["PLAYER"]
-        )
-        image_size = int(screen_height * size_ratio)
+        # 3. 이미지 및 히트박스 (Titan 크기로 표준화)
+        # Titan 기준 크기 (589x500) -> 화면 높이 12% 기준으로 계산
+        standard_size = int(screen_height * 0.12)  # Titan 크기 기준
 
         # 함선 이미지 로드 시도
         ship_image_path = (
@@ -65,18 +62,37 @@ class Player:
             / "ships"
             / self.ship_data.get("image", "fighter_front.png")
         )
+
+        # 원본 이미지를 먼저 로드하여 종횡비 확인
         if ship_image_path.exists():
-            self.image = AssetManager.get_image(
-                ship_image_path, (image_size, image_size)
-            )
+            try:
+                original_img = pygame.image.load(str(ship_image_path)).convert_alpha()
+                orig_width, orig_height = original_img.get_size()
+
+                # 종횡비 유지하면서 높이를 standard_size로 맞춤
+                aspect_ratio = orig_width / orig_height
+                target_height = standard_size
+                target_width = int(target_height * aspect_ratio)
+
+                self.image = AssetManager.get_image(
+                    ship_image_path, (target_width, target_height)
+                )
+            except Exception as e:
+                print(f"WARNING: Failed to load ship image {ship_image_path}: {e}")
+                # 기본 플레이어 이미지 사용
+                self.image = AssetManager.get_image(
+                    config.PLAYER_SHIP_IMAGE_PATH, (standard_size, standard_size)
+                )
         else:
             # 기본 플레이어 이미지 사용
             self.image = AssetManager.get_image(
-                config.PLAYER_SHIP_IMAGE_PATH, (image_size, image_size)
+                config.PLAYER_SHIP_IMAGE_PATH, (standard_size, standard_size)
             )
+
         self.image_rect = self.image.get_rect(center=(self.pos.x, self.pos.y))
 
-        hitbox_size = int(image_size * config.PLAYER_HITBOX_RATIO)
+        # 히트박스는 이미지 높이 기준으로 설정
+        hitbox_size = int(standard_size * config.PLAYER_HITBOX_RATIO)
         self.hitbox = pygame.Rect(0, 0, hitbox_size, hitbox_size)
         self.hitbox.center = (int(self.pos.x), int(self.pos.y))
 

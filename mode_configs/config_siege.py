@@ -157,7 +157,7 @@ STAR_COUNT = 100              # 배경 별 개수
 # =========================================================
 # 이미지 경로
 # =========================================================
-SIEGE_IMAGE_DIR = Path("assets/siege_mode")
+SIEGE_IMAGE_DIR = Path("assets/modes/siege")
 ENEMY_IMAGE_DIR = SIEGE_IMAGE_DIR / "enemies"
 BACKGROUND_DIR = SIEGE_IMAGE_DIR / "backgrounds"
 

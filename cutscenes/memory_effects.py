@@ -368,7 +368,9 @@ class PolaroidMemoryEffect:
     ) -> pygame.Surface:
         """모서리 들뜬 효과 이미지 로드 - 프레임(흰 테두리)에만 적용"""
         try:
-            flip_path = f"assets/story_mode/polaroids/{flip_file}"
+            # 에피소드 리소스 경로 사용
+            flip_path = f"assets/data/episodes/ep1/cutscene_images/{flip_file}"
+
             if Path(flip_path).exists():
                 img = pygame.image.load(flip_path).convert_alpha()
                 # 프레임 크기에 맞게 스케일링
@@ -678,10 +680,10 @@ class PolaroidMemoryEffect:
 
             path = CHARACTER_PORTRAITS.get(speaker)
         except ImportError:
-            # 폴백: 기본 경로
+            # 폴백: 에피소드 경로
             portrait_paths = {
-                "ARTEMIS": "assets/story_mode/portraits/portrait_artemis.jpg",
-                "PILOT": "assets/story_mode/portraits/portrait_pilot.png",
+                "ARTEMIS": "assets/data/episodes/ep1/portraits/portrait_artemis.jpg",
+                "PILOT": "assets/data/episodes/ep1/portraits/portrait_pilot.png",
             }
             path = portrait_paths.get(speaker)
 

@@ -160,10 +160,10 @@ class ReflectionMode(GameMode):
             self._create_gradient_background()
             return
 
-        # 여러 경로 시도
+        # 여러 경로 시도 (에피소드 시스템)
         paths = [
-            f"assets/story_mode/reflection/backgrounds/{bg_name}",
-            f"assets/story_mode/backgrounds/{bg_name}",
+            f"assets/data/episodes/ep1/backgrounds/reflection/{bg_name}",
+            f"assets/data/episodes/ep1/backgrounds/{bg_name}",
             f"assets/images/backgrounds/{bg_name}",
         ]
 
@@ -241,7 +241,7 @@ class ReflectionMode(GameMode):
         portrait_names = ["artemis", "pilot", "android"]
         for name in portrait_names:
             try:
-                path = f"assets/story_mode/portraits/portrait_{name}.png"
+                path = f"assets/data/episodes/ep1/portraits/portrait_{name}.png"
                 portrait = self.asset_manager.load_image(path)
                 if portrait:
                     # 크기 조정

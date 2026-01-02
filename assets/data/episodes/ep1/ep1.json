@@ -23,7 +23,7 @@
         },
         {
           "speaker": "ARTEMIS",
-          "text": "3년 만에 돌아온 고향이야. 어떤 모습일지..."
+          "text": "3년 만에 돌아온 고향이야. ..."
         }
       ]
     },
@@ -112,8 +112,8 @@
           "memory_survive.jpg"
         ],
         "special_effects": {
-          "memory_ufo.jpg": {"effect": "flicker_then_zoom"},
-          "memory_survive.jpg": {"effect": "fullscreen_fadeout"}
+          "memory_ufo.jpg": { "effect": "flicker_then_zoom" },
+          "memory_survive.jpg": { "effect": "fullscreen_fadeout" }
         }
       },
       "dialogues": [
@@ -207,14 +207,14 @@
   },
 
   "segments": [
-    {"type": "DIALOGUE", "scene": "briefing"},
-    {"type": "DIALOGUE", "scene": "opening"},
-    {"type": "COMBAT", "rounds": 3, "enemies": ["scout", "fighter"]},
-    {"type": "DIALOGUE", "scene": "mid_01"},
-    {"type": "CUTSCENE", "scene": "memory"},
-    {"type": "COMBAT", "rounds": 2, "boss": "shadow_scout"},
-    {"type": "DIALOGUE", "scene": "boss"},
-    {"type": "DIALOGUE", "scene": "boss_victory"},
-    {"type": "DIALOGUE", "scene": "ending"}
+    { "type": "DIALOGUE", "scene": "briefing" },
+    { "type": "DIALOGUE", "scene": "opening" },
+    { "type": "COMBAT", "rounds": 3, "enemies": ["scout", "fighter"] },
+    { "type": "DIALOGUE", "scene": "mid_01" },
+    { "type": "CUTSCENE", "scene": "memory" },
+    { "type": "COMBAT", "rounds": 2, "boss": "shadow_scout" },
+    { "type": "DIALOGUE", "scene": "boss" },
+    { "type": "DIALOGUE", "scene": "boss_victory" },
+    { "type": "DIALOGUE", "scene": "ending" }
   ]
 }
