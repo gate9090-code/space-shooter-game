@@ -209,7 +209,7 @@ class ArchiveMode(GameMode):
         """배경 렌더링 - facility_bg 이미지 사용"""
         # facility_bg 이미지 로드 시도
         if not hasattr(self, '_bg_image'):
-            bg_path = config.ASSET_DIR / "images" / "facilities" / "facility_bg.png"
+            bg_path = config.ASSET_DIR / "images" / "base" / "facilities" / "facility_bg.png"
             try:
                 if bg_path.exists():
                     self._bg_image = pygame.image.load(str(bg_path)).convert()

@@ -79,7 +79,8 @@
       "Bash(then echo \"✓ Episode background exists\")",
       "Bash(else echo \"✗ Missing\")",
       "Bash(if [ -d \"assets/modes/siege/enemies\" ])",
-      "Bash(then echo \"✓ Siege enemies folder exists\")"
+      "Bash(then echo \"✓ Siege enemies folder exists\")",
+      "Bash(timeout 12 python:*)"
     ],
     "deny": [],
     "ask": []

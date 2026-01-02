@@ -485,7 +485,7 @@ class EpisodeMode(GameMode):
             paths = [
                 f"assets/data/episodes/ep1/backgrounds/{bg_name}",
                 f"assets/data/episodes/ep1/backgrounds/reflection/{bg_name}",
-                f"assets/images/backgrounds/{bg_name}",
+                f"assets/backgrounds/{bg_name}",
             ]
 
             for path in paths:

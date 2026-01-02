@@ -191,7 +191,7 @@ class GameMode(ABC):
 
     def _load_base_cursor(self) -> pygame.Surface:
         """기지용 커스텀 커서 로드"""
-        cursor_path = config.ASSET_DIR / "images" / "items" / "mouse_action.png"
+        cursor_path = config.ASSET_DIR / "images" / "gameplay" / "collectibles" / "mouse_action.png"
         try:
             if cursor_path.exists():
                 cursor_img = pygame.image.load(str(cursor_path)).convert_alpha()

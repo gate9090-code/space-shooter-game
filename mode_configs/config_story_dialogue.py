@@ -46,11 +46,11 @@ CHARACTER_NAMES = {
     "NARRATOR": "",
 }
 
-# 캐릭터 초상화 경로
+# 캐릭터 초상화 경로 (Episode 시스템으로 이동)
 CHARACTER_PORTRAITS = {
-    "ARTEMIS": "assets/story_mode/portraits/portrait_artemis.png",
-    "PILOT": "assets/story_mode/portraits/portrait_pilot.png",
-    "NARRATOR": "assets/story_mode/portraits/portrait_android.png",  # 나레이터는 안드로이드 이미지 사용
+    "ARTEMIS": "assets/data/episodes/ep1/portraits/portrait_artemis.png",
+    "PILOT": "assets/data/episodes/ep1/portraits/portrait_pilot.png",
+    "NARRATOR": "assets/data/episodes/ep1/portraits/portrait_android.png",  # 나레이터는 안드로이드 이미지 사용
 }
 
 # =========================================================

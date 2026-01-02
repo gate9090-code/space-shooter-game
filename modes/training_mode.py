@@ -346,7 +346,7 @@ class TrainingMode(GameMode):
         """훈련장 배경 로드 - facility_bg 이미지 사용"""
         try:
             # facility_bg 이미지 로드 시도
-            bg_path = config.ASSET_DIR / "images" / "facilities" / "facility_bg.png"
+            bg_path = config.ASSET_DIR / "images" / "base" / "facilities" / "facility_bg.png"
             if bg_path.exists():
                 bg = pygame.image.load(str(bg_path)).convert()
                 return pygame.transform.smoothscale(bg, self.screen_size)

@@ -54,8 +54,8 @@ class MainMenuMode(GameMode):
         # 배경 이미지 경로 시도
         bg_paths = [
             Path("assets/images/ui/intro_start_01.png"),
-            Path("assets/images/backgrounds/bg_space.jpg"),
-            Path("assets/images/backgrounds/intro_bg.jpg"),
+            Path("assets/backgrounds/bg_space.jpg"),
+            Path("assets/backgrounds/intro_bg.jpg"),
         ]
 
         for bg_path in bg_paths:

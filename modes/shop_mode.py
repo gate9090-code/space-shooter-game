@@ -156,7 +156,7 @@ class ShopMode(GameMode):
     def _create_background(self) -> pygame.Surface:
         """배경 생성 - facility_bg 이미지 사용"""
         # facility_bg 이미지 로드 시도
-        bg_path = config.ASSET_DIR / "images" / "facilities" / "facility_bg.png"
+        bg_path = config.ASSET_DIR / "images" / "base" / "facilities" / "facility_bg.png"
         try:
             if bg_path.exists():
                 bg = pygame.image.load(str(bg_path)).convert()

@@ -352,7 +352,7 @@ class BaseHubMode(GameMode):
         self.particle_system = ParticleSystem(self.screen_size, count=25)
 
         # 플레어 시스템 초기화
-        flare_path = str(config.ASSET_DIR / "images" / "facilities" / "facility_flare.png")
+        flare_path = str(config.ASSET_DIR / "images" / "base" / "facilities" / "facility_flare.png")
         self.flare_system = FlareSystem(flare_path)
 
         # 우주모함 이미지
@@ -522,7 +522,7 @@ class BaseHubMode(GameMode):
 
     def _load_custom_cursor(self) -> Optional[pygame.Surface]:
         """커스텀 커서 이미지 로드"""
-        cursor_path = config.ASSET_DIR / "images" / "items" / "mouse_action.png"
+        cursor_path = config.ASSET_DIR / "images" / "gameplay" / "collectibles" / "mouse_action.png"
         try:
             if cursor_path.exists():
                 cursor_img = pygame.image.load(str(cursor_path)).convert_alpha()
@@ -536,7 +536,7 @@ class BaseHubMode(GameMode):
 
     def _load_facility_background(self) -> pygame.Surface:
         """facility_bg 이미지를 배경으로 로드"""
-        bg_path = config.ASSET_DIR / "images" / "facilities" / "facility_bg.png"
+        bg_path = config.ASSET_DIR / "images" / "base" / "facilities" / "facility_bg.png"
         try:
             if bg_path.exists():
                 img = pygame.image.load(str(bg_path)).convert()
@@ -551,13 +551,13 @@ class BaseHubMode(GameMode):
 
     def _load_carrier_image(self) -> Optional[pygame.Surface]:
         """우주모함 이미지 로드"""
-        # PNG 형식 우선
+        # PNG 형식 우선 (존재하는 파일만)
         bg_paths = [
             config.ASSET_DIR / "images" / "base" / "basehub_mother_01.png",
             config.ASSET_DIR / "images" / "base" / "carrier_bg.png",
-            config.ASSET_DIR / "images" / "base" / "basehub_bg_01.png",
             config.ASSET_DIR / "images" / "base" / "basehub_bg_0000.png",
             config.ASSET_DIR / "images" / "base" / "basehub_bg_02.png",
+            config.ASSET_DIR / "images" / "base" / "basehub_set_1.png",
         ]
 
         for bg_path in bg_paths:
@@ -650,8 +650,8 @@ class BaseHubMode(GameMode):
         """시설 내부 이미지 로드 (원형 썸네일용)"""
         # PNG 형식 우선
         image_paths = [
-            config.ASSET_DIR / "images" / "facilities" / f"facility_{facility_name}.png",
-            config.ASSET_DIR / "images" / "facilities" / f"facility_{facility_name}.jpg",
+            config.ASSET_DIR / "images" / "base" / "facilities" / f"facility_{facility_name}.png",
+            config.ASSET_DIR / "images" / "base" / "facilities" / f"facility_{facility_name}.jpg",
             config.ASSET_DIR / "images" / "base" / f"{facility_name}_interior.png",
             config.ASSET_DIR / "images" / "base" / f"{facility_name}_interior.jpg",
             config.ASSET_DIR / "images" / "base" / f"{facility_name}_bg.png",
