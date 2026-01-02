@@ -135,7 +135,6 @@ class TrainingSpawnManager:
                 chase_probability=1.0,
                 enemy_type=enemy_type,
             )
-            print(f"DEBUG: Enemy spawned at {pos}, type={enemy_type}")
             return enemy
         except Exception as e:
             import traceback

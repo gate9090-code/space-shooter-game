@@ -836,7 +836,6 @@ class GameMode(ABC):
         # 함선 타입 (shared_state에서 가져오거나 기본값 사용)
         if ship_type is None:
             ship_type = self.engine.shared_state.get("current_ship", config.DEFAULT_SHIP)
-            print(f"DEBUG: spawn_player - current_ship from shared_state: {ship_type}")
 
         self.player = Player(
             pos=pygame.math.Vector2(pos),

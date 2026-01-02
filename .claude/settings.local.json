@@ -82,7 +82,15 @@
       "Bash(then echo \"✓ Siege enemies folder exists\")",
       "Bash(timeout 12 python:*)",
       "Bash(if exist \"__pycache__\" rd /s /q \"__pycache__\")",
-      "Bash(xargs -0 rm:*)"
+      "Bash(xargs -0 rm:*)",
+      "Bash(git ls-tree:*)",
+      "Bash(git restore:*)",
+      "Bash(if exist \"assetsimagesgameplayplayerbomber_front.png\" del \"assetsimagesgameplayplayerbomber_front.png\")",
+      "Bash(if exist \"assetsimagesgameplayplayerfighter_front.png\" del \"assetsimagesgameplayplayerfighter_front.png\")",
+      "Bash(if exist \"assetsimagesgameplayplayerinterceptor_front.png\" del \"assetsimagesgameplayplayerinterceptor_front.png\")",
+      "Bash(if exist \"assetsimagesgameplayplayerstealth_front.png\" del \"assetsimagesgameplayplayerstealth_front.png\")",
+      "Bash(if exist \"assetsimagesgameplayplayertitan_front.png\" del \"assetsimagesgameplayplayertitan_front.png\")",
+      "Bash(if exist \"temp_old_hangar.txt\" del \"temp_old_hangar.txt\")"
     ],
     "deny": [],
     "ask": []

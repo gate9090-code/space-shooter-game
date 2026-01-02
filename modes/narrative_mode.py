@@ -457,7 +457,6 @@ class NarrativeMode(GameMode):
 
     def _init_voice_system(self):
         """음성 시스템 초기화"""
-        print("DEBUG: _init_voice_system called")
         try:
             from systems.voice_system import VoiceSystem, EdgeTTSAdapter, Pyttsx3Adapter, SilentAdapter
             from mode_configs import config_story_dialogue
@@ -466,10 +465,8 @@ class NarrativeMode(GameMode):
             voice_settings = config_story_dialogue.VOICE_SYSTEM_SETTINGS
             char_voice_settings = config_story_dialogue.CHARACTER_VOICE_SETTINGS
 
-            print(f"DEBUG: voice_settings enabled={voice_settings.get('enabled', False)}")
             if not voice_settings.get("enabled", False):
                 self.voice_system = None
-                print("DEBUG: Voice system disabled by config")
                 return
 
             # VoiceSystem 생성
@@ -1202,7 +1199,7 @@ class NarrativeMode(GameMode):
                     self._missing_portraits = set()
                 if portrait_key not in self._missing_portraits:
                     self._missing_portraits.add(portrait_key)
-                    print(f"DEBUG: Portrait not found for speaker '{portrait_key}'. Available: {list(self.portraits.keys())}")
+                    print(f"WARNING: Portrait not found for speaker '{portrait_key}'")
 
         # 타이핑 진행률 계산
         typing_progress = len(self.displayed_text) if self.displayed_text else 0
