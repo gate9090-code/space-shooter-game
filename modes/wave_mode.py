@@ -23,6 +23,7 @@ from entities.support_units import Drone, Turret
 # Effect and background classes
 from effects.transitions import ParallaxLayer, BackgroundTransition
 from effects.game_animations import Meteor
+from effects.physics_effects import WarpPortal, DepthEffect
 from cutscenes.combat_effects import CombatMotionEffect
 from asset_manager import AssetManager
 from game_logic import (
@@ -176,6 +177,12 @@ class WaveMode(GameMode):
 
         # 시각적 피드백 효과 (base_mode의 공통 메서드 사용)
         self._init_visual_feedback_effects()
+
+        # 워프 포탈 시스템
+        self.warp_portal: Optional[WarpPortal] = None
+        self.warp_active = False
+        self.warp_state = 'none'  # 'none', 'portal_opening', 'ship_warping', 'portal_closing'
+        self.warp_timer = 0.0
 
         # 전투 모션 효과 (고속 비행 연출)
         self.combat_motion_effect = CombatMotionEffect(self.screen_size)
@@ -631,6 +638,10 @@ class WaveMode(GameMode):
 
         self.combat_motion_effect.update(dt)
 
+        # 워프 포탈 시퀀스 업데이트
+        if self.warp_active:
+            self._update_warp_sequence(dt)
+
         # 웨이브 페이즈에 따른 처리
         wave_phase = self.game_data.get('wave_phase', 'normal')
 
@@ -708,12 +719,13 @@ class WaveMode(GameMode):
 
         elif wave_phase == 'victory_animation':
             # === 승리 애니메이션 페이즈 ===
-            # PlayerVictoryAnimation이 완료되면 레벨업 화면으로 전환
+            # PlayerVictoryAnimation이 완료되면 워프 포탈 생성
             if not self.game_data.get('victory_animation_active', False):
-                self.game_data["game_state"] = config.GAME_STATE_WAVE_CLEAR
+                # WAVE_CLEAR 화면 삭제 → 포탈 시퀀스 시작
+                self._start_warp_sequence()
                 self.game_data["wave_phase"] = 'normal'
                 self.sound_manager.play_sfx("wave_clear")
-                print(f"INFO: Wave {self.game_data['current_wave']} cleared! (all enemies defeated or retreated)")
+                print(f"INFO: Wave {self.game_data['current_wave']} cleared! Starting warp sequence...")
 
         # 스킬 패시브 업데이트
         self.skill_system.update_passive_skills(
@@ -839,6 +851,81 @@ class WaveMode(GameMode):
         self.effects.append(fireworks_effect)
         print(f"INFO: Fireworks effect added (boss={is_boss_wave}, wave={current_wave})")
 
+    def _start_warp_sequence(self):
+        """웨이브 클리어 후 워프 포탈 시퀀스 시작"""
+        # 보스 웨이브는 파란색, 일반 웨이브는 초록색
+        current_wave = self.game_data.get('current_wave', 1)
+        is_boss_wave = current_wave in config.BOSS_WAVES
+        color_scheme = "blue" if is_boss_wave else "green"
+
+        # 화면 중앙 상단에 포탈 생성
+        portal_x = self.screen_size[0] // 2
+        portal_y = 250
+
+        self.warp_portal = WarpPortal(
+            center=(portal_x, portal_y),
+            max_radius=180,
+            particle_count=70,
+            ring_count=4,
+            duration=0,  # 무한 지속 (수동 종료)
+            color_scheme=color_scheme
+        )
+
+        self.warp_active = True
+        self.warp_state = 'portal_opening'
+        self.warp_timer = 0.0
+
+        print(f"INFO: Warp portal created at ({portal_x}, {portal_y}) with color={color_scheme}")
+
+    def _update_warp_sequence(self, dt: float):
+        """워프 시퀀스 업데이트"""
+        if not self.warp_active or not self.warp_portal:
+            return
+
+        self.warp_timer += dt
+        self.warp_portal.update(dt)
+
+        if self.warp_state == 'portal_opening':
+            # 1초간 포탈 생성
+            if self.warp_timer >= 1.0:
+                self.warp_state = 'ship_warping'
+                self.warp_timer = 0.0
+                print("INFO: Portal opened, ship warping...")
+
+        elif self.warp_state == 'ship_warping':
+            # 우주선을 포탈로 끌어당김
+            if self.player:
+                new_pos = self.warp_portal.pull_object(
+                    (self.player.pos.x, self.player.pos.y),
+                    dt,
+                    pull_strength=200.0
+                )
+                self.player.pos.x = new_pos[0]
+                self.player.pos.y = new_pos[1]
+
+                # 포탈 중심 도달 체크
+                distance = ((self.warp_portal.center.x - self.player.pos.x)**2 +
+                           (self.warp_portal.center.y - self.player.pos.y)**2)**0.5
+
+                if distance < 40:
+                    self.warp_state = 'portal_closing'
+                    self.warp_timer = 0.0
+                    print("INFO: Ship entered portal, closing...")
+
+        elif self.warp_state == 'portal_closing':
+            # 0.5초 후 포탈 닫기 + 레벨업 화면 전환
+            if self.warp_timer >= 0.5:
+                self.warp_active = False
+                self.warp_portal = None
+
+                # 저장
+                self.save_progress()
+
+                # 레벨업 화면으로 전환 (WAVE_CLEAR 건너뛰기)
+                advance_to_next_wave(self.game_data, self.player, self.sound_manager)
+
+                print("INFO: Warp sequence completed, advancing to next wave...")
+
     def _check_game_over(self):
         """게임 오버 체크"""
         if not self.player:
@@ -956,6 +1043,10 @@ class WaveMode(GameMode):
         # 타겟 마커 렌더링 (적 위에 표시)
         self.render_target_marker(screen)
 
+        # 워프 포탈 렌더링 (게임 객체 위에)
+        if self.warp_portal:
+            self.warp_portal.draw(screen)
+
         # 상태별 오버레이
         self._render_overlay(screen)
 
@@ -1021,8 +1112,10 @@ class WaveMode(GameMode):
             draw_wave_prepare_screen(screen, self.screen_size,
                                     self.fonts["huge"], self.fonts["medium"], self.game_data)
         elif state == config.GAME_STATE_WAVE_CLEAR:
-            draw_wave_clear_screen(screen, self.screen_size,
-                                  self.fonts["huge"], self.fonts["medium"], self.game_data)
+            # 워프 포탈 활성화 시 WAVE_CLEAR 화면 표시 안 함
+            if not self.warp_active:
+                draw_wave_clear_screen(screen, self.screen_size,
+                                      self.fonts["huge"], self.fonts["medium"], self.game_data)
         elif state == config.GAME_STATE_VICTORY:
             fonts_dict = {"huge": self.fonts["huge"], "title": self.fonts["large"],
                          "medium": self.fonts["medium"], "small": self.fonts["small"]}
@@ -1056,7 +1149,9 @@ class WaveMode(GameMode):
         elif state == config.GAME_STATE_WAVE_PREPARE:
             self._handle_wave_prepare_event(event)
         elif state == config.GAME_STATE_WAVE_CLEAR:
-            self._handle_wave_clear_event(event)
+            # 워프 포탈 시퀀스가 진행 중이면 무시 (자동으로 처리됨)
+            if not self.warp_active:
+                self._handle_wave_clear_event(event)
         elif state == config.GAME_STATE_LEVEL_UP:
             self._handle_level_up_event(event)
         elif state == config.GAME_STATE_SHOP:
