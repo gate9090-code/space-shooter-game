@@ -45,7 +45,9 @@ class BriefingMode(GameMode):
     """
 
     # 에피소드 ID 목록 (순서대로)
-    EPISODE_IDS = ["ep1", "ep2", "ep3", "ep4", "ep5"]
+    # 두 개의 미션 라인
+    MAIN_CAMPAIGN_IDS = ["ep1", "ep2", "ep3", "ep4", "ep5"]
+    GALACTIC_WAR_IDS = ["gw_ep1", "gw_ep2", "gw_ep3", "gw_ep4", "gw_ep5"]
 
     def get_config(self) -> ModeConfig:
         return ModeConfig(
@@ -72,7 +74,7 @@ class BriefingMode(GameMode):
         self._load_campaign_progress()
 
         # UI 상태
-        self.selected_tab = "episode"  # episode, training
+        self.selected_tab = "main_campaign"  # main_campaign, galactic_war
         self.selected_episode: Optional[str] = None
         self.hovered_episode: Optional[str] = None
 
@@ -88,9 +90,10 @@ class BriefingMode(GameMode):
         self.animation_time = 0.0
         self.pulse_phase = 0.0
 
-        # 탭 데이터 (트레이닝은 별도 시설 아이콘으로 입장)
+        # 탭 데이터 - 두 개의 미션 라인
         self.tabs = [
-            TabData(id="episode", name="EPISODES", icon="★", color=(80, 160, 255)),
+            TabData(id="main_campaign", name="MAIN CAMPAIGN", icon="★", color=(80, 160, 255)),
+            TabData(id="galactic_war", name="GALACTIC WAR", icon="⚔", color=(255, 100, 100)),
         ]
         self.tab_states: Dict[str, TabState] = {tab.id: TabState() for tab in self.tabs}
         self.tab_rects: Dict[str, pygame.Rect] = {}
@@ -111,21 +114,22 @@ class BriefingMode(GameMode):
         # 다음 에피소드 자동 선택
         self._auto_select_next_episode()
 
-        # 커스텀 커서
-        self.custom_cursor = self._load_base_cursor()
-
-        # 기본 마우스 커서 숨김
-        if self.custom_cursor:
-            pygame.mouse.set_visible(False)
-
         print("INFO: BriefingMode initialized (Episode System)")
 
+    def _get_current_episode_ids(self) -> List[str]:
+        """현재 선택된 탭의 에피소드 ID 목록 반환"""
+        if self.selected_tab == "galactic_war":
+            return self.GALACTIC_WAR_IDS
+        else:
+            return self.MAIN_CAMPAIGN_IDS
+
     def _load_episodes_data(self):
-        """에피소드 데이터 로드"""
-        for ep_id in self.EPISODE_IDS:
+        """에피소드 데이터 로드 - 두 미션 라인 모두"""
+        for ep_id in self.MAIN_CAMPAIGN_IDS + self.GALACTIC_WAR_IDS:
             episode = get_episode(ep_id)
             if episode:
                 self.episodes_data[ep_id] = episode
+                print(f"DEBUG: Loaded episode {ep_id}: {episode.title}")
 
     def _create_background(self) -> pygame.Surface:
         """배경 생성"""
@@ -171,15 +175,16 @@ class BriefingMode(GameMode):
 
     def _auto_select_next_episode(self):
         """다음 에피소드 자동 선택"""
-        for ep_id in self.EPISODE_IDS:
+        episode_ids = self._get_current_episode_ids()
+        for ep_id in episode_ids:
             if ep_id not in self.completed_episodes:
                 if self._is_episode_available(ep_id):
                     self.selected_episode = ep_id
                     return
 
         # 모두 완료했으면 마지막 에피소드 선택
-        if self.EPISODE_IDS:
-            self.selected_episode = self.EPISODE_IDS[-1]
+        if episode_ids:
+            self.selected_episode = episode_ids[-1]
 
     def _is_episode_available(self, episode_id: str) -> bool:
         """에피소드 진행 가능 여부"""
@@ -188,20 +193,24 @@ class BriefingMode(GameMode):
             return False
 
         # 첫 번째 에피소드는 항상 가능
-        if episode_id == "ep1":
+        if episode_id in ["ep1", "gw_ep1"]:
             return True
 
         # 이전 에피소드가 완료되어야 함
-        episode_num = int(episode_id.replace("ep", ""))
-        prev_episode_id = f"ep{episode_num - 1}"
+        # ep2 → ep1, gw_ep2 → gw_ep1
+        if episode_id.startswith("gw_ep"):
+            episode_num = int(episode_id.replace("gw_ep", ""))
+            prev_episode_id = f"gw_ep{episode_num - 1}"
+        else:
+            episode_num = int(episode_id.replace("ep", ""))
+            prev_episode_id = f"ep{episode_num - 1}"
 
         return prev_episode_id in self.completed_episodes
 
     def _get_current_episodes(self) -> Dict[str, EpisodeData]:
         """현재 탭의 에피소드 목록"""
-        if self.selected_tab == "episode":
-            return self.episodes_data
-        return {}
+        episode_ids = self._get_current_episode_ids()
+        return {ep_id: self.episodes_data[ep_id] for ep_id in episode_ids if ep_id in self.episodes_data}
 
     def update(self, dt: float, current_time: float):
         """업데이트"""
@@ -268,9 +277,6 @@ class BriefingMode(GameMode):
         # 키보드 힌트
         self.ui_manager.render_keyboard_hints(screen, "Click Episode  |  Enter Launch  |  ESC Back")
 
-        # 커스텀 커서
-        self._render_base_cursor(screen, self.custom_cursor)
-
     def _get_tab_color(self) -> Tuple[int, int, int]:
         """현재 탭 색상"""
         for tab in self.tabs:
@@ -307,7 +313,8 @@ class BriefingMode(GameMode):
         clip_rect = pygame.Rect(panel_rect.x, card_start_y, panel_rect.width, visible_height)
         screen.set_clip(clip_rect)
 
-        for i, ep_id in enumerate(self.EPISODE_IDS):
+        episode_ids = self._get_current_episode_ids()
+        for i, ep_id in enumerate(episode_ids):
             episode = episodes.get(ep_id)
             if not episode:
                 continue
@@ -362,8 +369,12 @@ class BriefingMode(GameMode):
         hover_progress: float
     ):
         """에피소드 카드 렌더링 - Web Button 스타일"""
-        # Episode별 색상 (에피소드 번호 추출: ep1 -> 1)
-        episode_num = int(episode_id.replace("ep", ""))
+        # Episode별 색상 (에피소드 번호 추출: ep1 -> 1, gw_ep1 -> 1)
+        if episode_id.startswith("gw_ep"):
+            episode_num = int(episode_id.replace("gw_ep", ""))
+        else:
+            episode_num = int(episode_id.replace("ep", ""))
+
         episode_colors = {
             1: (80, 160, 255),   # 파랑
             2: (80, 200, 140),   # 녹색
@@ -518,10 +529,15 @@ class BriefingMode(GameMode):
 
         # 에피소드 정보
         # 에피소드 번호 추출
-        episode_num = int(self.selected_episode.replace("ep", ""))
+        if self.selected_episode.startswith("gw_ep"):
+            episode_num = int(self.selected_episode.replace("gw_ep", ""))
+            series_name = "Galactic War"
+        else:
+            episode_num = int(self.selected_episode.replace("ep", ""))
+            series_name = "Episode"
 
         # 제목
-        title_text = f"Episode {episode_num}: {episode.title}"
+        title_text = f"{series_name} {episode_num}: {episode.title}"
         title_surf = self.fonts["medium"].render(title_text, True, (255, 255, 255))
         screen.blit(title_surf, (detail_rect.x + 20, detail_rect.y + 15))
 
@@ -582,8 +598,8 @@ class BriefingMode(GameMode):
                 if rect.collidepoint(mouse_pos):
                     self.selected_tab = tab_id
                     self.scroll_offset = 0
-                    if tab_id == "episode":
-                        self._auto_select_next_episode()
+                    # 탭 변경 시 해당 미션 라인의 첫 번째 에피소드 자동 선택
+                    self._auto_select_next_episode()
                     if hasattr(self, 'sound_manager') and self.sound_manager:
                         self.sound_manager.play_sfx("click")
                     return
@@ -647,12 +663,8 @@ class BriefingMode(GameMode):
         # 진행 상황 다시 로드
         self._load_campaign_progress()
         self._auto_select_next_episode()
-        if self.custom_cursor:
-            self._enable_custom_cursor()
 
     def on_exit(self):
-        # 커서는 다음 모드에서 설정 (딜레이 방지)
-        # self._disable_custom_cursor()
         super().on_exit()
 
 

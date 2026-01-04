@@ -129,9 +129,6 @@ class ArchiveMode(GameMode):
         self.item_rects: List[pygame.Rect] = []
         self.category_rects: Dict[str, pygame.Rect] = {}
 
-        # 커스텀 커서
-        self.custom_cursor = self._load_base_cursor()
-
         if self.DEV_MODE:
             print("INFO: ArchiveMode DEV_MODE enabled - all dialogues unlocked")
         print("INFO: ArchiveMode initialized")
@@ -201,9 +198,6 @@ class ArchiveMode(GameMode):
             fade_surf = pygame.Surface(self.screen_size, pygame.SRCALPHA)
             fade_surf.fill((0, 0, 0, int(self.fade_alpha)))
             screen.blit(fade_surf, (0, 0))
-
-        # 커스텀 커서
-        self._render_base_cursor(screen, self.custom_cursor)
 
     def _render_background(self, screen: pygame.Surface):
         """배경 렌더링 - facility_bg 이미지 사용"""
@@ -587,20 +581,13 @@ class ArchiveMode(GameMode):
 
     def on_enter(self):
         super().on_enter()
-        if self.custom_cursor:
-            self._enable_custom_cursor()
 
     def on_exit(self):
-        self._disable_custom_cursor()
         super().on_exit()
 
     def on_resume(self, return_data=None):
         """ReflectionMode에서 복귀 시"""
         super().on_resume(return_data)
-
-        # 커스텀 커서 복원
-        if self.custom_cursor:
-            self._enable_custom_cursor()
 
         # 상태 갱신
         self.seen_reflections = self.engine.shared_state.get('seen_reflections', [])

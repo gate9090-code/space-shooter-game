@@ -176,9 +176,6 @@ class HangarMode(GameMode):
         self.equip_rect: Optional[pygame.Rect] = None
         self.equip_hover: bool = False
 
-        # 커스텀 커서
-        self.custom_cursor = self._load_base_cursor()
-
         print("INFO: HangarMode initialized (Gallery Style)")
 
     def _create_background(self) -> pygame.Surface:
@@ -319,9 +316,6 @@ class HangarMode(GameMode):
 
         # 키보드 힌트
         self._render_keyboard_hints(screen)
-
-        # 커스텀 커서
-        self._render_base_cursor(screen, self.custom_cursor)
 
     def _render_title(self, screen: pygame.Surface):
         """타이틀 렌더링"""
@@ -689,15 +683,12 @@ class HangarMode(GameMode):
 
     def on_enter(self):
         super().on_enter()
-        if self.custom_cursor:
-            self._enable_custom_cursor()
 
     def on_exit(self):
         self.engine.shared_state['global_score'] = self.credits
         self.engine.shared_state['owned_ships'] = self.owned_ships
         self.engine.shared_state['current_ship'] = self.selected_ship
         self.engine.save_shared_state()
-        self._disable_custom_cursor()
         super().on_exit()
 
 

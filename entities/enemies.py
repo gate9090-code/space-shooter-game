@@ -48,13 +48,25 @@ class Enemy:
         size_ratio = config.IMAGE_SIZE_RATIOS["ENEMY"]
         image_size = int(screen_height * size_ratio * self.type_config["size_mult"])
 
-        # 이미지 로드 및 색상 tint 적용
-        original_image = AssetManager.get_image(
-            config.ENEMY_SHIP_IMAGE_PATH, (image_size, image_size)
-        )
-        self.color = self.type_config["color_tint"]  # 사망 효과용 색상 저장
-        self.size = image_size // 2  # 사망 효과용 크기 저장 (반지름)
-        self.image = self._apply_color_tint(original_image, self.color)
+        # 커스텀 이미지 사용 여부 확인
+        use_custom_image = self.type_config.get("use_custom_image", False)
+        if use_custom_image:
+            # 블루 드래곤 같은 커스텀 이미지
+            custom_image_name = self.type_config.get("image", "enemy_ship.png")
+            custom_image_path = config.ASSET_DIR / "images" / "gameplay" / "enemies" / custom_image_name
+            original_image = AssetManager.get_image(custom_image_path, (image_size, image_size))
+            self.color = self.type_config["color_tint"]  # 사망 효과용 색상 저장
+            self.size = image_size // 2  # 사망 효과용 크기 저장 (반지름)
+            self.image = original_image  # 커스텀 이미지는 tint 적용 안함
+        else:
+            # 기존 일반 이미지 로드 및 색상 tint 적용
+            original_image = AssetManager.get_image(
+                config.ENEMY_SHIP_IMAGE_PATH, (image_size, image_size)
+            )
+            self.color = self.type_config["color_tint"]  # 사망 효과용 색상 저장
+            self.size = image_size // 2  # 사망 효과용 크기 저장 (반지름)
+            self.image = self._apply_color_tint(original_image, self.color)
+
         self.image_rect = self.image.get_rect(center=(self.pos.x, self.pos.y))
 
         hitbox_size = int(image_size * config.ENEMY_HITBOX_RATIO)
@@ -62,7 +74,12 @@ class Enemy:
         self.hitbox.center = (int(self.pos.x), int(self.pos.y))
 
         self.is_alive = True
-        self.is_boss = False  # 보스 여부
+        self.is_boss = self.type_config.get("is_boss", False)  # 보스 여부
+
+        # 회전 관련 속성 (블루 드래곤용)
+        self.use_rotation = self.type_config.get("use_rotation", False)
+        self.angle = 0.0  # 현재 회전 각도
+        self.velocity = pygame.math.Vector2(0, 0)  # 이동 속도 벡터 (회전 계산용)
 
         # 4. 히트 플래시 효과 속성
         self.hit_flash_timer = 0.0
@@ -71,14 +88,19 @@ class Enemy:
 
         # 4-1. 플레이어 접촉 시 화상 이미지
         self.is_burning = False  # 플레이어와 접촉 중 여부
-        # Burn 이미지를 10% 작게 표시
-        burn_size = int(image_size * 0.9)
-        burn_image = AssetManager.get_image(
-            config.ENEMY_SHIP_BURN_IMAGE_PATH,
-            (burn_size, burn_size),
-        )
-        # 화상 이미지는 불꽃 효과이므로 색상 tint를 적용하지 않음 (원본 그대로 사용)
-        self.burn_image = burn_image
+
+        # 커스텀 이미지는 burn 이미지 사용 안함 (원본 이미지 그대로 표시)
+        if use_custom_image:
+            self.burn_image = self.image  # 커스텀 이미지는 burn 효과 없이 원본 표시
+        else:
+            # Burn 이미지를 10% 작게 표시
+            burn_size = int(image_size * 0.9)
+            burn_image = AssetManager.get_image(
+                config.ENEMY_SHIP_BURN_IMAGE_PATH,
+                (burn_size, burn_size),
+            )
+            # 화상 이미지는 불꽃 효과이므로 색상 tint를 적용하지 않음 (원본 그대로 사용)
+            self.burn_image = burn_image
 
         # 5. 속성 스킬 상태 이펙트
         self.is_frozen = False  # 완전 동결 상태
@@ -105,6 +127,11 @@ class Enemy:
         self.explode_on_contact = self.type_config.get("explode_on_contact", False)
         self.explosion_damage = self.type_config.get("explosion_damage", 0.0)
         self.explosion_radius = self.type_config.get("explosion_radius", 0)
+
+        # 8. BURN_ATTACK 패턴 (보스급 적용)
+        self.has_burn_attack = self.type_config.get("has_burn_attack", False)
+        self.last_burn_attack_time = 0.0
+        self.burn_projectiles = []  # 발사된 burn 발사체 리스트
         self.has_exploded = False  # 자폭 여부 (한 번만 폭발)
 
         # 8. 웨이브 전환 AI 모드
@@ -135,9 +162,22 @@ class Enemy:
         return tinted
 
     def move_towards_player(
-        self, player_pos: pygame.math.Vector2, dt: float, other_enemies: list = None
+        self, player_pos: pygame.math.Vector2, dt: float, other_enemies: list = None, current_time: float = 0.0, screen_size: tuple = None
     ):
         """플레이어를 향해 이동하되, 다른 적들과 거리를 유지하고 포위 공격합니다."""
+
+        # BURN_ATTACK 패턴 (보스급 적용)
+        if hasattr(self, 'has_burn_attack') and self.has_burn_attack and hasattr(self, 'burn_projectiles'):
+            burn_settings = config.BOSS_PATTERN_SETTINGS["BURN_ATTACK"]
+            if current_time - self.last_burn_attack_time >= burn_settings["fire_interval"]:
+                self._fire_burn_projectiles()
+                self.last_burn_attack_time = current_time
+
+            # Burn 발사체 업데이트
+            for proj in self.burn_projectiles[:]:
+                proj.update(dt, screen_size)
+                if not proj.is_alive:
+                    self.burn_projectiles.remove(proj)
 
         direction = player_pos - self.pos
         distance_to_player = direction.length()
@@ -224,7 +264,13 @@ class Enemy:
             if final_direction.length_squared() > 0:
                 final_direction = final_direction.normalize()
 
-            self.pos += final_direction * self.speed * dt
+            # 이동 속도 벡터 계산 (회전용)
+            movement = final_direction * self.speed * dt
+            self.pos += movement
+
+            # 회전 사용 시 velocity 업데이트 (초당 픽셀)
+            if self.use_rotation:
+                self.velocity = final_direction * self.speed
 
             # rect 및 hitbox 위치 업데이트
             self.image_rect.center = (int(self.pos.x), int(self.pos.y))
@@ -312,7 +358,7 @@ class Enemy:
             # 추적 확률에 따라 플레이어를 추적할지 결정
             if random.random() < self.chase_probability:
                 # 플레이어를 추적 (다른 적들 정보 전달)
-                self.move_towards_player(player_pos, dt, other_enemies)
+                self.move_towards_player(player_pos, dt, other_enemies, current_time, screen_size)
             else:
                 # 방황 모드: 랜덤 방향으로 이동
                 self.wander_timer += dt
@@ -409,6 +455,13 @@ class Enemy:
         # 원근감 스케일 계산
         perspective_scale = self._calculate_perspective_scale(screen.get_height())
 
+        # 회전 각도 계산 (블루 드래곤용)
+        if self.use_rotation and self.velocity.length_squared() > 0:
+            # atan2로 이동 방향 계산
+            angle_rad = math.atan2(self.velocity.y, self.velocity.x)
+            # 이미지 머리가 위쪽(0도)을 향하므로 90도 보정
+            self.angle = math.degrees(angle_rad) + 90
+
         # 이미지 선택 우선순위: 화상 > 히트 플래시 > 동결 > 기본
         if self.is_burning:
             # 플레이어와 접촉 중 - 화상 이미지 사용
@@ -431,6 +484,10 @@ class Enemy:
             # 기본 이미지
             current_image = self.image
 
+        # 회전 적용 (블루 드래곤용)
+        if self.use_rotation:
+            current_image = pygame.transform.rotate(current_image, -self.angle)
+
         # 원근감 적용된 이미지 생성
         if (
             config.PERSPECTIVE_ENABLED
@@ -447,7 +504,7 @@ class Enemy:
             scaled_rect = scaled_image.get_rect(center=self.image_rect.center)
         else:
             scaled_image = current_image
-            scaled_rect = self.image_rect
+            scaled_rect = current_image.get_rect(center=self.image_rect.center)
 
         # 상태 이펙트 시각 효과 (이미지 뒤에 광선 효과)
         if self.is_frozen:
@@ -466,6 +523,11 @@ class Enemy:
 
         # 체력 바 그리기
         self.draw_health_bar(screen, perspective_scale)
+
+        # Burn 발사체 그리기 (보스급 적용)
+        if hasattr(self, 'has_burn_attack') and self.has_burn_attack:
+            for proj in self.burn_projectiles:
+                proj.draw(screen)
 
     def draw_health_bar(self, screen: pygame.Surface, perspective_scale: float = 1.0):
         """적의 현재 체력을 이미지 위에 작은 바로 표시합니다."""
@@ -540,6 +602,28 @@ class Enemy:
                 )
                 glow_rect = glow_surf.get_rect(center=self.image_rect.center)
                 screen.blit(glow_surf, glow_rect)
+
+    def _fire_burn_projectiles(self):
+        """Burn 발사체를 사방으로 발사합니다. (Enemy 클래스용)"""
+        burn_settings = config.BOSS_PATTERN_SETTINGS["BURN_ATTACK"]
+        projectile_count = burn_settings["projectile_count"]
+
+        # 8방향으로 균등하게 발사
+        for i in range(projectile_count):
+            angle = (2 * math.pi / projectile_count) * i
+            direction = pygame.math.Vector2(math.cos(angle), math.sin(angle))
+
+            projectile = BurnProjectile(self.pos.copy(), direction)
+            self.burn_projectiles.append(projectile)
+
+    def check_burn_collision_with_player(self, player) -> float:
+        """모든 Burn 발사체와 플레이어의 충돌을 검사하고 총 데미지를 반환합니다. (Enemy 클래스용)"""
+        total_damage = 0.0
+        for proj in self.burn_projectiles[:]:
+            if proj.check_collision_with_player(player):
+                total_damage += proj.damage
+                proj.is_alive = False  # 충돌한 발사체 제거
+        return total_damage
 
 
 class Boss(Enemy):
@@ -622,6 +706,11 @@ class Boss(Enemy):
 
         # 7. 포위 공격용 고유 ID
         self.enemy_id = id(self)
+
+        # 7.5. 회전 관련 속성 (Enemy와 동일하게 추가)
+        self.use_rotation = False  # 보스는 기본적으로 회전 안함
+        self.angle = 0.0
+        self.velocity = pygame.math.Vector2(0, 0)
 
         # 8. 보스 패턴 시스템
         self.current_phase = 0  # 현재 페이즈 (0, 1, 2)
@@ -720,7 +809,7 @@ class Boss(Enemy):
             self._update_circle_strafe(player_pos, dt)
         else:
             # 기본 추적 (Enemy의 move_towards_player 사용)
-            super().move_towards_player(player_pos, dt, other_enemies)
+            super().move_towards_player(player_pos, dt, other_enemies, current_time, screen_size)
 
         # 히트 플래시 타이머 업데이트
         if self.is_flashing:

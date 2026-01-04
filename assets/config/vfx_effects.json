@@ -1,0 +1,105 @@
+{
+  "_comment": "VFX 효과 설정 - 이미지만 교체하면 다양한 효과 생성 가능",
+
+  "hit_effects": {
+    "normal": {
+      "image": "assets/images/vfx/combat/purse_ring_effect.png",
+      "max_size": 240,
+      "duration": 0.8,
+      "color_tint": [255, 255, 255],
+      "wave_count": 3,
+      "wave_interval": 0.1,
+      "description": "기본 총알 적중 효과 (흰색 링)"
+    },
+    "fire": {
+      "image": "assets/images/vfx/combat/purse_ring_effect.png",
+      "max_size": 280,
+      "duration": 1.0,
+      "color_tint": [255, 100, 50],
+      "wave_count": 5,
+      "wave_interval": 0.08,
+      "description": "불 속성 효과 (주황색 틴트)"
+    },
+    "ice": {
+      "image": "assets/images/vfx/combat/purse_ring_effect.png",
+      "max_size": 220,
+      "duration": 0.7,
+      "color_tint": [100, 200, 255],
+      "wave_count": 4,
+      "wave_interval": 0.12,
+      "description": "얼음 속성 효과 (파란색 틴트)"
+    },
+    "electric": {
+      "image": "assets/images/vfx/combat/purse_ring_effect.png",
+      "max_size": 200,
+      "duration": 0.5,
+      "color_tint": [200, 200, 255],
+      "wave_count": 6,
+      "wave_interval": 0.05,
+      "description": "전기 속성 효과 (빠른 다중 파동)"
+    },
+    "poison": {
+      "image": "assets/images/vfx/combat/purse_ring_effect.png",
+      "max_size": 260,
+      "duration": 1.2,
+      "color_tint": [100, 255, 100],
+      "wave_count": 3,
+      "wave_interval": 0.15,
+      "description": "독 속성 효과 (초록색 틴트)"
+    }
+  },
+
+  "critical_effects": {
+    "default": {
+      "image": "assets/images/vfx/combat/purse_ring_effect.png",
+      "max_size": 320,
+      "duration": 0.6,
+      "color_tint": [255, 255, 100],
+      "wave_count": 2,
+      "wave_interval": 0.05,
+      "description": "크리티컬 히트 효과 (노란색, 큰 크기)"
+    }
+  },
+
+  "boss_effects": {
+    "hit": {
+      "image": "assets/images/vfx/combat/purse_ring_effect.png",
+      "max_size": 350,
+      "duration": 1.0,
+      "color_tint": [255, 150, 255],
+      "wave_count": 7,
+      "wave_interval": 0.1,
+      "description": "보스 피격 효과 (보라색, 매우 큰 크기)"
+    },
+    "death": {
+      "image": "assets/images/vfx/combat/purse_ring_effect.png",
+      "max_size": 500,
+      "duration": 1.5,
+      "color_tint": [255, 50, 50],
+      "wave_count": 10,
+      "wave_interval": 0.08,
+      "description": "보스 사망 효과 (빨간색, 거대)"
+    }
+  },
+
+  "skill_effects": {
+    "meteor": {
+      "image": "assets/images/vfx/combat/purse_ring_effect.png",
+      "max_size": 400,
+      "duration": 0.8,
+      "color_tint": [255, 150, 0],
+      "wave_count": 8,
+      "wave_interval": 0.06,
+      "description": "메테오 스킬 효과"
+    },
+    "heal": {
+      "image": "assets/images/vfx/combat/purse_ring_effect.png",
+      "max_size": 180,
+      "duration": 1.0,
+      "color_tint": [150, 255, 150],
+      "wave_count": 4,
+      "wave_interval": 0.2,
+      "description": "힐링 효과 (부드러운 초록색)"
+    }
+  }
+}

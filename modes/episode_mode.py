@@ -110,9 +110,6 @@ class EpisodeMode(GameMode):
         # 첫 Segment 시작 플래그 (인트로 동영상이 없거나 완료 후 시작)
         self._needs_first_segment_start = not self.intro_video_playing
 
-        # 커스텀 커서
-        self.custom_cursor = self._load_base_cursor()
-
     def _check_and_load_intro_video(self):
         """에피소드 인트로 동영상 체크 및 로드"""
         # 에피소드 ID로 인트로 동영상 경로 확인
@@ -279,11 +276,8 @@ class EpisodeMode(GameMode):
         self.video_fade_alpha = 0
         self.frame_surface = None
 
-        # 마우스 커서 복원 (커스텀 커서가 있으면 계속 숨김)
-        if self.custom_cursor:
-            pygame.mouse.set_visible(False)
-        else:
-            pygame.mouse.set_visible(True)
+        # 마우스 커서 복원
+        pygame.mouse.set_visible(True)
 
         # 첫 세그먼트 시작 플래그 설정
         self._needs_first_segment_start = True
@@ -739,9 +733,6 @@ class EpisodeMode(GameMode):
             fade_surf.fill((0, 0, 0, self.fade_alpha))
             screen.blit(fade_surf, (0, 0))
 
-        # 커스텀 커서
-        self._render_base_cursor(screen, self.custom_cursor)
-
     def handle_event(self, event: pygame.event.Event):
         """이벤트 처리"""
         # 인트로 동영상 재생 중 스킵 처리
@@ -832,8 +823,6 @@ class EpisodeMode(GameMode):
 
     def on_enter(self):
         super().on_enter()
-        if self.custom_cursor:
-            self._enable_custom_cursor()
 
     def on_exit(self):
         # 비디오 리소스 정리
@@ -841,7 +830,6 @@ class EpisodeMode(GameMode):
             self.video_capture.release()
             self.video_capture = None
 
-        self._disable_custom_cursor()
         super().on_exit()
 
 

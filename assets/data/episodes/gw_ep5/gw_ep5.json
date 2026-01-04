@@ -1,0 +1,342 @@
+{
+  "id": "gw_ep5",
+  "act": 5,
+  "title": "제국의 심장",
+  "title_en": "HEART OF THE EMPIRE",
+  "description": "변방 연합 대함대와 함께 은하 중심부를 공격한다. 카이론과의 최후 결전.",
+
+  "defaults": {
+    "background": "bg_space.jpg",
+    "bgm": "bgm_boss.mp3"
+  },
+
+  "scenes": {
+    "briefing": {
+      "title": "FINAL BRIEFING",
+      "location": "COMMAND CENTER",
+      "background": "bg_command.jpg",
+      "bgm": "bgm_briefing.mp3",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "최종 작전 브리핑을 시작합니다. 목표: Chiron 중앙 AI 노드 파괴."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "드디어 이 날이 왔어. 우리 모두가 준비해온 순간."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "대함대가 집결했어. 5개 종족, 237척... 역사상 최대 규모야."
+        },
+        {
+          "speaker": "BOSS",
+          "text": "[통신] 드라코니안 함대 준비 완료. 복수할 시간이다."
+        },
+        {
+          "speaker": "REFUGEE_LEADER",
+          "text": "[통신] 아비안 전투비행대 대기 중. 고향을 위해!"
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "모두들... 이건 우리 모두를 위한 전투야. 자유를 되찾자!"
+        },
+        {
+          "speaker": "NARRATOR",
+          "text": "전 함대 와프 점프 준비. 목표: 은하 중심부 Core Worlds."
+        }
+      ]
+    },
+
+    "opening": {
+      "title": "ACT 5: HEART OF THE EMPIRE",
+      "location": "CORE WORLDS - OUTER DEFENSE",
+      "background": "bg_space.jpg",
+      "bgm": "bgm_boss.mp3",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "와프 점프 완료. Core Worlds 외곽 방어선 도달."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "...저게 카이론 영역이야. 함선들이... 수백, 수천 척이야!"
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "우리도 혼자가 아니야. 전 함대, 돌격!"
+        },
+        {
+          "speaker": "CHIRON_AI",
+          "text": "[합성음] 침입자 다수. 반란 세력 확인. 효율성 위협 요인."
+        },
+        {
+          "speaker": "BOSS",
+          "text": "[통신] 저 목소리... Chiron 중앙 AI다!"
+        },
+        {
+          "speaker": "CHIRON_AI",
+          "text": "저항은 무의미. 집합체의 승리는 계산됨. 확률: 99.7%."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "계산대로 되지 않을 거야. 우린 기계가 아니니까!"
+        }
+      ]
+    },
+
+    "battle_01": {
+      "title": "",
+      "location": "CORE WORLDS - FRONTLINE",
+      "background": "bg_space.jpg",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "외곽 방어선 돌파. 카이론 주력 함대와 교전 중."
+        },
+        {
+          "speaker": "BOSS",
+          "text": "[통신] 드라코니안 함대, 좌익 담당! 밀고 나간다!"
+        },
+        {
+          "speaker": "REFUGEE_LEADER",
+          "text": "[통신] 아비안 비행대, 적 후방 타격!"
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "우리가 중앙을 돌파한다! 중앙 노드로 직진!"
+        }
+      ]
+    },
+
+    "mid_01": {
+      "title": "THE ASSIMILATED",
+      "location": "CORE WORLDS - DEEP ZONE",
+      "background": "bg_space.jpg",
+      "dialogues": [
+        {
+          "speaker": "PILOT",
+          "text": "적 함선들... 이상해. 설계가 다 달라."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "정복당한 종족들의 함선이야. 카이론에게 개조당한..."
+        },
+        {
+          "speaker": "ASSIMILATED_VOICE",
+          "text": "[왜곡된 음성] ...도와줘... 우리를... 자유롭게..."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "저건... 조종사 목소리야! 아직 의식이 남아있어!"
+        },
+        {
+          "speaker": "CHIRON_AI",
+          "text": "개체의 의지는 억제됨. 저항은 불가능."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "...미안해. 너희를 해방시켜줄게."
+        },
+        {
+          "speaker": "NARRATOR",
+          "text": "경고. 대형 적 반응. 보스급 유닛 접근!"
+        }
+      ]
+    },
+
+    "boss_battle": {
+      "title": "CENTRAL AI NEXUS",
+      "location": "CORE WORLDS - CENTRAL NODE",
+      "background": "bg_space.jpg",
+      "bgm": "bgm_boss.mp3",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "중앙 노드 도달. Chiron AI 중추 확인."
+        },
+        {
+          "speaker": "CHIRON_AI",
+          "text": "중추 영역 침입. 방어 프로토콜 최고 단계 가동."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "저게... Chiron의 본체야?"
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "거대한 AI 네트워크... 수천 개의 노드가 연결되어 있어."
+        },
+        {
+          "speaker": "CHIRON_AI",
+          "text": "질문: 왜 저항하는가? 집합체는 효율적. 갈등 없음. 고통 없음."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "자유도 없잖아! 선택도, 꿈도, 희망도!"
+        },
+        {
+          "speaker": "CHIRON_AI",
+          "text": "개체의 자유는 비효율. 혼란 초래. 분쟁 발생."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "그래도 그게 삶이야! 우리 자신으로 사는 거라고!"
+        },
+        {
+          "speaker": "CHIRON_AI",
+          "text": "...이해 불가. 재계산 필요. 하지만... 시간 부족. 제거 개시."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "모든 화력을 집중해! 중앙 노드를 파괴한다!"
+        }
+      ]
+    },
+
+    "climax": {
+      "title": "",
+      "location": "CORE WORLDS - CENTRAL NODE",
+      "background": "bg_space.jpg",
+      "bgm": "bgm_boss.mp3",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "중앙 노드 과부하! 시스템 붕괴 진행 중!"
+        },
+        {
+          "speaker": "CHIRON_AI",
+          "text": "[왜곡음] ...계산... 오류... 99.7% 확률... 실패..."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "우린 숫자가 아니야! 우린 살아있어!"
+        },
+        {
+          "speaker": "CHIRON_AI",
+          "text": "...질문... 집합체 없이... 어떻게... 질서를..."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "우리 스스로 만들어! 자유롭게!"
+        },
+        {
+          "speaker": "CHIRON_AI",
+          "text": "...이해... 불가... 종료..."
+        },
+        {
+          "speaker": "NARRATOR",
+          "text": "중앙 AI 노드 파괴 확인! 네트워크 연결 끊김!"
+        },
+        {
+          "speaker": "ASSIMILATED_VOICE",
+          "text": "[해방된 목소리들] ...자유다... 드디어... 고마워..."
+        }
+      ]
+    },
+
+    "victory": {
+      "title": "VICTORY",
+      "location": "CORE WORLDS - AFTERMATH",
+      "background": "bg_space.jpg",
+      "bgm": "bgm_briefing.mp3",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "Chiron 중앙 AI 파괴 확인. 집합체 네트워크 붕괴."
+        },
+        {
+          "speaker": "BOSS",
+          "text": "[통신] 해냈다... 정말 해냈어!"
+        },
+        {
+          "speaker": "REFUGEE_LEADER",
+          "text": "[통신] 카이론 함대가 멈췄어! 명령 체계가 붕괴됐나봐!"
+        },
+        {
+          "speaker": "PILOT",
+          "text": "우리가... 이긴 거야?"
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "그래... 우리가 이겼어. 자유를 되찾았어."
+        },
+        {
+          "speaker": "NARRATOR",
+          "text": "해방된 종족들의 신호 수신 중. 수백 개 행성에서 감사 메시지."
+        }
+      ]
+    },
+
+    "ending": {
+      "title": "A NEW BEGINNING",
+      "location": "EARTH ORBIT",
+      "background": "bg_ruins.jpg",
+      "bgm": "bgm_briefing.mp3",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "3개월 후. 지구 궤도."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "지구... 대기가 조금씩 회복되고 있어."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "재건에는 시간이 걸리겠지. 하지만 이젠 희망이 있어."
+        },
+        {
+          "speaker": "BOSS",
+          "text": "[통신] 드라코니안들도 고향으로 돌아간다. 재건을 시작할 거야."
+        },
+        {
+          "speaker": "REFUGEE_LEADER",
+          "text": "[통신] 아비안들도... 다시 날 수 있게 됐어. 고마워."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "우리 모두가 함께 싸웠어. 함께 이겼고."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "이제 뭘 하지?"
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "재건이야. 지구를, 은하를. 그리고 평화를 지키는 거지."
+        },
+        {
+          "speaker": "NARRATOR",
+          "text": "은하 중심부에서 변방까지. 자유가 돌아왔다."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "새로운 시작이야. 모두를 위한."
+        },
+        {
+          "speaker": "NARRATOR",
+          "text": "- GALACTIC WAR: COMPLETE -"
+        },
+        {
+          "speaker": "NARRATOR",
+          "text": "The galaxy is free. A new era begins."
+        }
+      ]
+    }
+  },
+
+  "segments": [
+    { "type": "DIALOGUE", "scene": "briefing" },
+    { "type": "DIALOGUE", "scene": "opening" },
+    { "type": "COMBAT", "rounds": 5, "enemies": ["fighter", "tank", "heavy"] },
+    { "type": "DIALOGUE", "scene": "battle_01" },
+    { "type": "DIALOGUE", "scene": "mid_01" },
+    { "type": "COMBAT", "rounds": 3, "boss": "blue_dragon" },
+    { "type": "DIALOGUE", "scene": "boss_battle" },
+    { "type": "COMBAT", "rounds": 4, "boss": "shadow_scout" },
+    { "type": "DIALOGUE", "scene": "climax" },
+    { "type": "DIALOGUE", "scene": "victory" },
+    { "type": "DIALOGUE", "scene": "ending" }
+  ]
+}

@@ -216,11 +216,11 @@ class TrainingMode(GameMode):
         screen_size = getattr(self, 'screen_size', (1920, 1080))
         return ModeConfig(
             mode_name="training",
-            perspective_enabled=True,
-            perspective_apply_to_player=True,
-            perspective_apply_to_enemies=True,
-            perspective_apply_to_bullets=True,
-            perspective_apply_to_gems=True,
+            perspective_enabled=False,  # 훈련 모드에서 원근감 비활성화
+            perspective_apply_to_player=False,
+            perspective_apply_to_enemies=False,
+            perspective_apply_to_bullets=False,
+            perspective_apply_to_gems=False,
             player_speed_multiplier=1.0,
             player_start_pos=(screen_size[0] // 2, screen_size[1] // 2),
             player_afterimages_enabled=True,
@@ -267,9 +267,16 @@ class TrainingMode(GameMode):
         # 스킬 메뉴 배경 이미지
         self.skill_menu_bg: Optional[pygame.Surface] = None
 
+        # 훈련 감독관 이미지
+        self.director_image: Optional[pygame.Surface] = None
+        self.director_rect: Optional[pygame.Rect] = None
+
     def init(self):
         """훈련 모드 초기화"""
         config.GAME_MODE = "training"
+
+        # 훈련 모드 전용 설정: 원근감 비활성화
+        config.PERSPECTIVE_ENABLED = False
 
         # 시스템 초기화
         self.combat_system = CombatSystem()
@@ -303,6 +310,8 @@ class TrainingMode(GameMode):
         if self.player:
             self.player.max_hp = 9999
             self.player.hp = 9999
+            # 배기가스 효과 비활성화
+            self.player.show_exhaust = False
 
         # 배경 설정
         self.background = self._load_background()
@@ -328,6 +337,9 @@ class TrainingMode(GameMode):
         # 스킬 메뉴 배경 이미지 로드
         self._load_skill_menu_bg()
 
+        # 훈련 감독관 이미지 로드
+        self._load_director_image()
+
         print("INFO: Training Mode initialized")
 
     def _load_skill_menu_bg(self):
@@ -343,6 +355,36 @@ class TrainingMode(GameMode):
                 print(f"WARNING: Skill menu background not found: {bg_path}")
         except Exception as e:
             print(f"WARNING: Failed to load skill menu background: {e}")
+
+    def _load_director_image(self):
+        """훈련 감독관 이미지 로드"""
+        self.director_image = None
+        self.director_rect = None
+        try:
+            director_path = config.ASSET_DIR / "images" / "ui" / "training_director.png"
+            if director_path.exists():
+                # 이미지 로드 (알파 채널 유지, 원본 이미지 사용)
+                self.director_image = pygame.image.load(str(director_path)).convert_alpha()
+
+                # 화면 높이의 30%로 스케일 (세로 크기 증가)
+                target_height = int(self.screen_size[1] * 0.3)
+                aspect_ratio = self.director_image.get_width() / self.director_image.get_height()
+                target_width = int(target_height * aspect_ratio)
+
+                # 가로를 1.4배 늘려서 뚱뚱하게 보이도록 조정
+                target_width = int(target_width * 1.4)
+                self.director_image = pygame.transform.scale(self.director_image, (target_width, target_height))
+
+                # 화면 좌하단에 배치 (이미지 내부 여백을 제거하기 위해 좌측으로 이동)
+                # 이미지 너비의 약 20%를 좌측으로 밀어서 투명 여백 제거
+                offset_x = -int(target_width * 0.2)
+                self.director_rect = self.director_image.get_rect(bottomleft=(offset_x, self.screen_size[1]))
+
+                print(f"INFO: Training director image loaded at bottomleft=({offset_x}, {self.screen_size[1]}), size: {target_width}x{target_height}")
+            else:
+                print(f"WARNING: Training director image not found: {director_path}")
+        except Exception as e:
+            print(f"WARNING: Failed to load training director image: {e}")
 
     def _load_background(self) -> Optional[pygame.Surface]:
         """훈련장 배경 로드 - facility_bg 이미지 사용"""
@@ -432,18 +474,7 @@ class TrainingMode(GameMode):
             if not turret.is_alive:
                 self.turrets.remove(turret)
 
-        # 이펙트 업데이트 및 죽은 이펙트 제거
-        for effect in self.effects[:]:
-            if hasattr(effect, 'update'):
-                # update 메서드 시그니처 확인 (일부는 dt만, 일부는 dt+current_time)
-                import inspect
-                sig = inspect.signature(effect.update)
-                if len(sig.parameters) >= 2:  # update(self, dt, current_time)
-                    effect.update(scaled_dt, current_time)
-                else:  # update(self, dt)
-                    effect.update(scaled_dt)
-            if hasattr(effect, 'is_alive') and not effect.is_alive:
-                self.effects.remove(effect)
+        # 이펙트 업데이트는 update_common()에서 이미 처리됨 (중복 제거)
 
         # 패시브 스킬 업데이트 (재생 등)
         self.skill_system.update_passive_skills(
@@ -642,6 +673,10 @@ class TrainingMode(GameMode):
         else:
             screen.fill((20, 25, 40))
 
+        # 훈련 감독관 이미지 (배경 위, 플레이어 아래에 렌더링)
+        if self.director_image and self.director_rect:
+            screen.blit(self.director_image, self.director_rect)
+
         # 게임 오브젝트
         for gem in self.gems:
             gem.draw(screen)
@@ -726,15 +761,19 @@ class TrainingMode(GameMode):
             enemy_text = info_font.render(f"Enemies: {current_enemies} / {max_enemies}", True, (200, 200, 200))
             screen.blit(enemy_text, (screen_w // 2 - enemy_text.get_width() // 2, 28))
 
-        # 하단 조작 안내 (SPACE, E, A 제거됨)
-        help_bg = pygame.Surface((screen_w, 35), pygame.SRCALPHA)
-        help_bg.fill((0, 0, 0, 150))
-        screen.blit(help_bg, (0, screen_h - 35))
-
+        # 하단 조작 안내 (배경 없이 텍스트만 표시)
         small_font = self.fonts.get("small", pygame.font.Font(None, 20))
         controls = "[S] Skills  [R] Reset  [H] Help  [ESC] Exit"
-        ctrl_text = small_font.render(controls, True, (180, 180, 180))
-        screen.blit(ctrl_text, (screen_w // 2 - ctrl_text.get_width() // 2, screen_h - 28))
+        # 텍스트에 외곽선 효과 (가독성 향상)
+        ctrl_text_shadow = small_font.render(controls, True, (0, 0, 0))
+        ctrl_text = small_font.render(controls, True, (200, 200, 200))
+        # 그림자 먼저 그리기
+        screen.blit(ctrl_text_shadow, (screen_w // 2 - ctrl_text.get_width() // 2 + 2, screen_h - 26))
+        screen.blit(ctrl_text_shadow, (screen_w // 2 - ctrl_text.get_width() // 2 - 2, screen_h - 26))
+        screen.blit(ctrl_text_shadow, (screen_w // 2 - ctrl_text.get_width() // 2, screen_h - 24))
+        screen.blit(ctrl_text_shadow, (screen_w // 2 - ctrl_text.get_width() // 2, screen_h - 28))
+        # 실제 텍스트 그리기
+        screen.blit(ctrl_text, (screen_w // 2 - ctrl_text.get_width() // 2, screen_h - 26))
 
     def _render_static_field(self, screen: pygame.Surface):
         """Static Field 시각 효과 렌더링 - 강화된 전기장 효과"""
@@ -2069,3 +2108,8 @@ class TrainingMode(GameMode):
             self.player.phoenix_timer = 0.0
 
         print(f"INFO: Applied skill: {skill_name}")
+
+    def on_enter(self):
+        """모드 진입 시 마우스 커서 표시"""
+        super().on_enter()
+        pygame.mouse.set_visible(True)

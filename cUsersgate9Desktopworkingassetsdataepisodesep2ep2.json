@@ -1,0 +1,173 @@
+{
+  "id": "ep2",
+  "act": 2,
+  "title": "공허 속의 메아리",
+  "title_en": "ECHOES IN THE VOID",
+  "description": "파괴된 서울에서 과거의 기억과 마주한다. 생존자 신호를 추적하며 진실에 가까워진다.",
+
+  "defaults": {
+    "background": "bg_bunker.jpg",
+    "bgm": "bgm_combat.mp3"
+  },
+
+  "scenes": {
+    "briefing": {
+      "title": "MISSION BRIEFING",
+      "location": "COMMAND CENTER",
+      "background": "bg_command.jpg",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "새로운 좌표 분석 완료. 구 서울 지역에서 생체 신호 포착."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "서울이라... 그 도시는 침공 첫날에 완전히 파괴됐어."
+        }
+      ]
+    },
+
+    "opening": {
+      "title": "ACT 2: ECHOES IN THE VOID",
+      "location": "DESTROYED CITY - SEOUL",
+      "background": "bg_bunker.jpg",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "미약한 생체 신호 포착. 좌표 전송 중입니다."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "저기... 저건 서울 타워잖아. 기억나?"
+        },
+        {
+          "speaker": "PILOT",
+          "text": "첫 번째 대피소가 무너진 날... 우리가 겨우 탈출했던 곳."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "그날 밤, 하늘이 불타올랐지. 사람들의 비명 소리가..."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "아르테미스, 그만. 지금은 앞만 봐야 해."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "...미안. 가끔 그때가 떠올라서."
+        },
+        {
+          "speaker": "NARRATOR",
+          "text": "인간의 기억은 생존에 필수적 요소입니다. 억압하지 마십시오."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "고마워, 철학자 양반. 근데 지금은 싸울 때야."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "기억은 짐이 아니야. 우리가 왜 싸우는지 알려주는 거니까."
+        }
+      ]
+    },
+
+    "mid_01": {
+      "title": "",
+      "location": "RUINED STREETS",
+      "background": "bg_bunker.jpg",
+      "dialogues": [
+        {
+          "speaker": "PILOT",
+          "text": "적 반응 증가! 우리를 포위하려는 거야!"
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "포위당하기 전에 돌파하자!"
+        }
+      ]
+    },
+
+    "document": {
+      "title": "CLASSIFIED",
+      "location": "UNDERGROUND BUNKER",
+      "background": "bg_gate.jpg",
+      "effect": "ClassifiedDocumentEffect",
+      "effect_data": {
+        "document_images": [
+          "doc_artemis_file.png",
+          "doc_bunker_map.png",
+          "doc_project_ark.png",
+          "doc_survivor_list.png",
+          "doc_transmission.png"
+        ],
+        "gate_images": [
+          "bunker_gate_01.jpg",
+          "bunker_gate_02.jpg",
+          "bunker_gate_03.jpg"
+        ]
+      },
+      "dialogues": [
+        {
+          "speaker": "ARTEMIS",
+          "text": "이건... 정부 기밀 문서야?"
+        },
+        {
+          "speaker": "PILOT",
+          "text": "카이론 침공 전에 작성된 거야. 누군가 알고 있었어."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "게이트... 그들은 게이트를 통해 왔어. 우리가 열어준 게이트를."
+        }
+      ]
+    },
+
+    "boss": {
+      "title": "BOSS BATTLE",
+      "location": "CITY CENTER",
+      "background": "bg_bunker.jpg",
+      "bgm": "bgm_boss.mp3",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "대형 적 반응 감지. 헌터급 카이론입니다."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "헌터... 저놈들은 생존자를 추적하는 특화형이야."
+        }
+      ]
+    },
+
+    "ending": {
+      "title": "MISSION COMPLETE",
+      "location": "SEOUL RUINS",
+      "background": "bg_bunker.jpg",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "적 섬멸 완료. 문서 데이터 저장됨."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "이 문서들... 누구에게 전해야 하지?"
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "일단 기지로 가져가자. 진실은 언젠가 밝혀질 거야."
+        }
+      ]
+    }
+  },
+
+  "segments": [
+    {"type": "DIALOGUE", "scene": "briefing"},
+    {"type": "DIALOGUE", "scene": "opening"},
+    {"type": "COMBAT", "rounds": 3, "enemies": ["fighter", "bomber"]},
+    {"type": "DIALOGUE", "scene": "mid_01"},
+    {"type": "CUTSCENE", "scene": "document"},
+    {"type": "COMBAT", "rounds": 2, "boss": "hunter"},
+    {"type": "DIALOGUE", "scene": "boss"},
+    {"type": "DIALOGUE", "scene": "ending"}
+  ]
+}

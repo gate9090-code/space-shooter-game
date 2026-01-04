@@ -187,35 +187,6 @@ class GameMode(ABC):
         if self.level_up_effect:
             self.level_up_effect.update(dt)
 
-    # ===== 커스텀 커서 (기지 모드용) =====
-
-    def _load_base_cursor(self) -> pygame.Surface:
-        """기지용 커스텀 커서 로드"""
-        cursor_path = config.ASSET_DIR / "images" / "gameplay" / "collectibles" / "mouse_action.png"
-        try:
-            if cursor_path.exists():
-                cursor_img = pygame.image.load(str(cursor_path)).convert_alpha()
-                cursor_size = 64  # 2배 크기
-                cursor_img = pygame.transform.smoothscale(cursor_img, (cursor_size, cursor_size))
-                return cursor_img
-        except Exception as e:
-            print(f"WARNING: Failed to load base cursor: {e}")
-        return None
-
-    def _render_base_cursor(self, screen: pygame.Surface, cursor_img: pygame.Surface):
-        """기지용 커스텀 커서 렌더링"""
-        if cursor_img:
-            mouse_pos = pygame.mouse.get_pos()
-            cursor_rect = cursor_img.get_rect(center=mouse_pos)
-            screen.blit(cursor_img, cursor_rect)
-
-    def _enable_custom_cursor(self):
-        """커스텀 커서 활성화 (기본 마우스 숨김)"""
-        pygame.mouse.set_visible(False)
-
-    def _disable_custom_cursor(self):
-        """커스텀 커서 비활성화 (기본 마우스 복원)"""
-        pygame.mouse.set_visible(True)
 
     # ===== 추상 메서드 (반드시 구현) =====
 
@@ -673,6 +644,28 @@ class GameMode(ABC):
         # 드론 그리기
         for drone in self.drones:
             drone.draw(screen)
+
+        # Carrier 그리기 (적보다 먼저 - 뒤에 표시)
+        if hasattr(self, 'carriers'):
+            for carrier in self.carriers:
+                carrier.draw(screen)
+
+        # SphereDroid 그리기 (적과 같은 레이어)
+        if hasattr(self, 'sphere_droids'):
+            for droid in self.sphere_droids:
+                if droid.is_alive:
+                    droid.draw(screen)
+
+        # BacteriaGenerator 그리기 (적보다 먼저 - 뒤에 표시)
+        if hasattr(self, 'bacteria_generators'):
+            for generator in self.bacteria_generators:
+                generator.draw(screen)
+
+        # Bacteria 그리기 (적과 같은 레이어)
+        if hasattr(self, 'bacteria'):
+            for bacteria in self.bacteria:
+                if bacteria.is_alive:
+                    bacteria.draw(screen)
 
         # 적 그리기 (Y 위치 기준 정렬)
         sorted_enemies = sorted(self.enemies, key=lambda e: e.pos.y)

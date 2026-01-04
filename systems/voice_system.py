@@ -215,71 +215,20 @@ class EdgeTTSAdapter(VoiceAdapter):
         "male_2": "en-US-ChristopherNeural",
     }
 
-    # 감정/스타일 옵션 (SSML mstts:express-as)
-    # 주의: 한국어 음성은 일부 스타일만 지원
-    EMOTION_STYLES = {
-        "default": None,           # 기본 (스타일 없음)
-        "cheerful": "cheerful",    # 밝고 활기찬
-        "sad": "sad",              # 슬픈
-        "angry": "angry",          # 화난
-        "fearful": "fearful",      # 두려운
-        "excited": "excited",      # 흥분한
-        "friendly": "friendly",    # 친근한
-        "hopeful": "hopeful",      # 희망찬
-        "shouting": "shouting",    # 외치는
-        "whispering": "whispering", # 속삭이는
-        "terrified": "terrified",  # 공포에 질린
-        "serious": "serious",      # 진지한
-        "depressed": "depressed",  # 우울한
-        "gentle": "gentle",        # 부드러운
-        "lyrical": "lyrical",      # 서정적인
-    }
-
-    # 텍스트 패턴 기반 자동 감정 감지 (긴박감 패턴 강화)
-    # 우선순위: 괄호로 시작하는 지시어 > 긴박 상황 > 일반 감정
-    EMOTION_PATTERNS = {
-        # 1순위: 괄호로 시작하는 지시어 (가장 먼저 확인)
-        "whispering": ["(속삭", "(독백)", "(작게)", "(조용히)", "(생각)", "(혼잣말)"],
-        "shouting": ["(외치며)", "(크게)", "(소리치며)"],
-
-        # 2순위: 긴박/위기 상황 (빠르고 높은 톤)
-        "terrified": ["공포", "도망쳐", "살려", "무섭", "죽", "끝이야"],
-        "fearful": ["...?", "위험해", "두려", "불길", "폭발", "임계점", "붕괴"],
-
-        # 3순위: 경고/흥분 (긴박감)
-        "excited": ["!!", "!!!", "와!", "대박", "해냈어", "찾았어", "발견", "통신이야", "살아있어", "있어!"],
-
-        # 4순위: 일반 감정
-        "angry": ["젠장", "분노", "화가", "어떻게 감히", "용납", "숙주", "수확"],
-        "hopeful": ["희망", "믿어", "할 수 있", "언젠가", "반드시", "기다리", "찾을 거야"],
-        "sad": ["슬퍼", "아쉽", "그리워", "눈물", "보고싶"],
-        "serious": ["작전", "명령", "보고", "분석", "확률", "데이터", "경고:"],
-
-        # 5순위: 부드러운 감정
-        "cheerful": ["고마워", "감사", "다행", "좋았어", "잘됐어"],
-        "gentle": ["괜찮아", "걱정마", "함께", "곁에"],
-    }
 
     def __init__(self, voice: str = "ko-KR-SunHiNeural", rate: str = "+0%", pitch: str = "+0Hz",
-                 fallback_enabled: bool = True, style: str = None, style_degree: float = 1.0,
-                 auto_emotion: bool = True, static_effect: bool = False):
+                 fallback_enabled: bool = True, static_effect: bool = False):
         """
         Args:
             voice: Edge TTS 음성 ID
             rate: 속도 (예: "+10%", "-20%")
             pitch: 피치 (예: "+5Hz", "-10Hz")
-            style: 감정/스타일 (예: "cheerful", "sad", "angry")
-            style_degree: 스타일 강도 (0.01 ~ 2.0, 기본 1.0)
-            auto_emotion: 텍스트 기반 자동 감정 감지 여부
             fallback_enabled: 인터넷 실패 시 pyttsx3 폴백 사용
             static_effect: 치지직 정적 잡음 효과 활성화 (안드로이드/나레이터용)
         """
         self._voice = voice
         self._rate = rate
         self._pitch = pitch
-        self._style = style
-        self._style_degree = max(0.01, min(2.0, style_degree))
-        self._auto_emotion = auto_emotion
         self._speaking = False
         self._fallback_enabled = fallback_enabled
         self._fallback_adapter: Optional[Pyttsx3Adapter] = None
@@ -287,56 +236,6 @@ class EdgeTTSAdapter(VoiceAdapter):
         self._static_effect = static_effect  # 치지직 효과 활성화
         self._static_sound = None  # 정적 잡음 사운드 객체
 
-    def _detect_emotion(self, text: str) -> Optional[str]:
-        """텍스트에서 감정 자동 감지"""
-        if not self._auto_emotion:
-            return self._style
-
-        # 패턴 매칭으로 감정 감지
-        for emotion, patterns in self.EMOTION_PATTERNS.items():
-            for pattern in patterns:
-                if pattern in text:
-                    return emotion
-
-        return self._style  # 기본 스타일 반환
-
-    def _build_ssml(self, text: str, emotion: Optional[str] = None) -> str:
-        """SSML 텍스트 생성 (감정 표현 포함)"""
-        # 감정 스타일 결정
-        style = emotion if emotion else self._style
-
-        # 기본 prosody 설정
-        prosody_attrs = []
-        if self._rate and self._rate != "+0%":
-            prosody_attrs.append(f'rate="{self._rate}"')
-        if self._pitch and self._pitch != "+0Hz":
-            prosody_attrs.append(f'pitch="{self._pitch}"')
-
-        prosody_open = f'<prosody {" ".join(prosody_attrs)}>' if prosody_attrs else ''
-        prosody_close = '</prosody>' if prosody_attrs else ''
-
-        # 스타일이 있으면 mstts:express-as 태그 사용
-        if style and style in self.EMOTION_STYLES and self.EMOTION_STYLES[style]:
-            style_value = self.EMOTION_STYLES[style]
-            style_degree_attr = f' styledegree="{self._style_degree}"' if self._style_degree != 1.0 else ''
-
-            ssml = f'''<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis"
-                xmlns:mstts="https://www.w3.org/2001/mstts" xml:lang="ko-KR">
-                <voice name="{self._voice}">
-                    <mstts:express-as style="{style_value}"{style_degree_attr}>
-                        {prosody_open}{text}{prosody_close}
-                    </mstts:express-as>
-                </voice>
-            </speak>'''
-        else:
-            # 스타일 없이 prosody만 적용
-            ssml = f'''<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="ko-KR">
-                <voice name="{self._voice}">
-                    {prosody_open}{text}{prosody_close}
-                </voice>
-            </speak>'''
-
-        return ssml
 
     def _get_fallback_adapter(self) -> Optional[Pyttsx3Adapter]:
         """폴백 어댑터 생성 (지연 로딩)"""
@@ -357,43 +256,6 @@ class EdgeTTSAdapter(VoiceAdapter):
             print("INFO: pyttsx3 fallback adapter initialized")
 
         return self._fallback_adapter
-
-    def _get_emotion_adjustments(self, emotion: Optional[str]) -> tuple:
-        """감정에 따른 속도/피치 조정값 반환 (긴박감 강화)"""
-        # 감정별 속도/피치 조정 (base rate/pitch에 추가)
-        emotion_adjustments = {
-            # 긴박/위기 상황 (강화됨)
-            "excited": ("+20%", "+8Hz"),     # 흥분: 더 빠르고 높게
-            "terrified": ("+30%", "+12Hz"),  # 공포: 가장 빠르고 높게 (떨림)
-            "fearful": ("+15%", "+10Hz"),    # 두려움: 빠르고 높게
-            "shouting": ("+25%", "+10Hz"),   # 외침: 매우 빠르고 높게
-
-            # 일반 감정
-            "cheerful": ("+10%", "+3Hz"),    # 밝음: 약간 빠르고 높게
-            "sad": ("-15%", "-5Hz"),         # 슬픔: 느리고 낮게
-            "depressed": ("-20%", "-8Hz"),   # 우울: 더 느리고 낮게
-            "angry": ("+10%", "-8Hz"),       # 화남: 빠르고 낮게 (위협적)
-            "hopeful": ("+5%", "+2Hz"),      # 희망: 약간 빠르고 높게
-            "whispering": ("-30%", "-10Hz"), # 속삭임: 매우 느리고 낮게
-            "serious": ("-5%", "-2Hz"),      # 진지함: 약간 느리고 낮게
-            "gentle": ("-10%", "+2Hz"),      # 부드러움: 느리고 약간 높게
-        }
-        return emotion_adjustments.get(emotion, ("+0%", "+0Hz"))
-
-    def _combine_rate_pitch(self, base: str, adjustment: str) -> str:
-        """rate/pitch 값 합산 (예: "+5%" + "+10%" = "+15%")"""
-        try:
-            # 숫자 추출
-            base_num = int(base.replace("%", "").replace("Hz", "").replace("+", ""))
-            adj_num = int(adjustment.replace("%", "").replace("Hz", "").replace("+", ""))
-            combined = base_num + adj_num
-
-            # 부호와 단위 추가
-            sign = "+" if combined >= 0 else ""
-            unit = "%" if "%" in base else "Hz"
-            return f"{sign}{combined}{unit}"
-        except:
-            return base
 
     def _init_static_sound(self):
         """치지직 정적 잡음 사운드 초기화"""
@@ -449,12 +311,6 @@ class EdgeTTSAdapter(VoiceAdapter):
             if not hasattr(pygame.mixer, 'music'):
                 raise RuntimeError("pygame.mixer.music not available")
 
-            # 감정 감지 및 속도/피치 조정
-            detected_emotion = self._detect_emotion(text)
-            rate_adj, pitch_adj = self._get_emotion_adjustments(detected_emotion)
-            final_rate = self._combine_rate_pitch(self._rate, rate_adj)
-            final_pitch = self._combine_rate_pitch(self._pitch, pitch_adj)
-
             # 치지직 효과음 재생 (음성 시작 전)
             self._play_static_effect()
 
@@ -462,8 +318,8 @@ class EdgeTTSAdapter(VoiceAdapter):
                 communicate = edge_tts.Communicate(
                     text,
                     self._voice,
-                    rate=final_rate,
-                    pitch=final_pitch
+                    rate=self._rate,
+                    pitch=self._pitch
                 )
 
                 # 임시 파일 생성 (먼저 닫고 저장)
@@ -774,23 +630,22 @@ CHARACTER_VOICE_PRESETS = {
     "ARTEMIS": {
         "adapter": "edge",
         "voice": "ko-KR-SunHiNeural",
-        "rate": "+25%",  # 나레이터 기본(+15%) + 10% 더 빠르게
-        "pitch": "+5Hz",  # 음 톤 높임 (기존 +2Hz → +5Hz)
+        "rate": "+30%",  # 빠른 속도
+        "pitch": "+0Hz",  # 표준 톤
     },
     # 파일럿: 차분하고 기계적인 남성 음성
     "PILOT": {
         "adapter": "edge",
         "voice": "ko-KR-InJoonNeural",
-        "rate": "+20%",  # 나레이터 기본(+15%) + 5% 더 빠르게
-        "pitch": "+0Hz",  # 음 톤 높임 (기존 -3Hz → +0Hz, 보통 톤)
+        "rate": "+30%",  # 빠른 속도
+        "pitch": "+0Hz",  # 표준 톤
     },
-    # 안드로이드 나레이터: 기계적 로봇 음성 (Edge TTS 사용, 빠른 속도, 치지직 효과)
+    # 안드로이드 나레이터: 기계적 로봇 음성
     "NARRATOR": {
         "adapter": "edge",
         "voice": "ko-KR-InJoonNeural",
-        "rate": "+15%",  # 빠른 속도로 조정
-        "pitch": "-5Hz",  # 약간 낮은 피치로 로봇 느낌 강화
-        "static_effect": True,  # 치지직 정적 잡음 효과 활성화
+        "rate": "+0%",  # 표준 속도
+        "pitch": "+0Hz",  # 표준 톤
     },
 }
 

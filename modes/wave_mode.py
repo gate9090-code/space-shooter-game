@@ -143,6 +143,16 @@ class WaveMode(GameMode):
         self.meteors: List[Meteor] = []
         self.meteor_spawned_this_wave = False
 
+        # Carrier 시스템 (1단계)
+        self.carriers = []  # DroidCarrier 리스트
+        self.sphere_droids = []  # SphereDroid 리스트 (별도 관리)
+        self.carrier_spawned_this_wave = False  # 웨이브당 1회 스폰 제어
+
+        # 박테리아 시스템 (2단계)
+        self.bacteria_generators = []  # BacteriaGenerator 리스트
+        self.bacteria = []  # Bacteria 리스트
+        self.generator_spawned_this_wave = False  # 웨이브당 1회 스폰 제어
+
         # 배경 이미지 캐시 로드
         self._load_background_cache()
 
@@ -246,6 +256,26 @@ class WaveMode(GameMode):
                 self.background_image_cache[bg_num] = pygame.Surface(self.screen_size)
                 self.background_image_cache[bg_num].fill((0, 0, 0))
 
+        # 박테리아 배경 (bacteria_bg_01, bacteria_bg_02)
+        self.bacteria_backgrounds = {}
+        for bg_num in [1, 2]:
+            bg_filename = f"bacteria_bg_0{bg_num}.jpg"
+            try:
+                bg_path = config.BACKGROUND_DIR / bg_filename
+                self.bacteria_backgrounds[bg_num] = AssetManager.get_image(bg_path, self.screen_size)
+            except Exception as e:
+                # 폴백: 녹색 틴트 배경
+                fallback_bg = pygame.Surface(self.screen_size)
+                fallback_bg.fill((0, 20, 10))  # 어두운 녹색
+                self.bacteria_backgrounds[bg_num] = fallback_bg
+
+        # 박테리아 이벤트 상태
+        self.original_background = None  # 박테리아 이전의 배경 저장
+        self.bacteria_event_active = False
+        self.bacteria_bg_stage = 0  # 배경 전환 단계 (0: 비활성, 1: bg_01, 2: bg_02)
+        self.bacteria_bg_stage_timer = 0.0  # 단계 타이머
+        self.bacteria_bg_stage_delay = 2.5  # 1단계→2단계 전환 딜레이
+
     def update(self, dt: float, current_time: float):
         """웨이브 모드 업데이트"""
         # 복귀 애니메이션 업데이트 (최우선)
@@ -327,6 +357,53 @@ class WaveMode(GameMode):
                 self.meteors.remove(meteor)
                 self.meteor_spawned_this_wave = False
 
+    def start_bacteria_event(self):
+        """박테리아 이벤트 시작 - 배경을 bacteria_bg_01로 전환 (2단계 전환)"""
+        if self.bacteria_event_active:
+            return  # 이미 박테리아 이벤트 중
+
+        # 현재 배경 저장
+        self.original_background = self.current_background
+
+        # 첫 번째 배경: bacteria_bg_01
+        bacteria_bg_01 = self.bacteria_backgrounds[1]
+
+        # 배경 전환 (페이드 효과)
+        self.background_transition = BackgroundTransition(
+            old_bg=self.current_background,
+            new_bg=bacteria_bg_01,
+            screen_size=self.screen_size,
+            effect_type="fade_in",
+            duration=1.5  # 1.5초 페이드
+        )
+
+        self.bacteria_event_active = True
+        self.bacteria_bg_stage = 1  # 1단계: bacteria_bg_01
+        self.bacteria_bg_stage_timer = 0.0
+        self.bacteria_bg_stage_delay = 2.5  # 2.5초 후 두번째 배경으로 전환
+        print("INFO: Bacteria event started - switching to bacteria_bg_01 (stage 1/2)")
+
+    def end_bacteria_event(self):
+        """박테리아 이벤트 종료 - 원래 배경으로 복원 (천천히)"""
+        if not self.bacteria_event_active:
+            return  # 박테리아 이벤트 중이 아님
+
+        # 저장된 원래 배경으로 복원 (천천히 페이드)
+        if self.original_background:
+            self.background_transition = BackgroundTransition(
+                old_bg=self.current_background,
+                new_bg=self.original_background,
+                screen_size=self.screen_size,
+                effect_type="fade_in",
+                duration=3.0  # 3초 페이드 (천천히)
+            )
+
+        self.bacteria_event_active = False
+        self.bacteria_bg_stage = 0
+        self.bacteria_bg_stage_timer = 0.0
+        self.original_background = None
+        print("INFO: Bacteria event ended - restoring original background (slow fade)")
+
     def _update_running(self, dt: float, current_time: float):
         """게임 실행 중 업데이트"""
         # 플레이어 업데이트
@@ -338,8 +415,85 @@ class WaveMode(GameMode):
         # 객체 업데이트 (터렛, 드론, 총알)
         self.update_objects(dt)
 
+        # === Carrier 업데이트 (드로이드 투하) - 게임 객체 업데이트 전에 처리 ===
+        for carrier in self.carriers[:]:  # 복사본으로 순회
+            newly_spawned = carrier.update(dt, current_time)
+            self.sphere_droids.extend(newly_spawned)  # 투하된 드로이드 추가 (별도 리스트)
+
+            # 죽은 캐리어 제거
+            if carrier.dead:
+                self.carriers.remove(carrier)
+
+        # === SphereDroid 업데이트 ===
+        for droid in self.sphere_droids[:]:
+            droid.update(dt)
+            if not droid.is_alive:
+                self.sphere_droids.remove(droid)
+
         # HP 변화 감지를 위해 이전 HP 저장
         hp_before = self.player.hp if self.player else 0
+
+        # === Carrier 피격 처리 (플레이어 총알) ===
+        for bullet in self.bullets[:]:  # 복사본으로 순회
+            for carrier in self.carriers:
+                if carrier.hitbox.colliderect(bullet.hitbox):  # bullet.rect → bullet.hitbox
+                    # 피격 처리
+                    should_drop_gem = carrier.take_damage(bullet.damage)
+
+                    # HP 젬 드롭
+                    if should_drop_gem:
+                        from entities.collectibles import HealItem
+                        heal_item = HealItem(
+                            pos=(carrier.pos.x, carrier.pos.y),
+                            screen_height=self.screen_size[1]
+                        )
+                        self.gems.append(heal_item)
+                        print("INFO: HP gem dropped from carrier!")
+
+                    # 충격파 효과 추가
+                    from effects.screen_effects import ImageShockwave
+                    settings = config.SHOCKWAVE_SETTINGS.get("BULLET_HIT", {})
+                    wave_count = settings.get("wave_count", 3)
+                    wave_interval = settings.get("wave_interval", 0.1)
+                    for i in range(wave_count):
+                        shockwave = ImageShockwave(
+                            center=(bullet.pos.x, bullet.pos.y),
+                            max_size=settings.get("max_radius", 120) * 2,
+                            duration=settings.get("duration", 0.8),
+                            delay=i * wave_interval,
+                            color_tint=settings.get("color", (255, 255, 255)),
+                        )
+                        self.effects.append(shockwave)
+
+                    # 총알 제거
+                    if bullet in self.bullets:
+                        self.bullets.remove(bullet)
+                    break  # 다음 총알로
+
+        # === SphereDroid 피격 처리 (플레이어 총알) ===
+        for bullet in self.bullets[:]:
+            for droid in self.sphere_droids:
+                if droid.is_alive and droid.hitbox.colliderect(bullet.hitbox):
+                    droid.take_damage(bullet.damage)
+
+                    # 충격파 효과 추가
+                    from effects.screen_effects import ImageShockwave
+                    settings = config.SHOCKWAVE_SETTINGS.get("BULLET_HIT", {})
+                    wave_count = settings.get("wave_count", 3)
+                    wave_interval = settings.get("wave_interval", 0.1)
+                    for i in range(wave_count):
+                        shockwave = ImageShockwave(
+                            center=(bullet.pos.x, bullet.pos.y),
+                            max_size=settings.get("max_radius", 120) * 2,
+                            duration=settings.get("duration", 0.8),
+                            delay=i * wave_interval,
+                            color_tint=settings.get("color", (255, 255, 255)),
+                        )
+                        self.effects.append(shockwave)
+
+                    if bullet in self.bullets:
+                        self.bullets.remove(bullet)
+                    break  # 다음 총알로
 
         # 게임 객체 충돌 및 업데이트
         update_game_objects(
@@ -352,6 +506,102 @@ class WaveMode(GameMode):
             sound_manager=self.sound_manager,
             death_effect_manager=self.death_effect_manager
         )
+
+        # === SphereDroid와 플레이어 충돌 처리 ===
+        if self.player:
+            for droid in self.sphere_droids:
+                if droid.is_alive and self.player.hitbox.colliderect(droid.hitbox):
+                    # 드로이드가 플레이어에게 데미지
+                    self.player.take_damage(droid.damage)
+                    # 플레이어 피격 사운드
+                    if self.sound_manager:
+                        self.sound_manager.play_sfx("player_hit")
+                    # 플레이어 피격 시 화면 떨림
+                    if self.screen_shake:
+                        from game_logic.helpers import trigger_screen_shake
+                        trigger_screen_shake("PLAYER_HIT", self.screen_shake)
+                    break  # 한 프레임에 한 번만
+
+        # === BacteriaGenerator 업데이트 (박테리아 투하) ===
+        for generator in self.bacteria_generators[:]:
+            newly_spawned = generator.update(dt, current_time)
+            self.bacteria.extend(newly_spawned)  # 투하된 박테리아 추가
+
+            # 박테리아 20개 생성 시점에 배경 전환
+            if generator.bacteria_spawned == 20 and not self.bacteria_event_active:
+                self.start_bacteria_event()
+                print("INFO: Bacteria background transition started at 20 bacteria spawned")
+
+            # 죽은 생성기 제거
+            if generator.dead:
+                self.bacteria_generators.remove(generator)
+
+        # === Bacteria 업데이트 (플레이어 추적 및 달라붙기) ===
+        player_pos = self.player.pos if self.player else None
+        attached_count = 0
+        total_bacteria_damage = 0.0
+
+        for bacteria in self.bacteria[:]:
+            is_attached, damage = bacteria.update(dt, current_time, player_pos)
+
+            if is_attached:
+                attached_count += 1
+                total_bacteria_damage += damage
+
+            # 죽은 박테리아 제거
+            if bacteria.dead or not bacteria.is_alive:
+                self.bacteria.remove(bacteria)
+
+        # === Bacteria 배경 2단계 전환 (bacteria_bg_01 → bacteria_bg_02) ===
+        if self.bacteria_event_active and hasattr(self, 'bacteria_bg_stage'):
+            if self.bacteria_bg_stage == 1:
+                self.bacteria_bg_stage_timer += dt
+                # 2.5초 경과 후 두 번째 배경으로 전환
+                if self.bacteria_bg_stage_timer >= self.bacteria_bg_stage_delay:
+                    bacteria_bg_02 = self.bacteria_backgrounds[2]
+                    self.background_transition = BackgroundTransition(
+                        old_bg=self.current_background,
+                        new_bg=bacteria_bg_02,
+                        screen_size=self.screen_size,
+                        effect_type="fade_in",
+                        duration=2.0  # 2초 페이드
+                    )
+                    self.bacteria_bg_stage = 2
+                    print("INFO: Bacteria background stage 2 - switching to bacteria_bg_02")
+
+        # 플레이어 속도 저하 업데이트
+        if self.player:
+            self.player.update_bacteria_attachment(attached_count)
+
+            # 박테리아 데미지 적용
+            if total_bacteria_damage > 0:
+                self.player.take_damage(total_bacteria_damage)
+
+        # 모든 박테리아 소멸 시 배경 복원
+        if len(self.bacteria) == 0 and len(self.bacteria_generators) == 0:
+            if self.bacteria_event_active:
+                self.end_bacteria_event()
+
+        # === Bacteria 피격 처리 (특수 무기만) ===
+        # Static Field 피격 처리
+        if self.player and self.player.has_static_field:
+            static_field_radius = 150  # Static Field 범위
+            for bacteria in self.bacteria[:]:
+                if bacteria.is_alive:
+                    distance = (bacteria.pos - self.player.pos).length()
+                    if distance <= static_field_radius:
+                        bacteria.take_damage(100, is_special_weapon=True)  # 높은 데미지
+
+        # Lightning Chain 피격 처리 (총알 속성 확인 필요)
+        for bullet in self.bullets[:]:
+            # 번개 속성 총알인지 확인
+            has_lightning = getattr(bullet, 'has_lightning', False) or (self.player and self.player.has_lightning)
+
+            if has_lightning:
+                for bacteria in self.bacteria[:]:
+                    if bacteria.is_alive and bacteria.hitbox.colliderect(bullet.hitbox):
+                        bacteria.take_damage(bullet.damage, is_special_weapon=True)
+                        # 번개는 관통하므로 총알은 제거하지 않음
 
         # HP 감소 감지 → 피격 효과 트리거 (base_mode 공통 메서드)
         self._trigger_damage_feedback(hp_before)
@@ -394,6 +644,42 @@ class WaveMode(GameMode):
                 self.sound_manager.play_sfx("level_up")
                 return  # 레벨업 메뉴로 전환, 나머지 업데이트 스킵
             # === 일반 페이즈 ===
+            # === Carrier 스폰 (짝수 웨이브, 보스 제외, 웨이브당 1회) ===
+            current_wave = self.game_data.get('current_wave', 1)
+            if not self.carrier_spawned_this_wave:
+                # 조건: Wave 6+, 짝수, 보스 아님
+                if (current_wave >= 6 and
+                    current_wave % 2 == 0 and
+                    current_wave not in config.BOSS_WAVES):
+
+                    # Carrier 생성
+                    from entities.droid_carrier import DroidCarrier
+                    carrier = DroidCarrier(
+                        screen_size=self.screen_size,
+                        current_wave=current_wave
+                    )
+                    self.carriers.append(carrier)
+                    self.carrier_spawned_this_wave = True
+                    print(f"INFO: Droid Carrier spawned at Wave {current_wave}")
+
+            # === BacteriaGenerator 스폰 (홀수 웨이브, 보스 제외, 웨이브당 1회) ===
+            if not self.generator_spawned_this_wave:
+                # 조건: Wave 6+, 홀수, 보스 아님
+                if (current_wave >= 6 and
+                    current_wave % 2 == 1 and
+                    current_wave not in config.BOSS_WAVES):
+
+                    # BacteriaGenerator 생성
+                    from entities.bacteria_generator import BacteriaGenerator
+                    generator = BacteriaGenerator(
+                        screen_size=self.screen_size,
+                        current_wave=current_wave
+                    )
+                    self.bacteria_generators.append(generator)
+                    self.generator_spawned_this_wave = True
+
+                    print(f"INFO: BacteriaGenerator spawned at Wave {current_wave}")
+
             # 적 스폰
             handle_spawning(self.enemies, self.screen_size, current_time,
                            self.game_data, self.effects, self.sound_manager)
@@ -471,6 +757,35 @@ class WaveMode(GameMode):
                 continue
             enemy.is_retreating = True
             enemy.is_circling = False  # 회전 모드 해제
+
+        # Carrier, SphereDroid, Bacteria 제거 (웨이브 전환 시 초기화)
+        if hasattr(self, 'carriers'):
+            carrier_count = len(self.carriers)
+            if carrier_count > 0:
+                self.carriers.clear()
+                print(f"INFO: Cleared {carrier_count} carriers")
+
+        if hasattr(self, 'sphere_droids'):
+            droid_count = len(self.sphere_droids)
+            if droid_count > 0:
+                self.sphere_droids.clear()
+                print(f"INFO: Cleared {droid_count} sphere droids")
+
+        if hasattr(self, 'bacteria_generators'):
+            gen_count = len(self.bacteria_generators)
+            if gen_count > 0:
+                self.bacteria_generators.clear()
+                print(f"INFO: Cleared {gen_count} bacteria generators")
+
+        if hasattr(self, 'bacteria'):
+            bacteria_count = len(self.bacteria)
+            if bacteria_count > 0:
+                self.bacteria.clear()
+                print(f"INFO: Cleared {bacteria_count} bacteria")
+
+        # 박테리아 이벤트 종료 및 배경 복원
+        if hasattr(self, 'bacteria_event_active') and self.bacteria_event_active:
+            self.end_bacteria_event()
 
         # 남은 젬 모두 제거
         gem_count = len(self.gems)
@@ -816,6 +1131,32 @@ class WaveMode(GameMode):
                     sound_manager=self.sound_manager
                 )
 
+            # 치트키: F5 - Wave 5로 바로 이동 (블루 드래곤 보스 테스트용)
+            elif event.key == pygame.K_F5:
+                self.game_data["current_wave"] = 5
+                self.game_data["wave_kills"] = 0
+                self.game_data["wave_target_kills"] = 1
+                self.game_data["game_state"] = config.GAME_STATE_WAVE_PREPARE
+                # 보스 스폰 플래그 초기화
+                self.game_data[f"boss_spawned_wave_5"] = False
+                print("CHEAT: Skipping to Wave 5 (Blue Dragon Boss)")
+
+            # 치트키: F6 - Wave 6으로 바로 이동 (Carrier 테스트용)
+            elif event.key == pygame.K_F6:
+                self.game_data["current_wave"] = 6
+                self.game_data["wave_kills"] = 0
+                self.game_data["wave_target_kills"] = 14
+                self.game_data["game_state"] = config.GAME_STATE_WAVE_PREPARE
+                self.carrier_spawned_this_wave = False
+                print("CHEAT: Skipping to Wave 6 (Droid Carrier Test)")
+            elif event.key == pygame.K_F7:
+                self.game_data["current_wave"] = 7
+                self.game_data["wave_kills"] = 0
+                self.game_data["wave_target_kills"] = 16
+                self.game_data["game_state"] = config.GAME_STATE_WAVE_PREPARE
+                self.generator_spawned_this_wave = False
+                print("CHEAT: Skipping to Wave 7 (Bacteria Generator Test)")
+
     def _handle_wave_prepare_event(self, event: pygame.event.Event):
         """웨이브 준비 이벤트"""
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -831,6 +1172,10 @@ class WaveMode(GameMode):
 
             # 전투 모션 효과 리셋 (웨이브당 2회)
             self.combat_motion_effect.reset_wave()
+
+            # Carrier 스폰 플래그 리셋 (새 웨이브 시작)
+            self.carrier_spawned_this_wave = False
+            self.generator_spawned_this_wave = False
 
     def _handle_wave_clear_event(self, event: pygame.event.Event):
         """웨이브 클리어 이벤트"""
@@ -1185,6 +1530,22 @@ class WaveMode(GameMode):
         self.turrets.clear()
         self.drones.clear()
         self.death_effect_manager.clear()
+
+        # Carrier, SphereDroid, Bacteria 초기화
+        if hasattr(self, 'carriers'):
+            self.carriers.clear()
+        if hasattr(self, 'sphere_droids'):
+            self.sphere_droids.clear()
+        if hasattr(self, 'bacteria_generators'):
+            self.bacteria_generators.clear()
+        if hasattr(self, 'bacteria'):
+            self.bacteria.clear()
+        if hasattr(self, 'bacteria_event_active') and self.bacteria_event_active:
+            self.end_bacteria_event()
+
+        # 스폰 플래그 리셋
+        self.carrier_spawned_this_wave = False
+        self.generator_spawned_this_wave = False
 
         print("INFO: Game restarted")
 

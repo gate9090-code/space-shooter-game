@@ -1,0 +1,272 @@
+{
+  "id": "gw_ep4",
+  "act": 4,
+  "title": "잃어버린 자들의 동맹",
+  "title_en": "ALLIANCE OF THE LOST",
+  "description": "카이론에게 고향을 잃은 종족들을 구출하고 대연합을 결성한다.",
+
+  "defaults": {
+    "background": "bg_space.jpg",
+    "bgm": "bgm_combat.mp3"
+  },
+
+  "scenes": {
+    "briefing": {
+      "title": "MISSION BRIEFING",
+      "location": "COMMAND CENTER",
+      "background": "bg_command.jpg",
+      "bgm": "bgm_briefing.mp3",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "작전 브리핑을 시작합니다. 목표: Triangulum 난민 함대 구출."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "평의회에서 긴급 신호를 포착했어. 난민 함대가 카이론 추격을 받고 있대."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "Triangulum? 안드로메다 근처 은하 아니야?"
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "맞아. 카이론이 거기까지 손을 뻗친 거야. 더 많은 동맹이 필요해."
+        },
+        {
+          "speaker": "NARRATOR",
+          "text": "구출 좌표 설정 완료. 카이론 추격 함대 예상 시간: 20분."
+        }
+      ]
+    },
+
+    "opening": {
+      "title": "ACT 4: ALLIANCE OF THE LOST",
+      "location": "TRIANGULUM SECTOR - REFUGEE ZONE",
+      "background": "bg_space.jpg",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "Triangulum 섹터 도착. 난민 함대 신호 포착."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "저기... 함선들이 보여. 민간 선박들이야. 무장도 거의 없어 보여."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "통신 연결. 우리가 왔다는 걸 알려."
+        },
+        {
+          "speaker": "REFUGEE_LEADER",
+          "text": "[통신] ...누구? 안드로메다 평의회? 정말... 와줬어?"
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "우린 당신들을 구하러 왔어. 안전한 곳으로 안내할게."
+        },
+        {
+          "speaker": "REFUGEE_LEADER",
+          "text": "고맙... 카이론이 우리 고향을 파괴했어. 우린 도망칠 수밖에..."
+        },
+        {
+          "speaker": "NARRATOR",
+          "text": "경고. 카이론 추격 함대 접근. 예상보다 빠릅니다!"
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "벌써?! 난민 함대를 지켜야 해!"
+        }
+      ]
+    },
+
+    "mid_01": {
+      "title": "",
+      "location": "TRIANGULUM SECTOR - COMBAT ZONE",
+      "background": "bg_space.jpg",
+      "dialogues": [
+        {
+          "speaker": "ARTEMIS",
+          "text": "첫 번째 파도를 막았어! 난민 함대는 괜찮아?"
+        },
+        {
+          "speaker": "REFUGEE_LEADER",
+          "text": "[통신] 무사해! 하지만 더 많은 카이론이 오고 있어!"
+        },
+        {
+          "speaker": "PILOT",
+          "text": "지원군은 언제 와? 우리만으론 버틸 수 없어!"
+        },
+        {
+          "speaker": "NARRATOR",
+          "text": "신호 감지. 드라코니안 함대 워프 진입!"
+        },
+        {
+          "speaker": "BOSS",
+          "text": "[통신] 늦어서 미안하다! 우리가 합류하지!"
+        }
+      ]
+    },
+
+    "council": {
+      "title": "THE COUNCIL",
+      "location": "REFUGEE COMMAND SHIP - BRIDGE",
+      "background": "bg_command.jpg",
+      "bgm": "bgm_briefing.mp3",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "카이론 추격 함대 격퇴 완료. 난민 함대 안전 확보."
+        },
+        {
+          "speaker": "REFUGEE_LEADER",
+          "text": "고마워요. 당신들이 아니었다면... 우리 모두 죽었을 거야."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "당신들은 어디서 왔어요? Triangulum 어느 구역?"
+        },
+        {
+          "speaker": "REFUGEE_LEADER",
+          "text": "M33 중심부... 아비안 공화국이라고 불렸던 곳이야. 이젠 카이론 영역이지만."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "아비안? 조류형 종족?"
+        },
+        {
+          "speaker": "REFUGEE_LEADER",
+          "text": "맞아. 우린 한때 자유롭게 날았지. 하지만 카이론이 왔고... 모든 게 끝났어."
+        },
+        {
+          "speaker": "BOSS",
+          "text": "우리도 같은 경험을 했다. 고향을 잃고, 도망치고..."
+        },
+        {
+          "speaker": "REFUGEE_LEADER",
+          "text": "...너희는 드라코니안? 저항하고 있다는 소문은 들었어."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "우리 모두 같은 적과 싸우고 있어. 함께하지 않을래요?"
+        },
+        {
+          "speaker": "REFUGEE_LEADER",
+          "text": "함께? 우린... 전사가 아니야. 그저 살아남으려는 난민일 뿐이야."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "도망쳐봤자 카이론은 은하 끝까지 쫓아올 거예요. 우린 싸워야 해요."
+        },
+        {
+          "speaker": "REFUGEE_LEADER",
+          "text": "...우리 아이들은? 노인들은? 싸울 수 없는 이들은?"
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "안드로메다 평의회가 보호할 거예요. 하지만 싸울 수 있는 이들은 힘을 모아야 해요."
+        },
+        {
+          "speaker": "BOSS",
+          "text": "고향을 되찾고 싶지 않나? 다시 자유롭게 날고 싶지 않나?"
+        },
+        {
+          "speaker": "REFUGEE_LEADER",
+          "text": "...그렇지. 우린 한때 전사였어. 다시 날개를 펼칠 때가 왔나보군."
+        }
+      ]
+    },
+
+    "gathering": {
+      "title": "THE GATHERING",
+      "location": "ASSEMBLY HALL",
+      "background": "bg_command.jpg",
+      "bgm": "bgm_briefing.mp3",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "대연합 회의 개최. 참석 종족: 인류, 드라코니안, 아비안, 크리스탈린..."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "오늘 우린 역사적인 순간을 맞이했어요. 카이론에게 고향을 잃은 우리 모두가 모였습니다."
+        },
+        {
+          "speaker": "BOSS",
+          "text": "우리는 서로 다른 종족이지만, 같은 고통을 겪었다. 같은 적과 싸운다."
+        },
+        {
+          "speaker": "REFUGEE_LEADER",
+          "text": "변방 연합... 패배자들의 모임이라 불렸지. 하지만 이제는 다르다."
+        },
+        {
+          "speaker": "CRYSTAL_REP",
+          "text": "[에코음] 우리는... 함께... 강하다. 카이론에게... 보여주자."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "지구를 되찾고, 은하 중심부로 반격한다. 자유를 되찾는다!"
+        },
+        {
+          "speaker": "ALL",
+          "text": "[함성] 자유를! 고향을! 승리를!"
+        }
+      ]
+    },
+
+    "ending": {
+      "title": "MISSION COMPLETE",
+      "location": "ALLIED SHIP - BRIDGE",
+      "background": "bg_command.jpg",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "대연합 결성 완료. 참여 종족: 5개. 총 함대: 237척."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "믿기지 않아... 우리가 이렇게 큰 동맹을 만들었어."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "아직 시작일 뿐이야. 더 많은 종족들이 우리와 함께할 거야."
+        },
+        {
+          "speaker": "BOSS",
+          "text": "[통신] 평의회에서 연락이 왔다. 최종 작전 준비를 시작한대."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "최종 작전?"
+        },
+        {
+          "speaker": "BOSS",
+          "text": "은하 중심부 공격. 카이론 중앙 AI를 파괴한다."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "드디어... 끝을 낼 수 있는 건가?"
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "이길 수 있어. 이제 우린 혼자가 아니니까."
+        },
+        {
+          "speaker": "NARRATOR",
+          "text": "다음 목표: 은하 중심부. 작전명 'Heart of the Empire'."
+        }
+      ]
+    }
+  },
+
+  "segments": [
+    { "type": "DIALOGUE", "scene": "briefing" },
+    { "type": "DIALOGUE", "scene": "opening" },
+    { "type": "COMBAT", "rounds": 4, "enemies": ["scout", "fighter", "tank"] },
+    { "type": "DIALOGUE", "scene": "mid_01" },
+    { "type": "COMBAT", "rounds": 3, "enemies": ["fighter", "tank", "heavy"] },
+    { "type": "DIALOGUE", "scene": "council" },
+    { "type": "DIALOGUE", "scene": "gathering" },
+    { "type": "DIALOGUE", "scene": "ending" }
+  ]
+}

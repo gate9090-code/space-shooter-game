@@ -391,17 +391,33 @@ def render_dialogue_box(
     speaker = dialogue.get("speaker", "") if dialogue else ""
 
     screen_w, screen_h = screen_size
-    box_width = (screen_w - 100) // 2  # 가로 1/2 크기
-    box_x = (screen_w - box_width) // 2  # 중앙 정렬
-    box_y = screen_h - box_height - 40
+
+    # 위쪽으로 이동된 y 좌표 사용 (narrative_mode와 동일)
+    box_y = screen_h - box_height - 150
 
     # TextBoxExpand 효과 적용
-    if textbox_expand and not textbox_expand.complete:
-        actual_width = int(textbox_expand.current_width)
-        actual_height = int(textbox_expand.current_height)
+    if textbox_expand:
+        # 펼침 중이거나 완료된 경우 모두 textbox_expand의 설정 사용
+        if not textbox_expand.complete:
+            actual_width = int(textbox_expand.current_width)
+            actual_height = int(textbox_expand.current_height)
+        else:
+            # 완료 후에도 target_rect의 크기 사용
+            actual_width = textbox_expand.target_rect.width
+            actual_height = textbox_expand.target_rect.height
+        actual_box_x = textbox_expand.start_x
+        actual_box_y = textbox_expand.target_rect.y
+        # 반환값을 위해 변수 할당
+        box_x = actual_box_x
+        box_width = actual_width
     else:
+        # textbox_expand가 없으면 기본값 사용 (폴백)
+        box_width = screen_w // 2
+        box_x = 100
         actual_width = box_width
         actual_height = box_height
+        actual_box_x = box_x
+        actual_box_y = box_y
 
     # 대화창 바 이미지 로드
     dialogue_bars = _load_dialogue_bars()
@@ -412,7 +428,7 @@ def render_dialogue_box(
     if bar_image:
         # 이미지를 대화창 크기에 맞게 스케일
         scaled_bar = pygame.transform.smoothscale(bar_image, (actual_width, actual_height))
-        screen.blit(scaled_bar, (box_x, box_y))
+        screen.blit(scaled_bar, (actual_box_x, actual_box_y))
     else:
         # 이미지가 없으면 기본 박스 그리기 (폴백)
         box_surf = pygame.Surface((actual_width, actual_height), pygame.SRCALPHA)
@@ -423,34 +439,49 @@ def render_dialogue_box(
         pygame.draw.rect(
             box_surf, border_col, (0, 0, actual_width, actual_height), 2, border_radius=10
         )
-        screen.blit(box_surf, (box_x, box_y))
+        screen.blit(box_surf, (actual_box_x, actual_box_y))
 
-    # 초상화 (StoryBriefingEffect 스타일: 200x200, 하단 왼쪽 정렬, 사각형)
+    # 초상화 위치 계산 (textbox_expand 정보 기반)
     portrait_width = 0
+    portrait_x = 0
     if has_portrait and portrait:
-        # 화자에 따라 초상화 크기 조정 (30% 추가 확대)
+        # 화자에 따라 초상화 크기 조정
         speaker = dialogue.get("speaker", "") if dialogue else ""
         if speaker == "ARTEMIS":
-            portrait_size = 364  # 아르테미스: 280 * 1.3
+            portrait_size = 364
         else:
-            portrait_size = 338  # 기타 캐릭터: 260 * 1.3
+            portrait_size = 338  # PILOT, NARRATOR
 
-        portrait_x = box_x + 20
-        portrait_y = box_y + box_height - portrait_size - 10  # bottomleft 정렬
+        # textbox_expand에서 그룹 정보 가져오기
+        if textbox_expand:
+            # 대화창 시작점 = 캐릭터 중심
+            dialogue_box_start = textbox_expand.start_x
+            # 캐릭터 중심에서 역산하여 캐릭터 왼쪽 위치 계산
+            portrait_center_x = dialogue_box_start
+            portrait_x = portrait_center_x - portrait_size // 2
+        else:
+            # 폴백: 전체 그룹 폭 계산 (화면 2/3)
+            total_width = int(screen_w * 0.66)
+            group_start_x = (screen_w - total_width) // 2
+            portrait_x = group_start_x
+
+        portrait_y = actual_box_y + box_height - portrait_size  # bottomleft 정렬 (대화창 바닥과 동일)
 
         # 초상화 스케일 및 표시
         portrait_copy = pygame.transform.smoothscale(
             portrait, (portrait_size, portrait_size)
         )
         screen.blit(portrait_copy, (portrait_x, portrait_y))
-        portrait_width = portrait_size + 30  # 간격 유지
+        portrait_width = portrait_size
 
-    # 텍스트 시작 위치 (초상화 오른쪽)
-    text_left_x = box_x + portrait_width + 20
+    # 텍스트 시작 위치 (모든 화자 동일 위치 - ARTEMIS 기준 364px + 20px)
+    # PILOT(338px)과 ARTEMIS(364px)의 텍스트 시작점을 통일
+    max_portrait_size = 364  # ARTEMIS 크기
+    text_left_x = portrait_x + max_portrait_size + 20  # 최대 캐릭터 크기 + 간격
 
-    # 화자 이름 (StoryBriefingEffect 스타일)
-    text_y = box_y + 15
-    if speaker and speaker != "NARRATOR" and "medium" in fonts:
+    # 화자 이름 (모든 화자 표시, NARRATOR 포함)
+    text_y = actual_box_y + 15
+    if speaker and "medium" in fonts:
         try:
             from mode_configs.config_story_dialogue import (
                 CHARACTER_COLORS,
@@ -467,14 +498,16 @@ def render_dialogue_box(
         screen.blit(name_surf, (text_left_x, text_y))
         text_y = text_y + name_surf.get_height() + 10
     else:
-        text_y = box_y + 20
+        text_y = actual_box_y + 20
 
     # 대사 텍스트 (단어 단위 줄바꿈 - StoryBriefingEffect 스타일)
     if "small" in fonts and dialogue_text:
         visible_text = dialogue_text[: int(typing_progress)]
 
-        # 텍스트 영역 너비 계산
-        max_width = box_width - portrait_width - 60
+        # 텍스트 영역 너비 계산 (대화창 우측 끝까지 - 우측 여백)
+        # text_left_x부터 대화창 끝까지 사용 가능
+        text_area_right = actual_box_x + actual_width - 60  # 우측 여백 (클릭 힌트 공간)
+        max_width = text_area_right - text_left_x
 
         # 단어 단위 줄바꿈 (StoryBriefingEffect 방식)
         words = visible_text.split()
@@ -502,9 +535,13 @@ def render_dialogue_box(
                 text_surf, (text_left_x, text_y + i * 28)
             )  # 28px 간격 (StoryBriefingEffect)
 
-    # 클릭 대기 표시 (StoryBriefingEffect 스타일)
-    if waiting_for_click and "small" in fonts:
-        hint = fonts["small"].render("▼", True, (150, 150, 150))
-        screen.blit(hint, (box_x + box_width - 50, box_y + box_height - 35))
+    # 클릭 대기 표시 (대화창 우측 내부, 깜빡이는 이모지)
+    if waiting_for_click and "medium" in fonts:
+        # 깜빡이는 효과를 위한 알파값 (시간 기반)
+        import time
+        alpha = int(abs(math.sin(time.time() * 3) * 155) + 100)  # 100~255 사이
+        hint = fonts["medium"].render("▶", True, (200, 200, 200))
+        hint.set_alpha(alpha)
+        screen.blit(hint, (actual_box_x + actual_width - 40, actual_box_y + actual_height - 50))
 
     return box_x, box_y, box_width, box_height  # 필요시 반환

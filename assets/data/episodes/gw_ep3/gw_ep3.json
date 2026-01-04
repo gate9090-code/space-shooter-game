@@ -1,0 +1,262 @@
+{
+  "id": "gw_ep3",
+  "act": 3,
+  "title": "은하 중심부의 그림자",
+  "title_en": "THE CORE'S SHADOW",
+  "description": "드라코니안 연합과 함께 은하 중심부 정찰. Chiron의 진짜 정체를 발견한다.",
+
+  "defaults": {
+    "background": "bg_space.jpg",
+    "bgm": "bgm_combat.mp3"
+  },
+
+  "scenes": {
+    "briefing": {
+      "title": "MISSION BRIEFING",
+      "location": "COMMAND CENTER",
+      "background": "bg_command.jpg",
+      "bgm": "bgm_briefing.mp3",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "작전 브리핑을 시작합니다. 목표: 은하 중심부 Sagittarius Arm 정찰."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "드라코니안 연합과 합동 작전이야. 카이론의 본거지에 가까워진다."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "위험하지 않을까? 카이론의 영역인데..."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "적을 알아야 이긴다. 정보가 필요해."
+        },
+        {
+          "speaker": "NARRATOR",
+          "text": "드라코니안 정찰함과 랑데부 지점 설정 완료. 출격 준비하십시오."
+        }
+      ]
+    },
+
+    "opening": {
+      "title": "ACT 3: THE CORE'S SHADOW",
+      "location": "SAGITTARIUS ARM - OUTER EDGE",
+      "background": "bg_space.jpg",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "Sagittarius Arm 외곽 도착. 드라코니안 함대와 합류 중."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "저기... 드라코니안 함선이다. 생각보다 크네."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "통신 연결. 작전 좌표 확인해."
+        },
+        {
+          "speaker": "BOSS",
+          "text": "[통신] 인간들, 잘 왔다. 우리 정찰대를 따라오라."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "은하 중심부... 별들이 너무 많아. 이상하게 아름답네."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "하지만 여기가 카이론의 영역이야. 경계를 늦추지 마."
+        }
+      ]
+    },
+
+    "mid_01": {
+      "title": "",
+      "location": "SAGITTARIUS ARM - DEEP SPACE",
+      "background": "bg_space.jpg",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "경고. 카이론 순찰대 감지. 다수의 적 반응."
+        },
+        {
+          "speaker": "BOSS",
+          "text": "[통신] 예상했던 일이다. 조용히 제거하자."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "알았어. 전투 준비!"
+        }
+      ]
+    },
+
+    "discovery": {
+      "title": "THE DISCOVERY",
+      "location": "CORE WORLDS - BORDER",
+      "background": "bg_space.jpg",
+      "bgm": "bgm_boss.mp3",
+      "dialogues": [
+        {
+          "speaker": "PILOT",
+          "text": "적 섬멸 완료. 하지만... 저건 뭐야?"
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "거대한 구조물이야. 함선? 아니... 너무 커."
+        },
+        {
+          "speaker": "BOSS",
+          "text": "[통신] ...카이론 중앙 노드다. 저기서 모든 명령이 나온다."
+        },
+        {
+          "speaker": "NARRATOR",
+          "text": "스캔 결과: 거대 AI 네트워크 노드. 생체 신호 다수 감지."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "생체 신호? 저 안에 생명체가 있어?"
+        },
+        {
+          "speaker": "BOSS",
+          "text": "정복당한 종족들이다. 개조되어 AI에 연결된... 노예들."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "그럼... 저들은 모두..."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "자유 의지가 없다는 거야? 끔찍해..."
+        }
+      ]
+    },
+
+    "encounter": {
+      "title": "",
+      "location": "CORE WORLDS - BORDER",
+      "background": "bg_space.jpg",
+      "bgm": "bgm_boss.mp3",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "경고! 중앙 노드에서 신호 발신. AI가 우리를 감지했습니다!"
+        },
+        {
+          "speaker": "CHIRON_AI",
+          "text": "[합성음] ...침입자 확인. 미등록 생명체. 효율성 저하 요인."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "카이론 AI가 직접 통신을 해오고 있어!"
+        },
+        {
+          "speaker": "CHIRON_AI",
+          "text": "저항은 비효율적. 개체의 의지는 무의미. 집합체에 편입될 것."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "우릴... 동화시키려는 거야?"
+        },
+        {
+          "speaker": "BOSS",
+          "text": "[통신] 도망쳐! 추격 함대가 온다!"
+        },
+        {
+          "speaker": "CHIRON_AI",
+          "text": "도주 시도 무의미. 포획 개시."
+        }
+      ]
+    },
+
+    "escape": {
+      "title": "ESCAPE",
+      "location": "SAGITTARIUS ARM - RETREAT",
+      "background": "bg_space.jpg",
+      "bgm": "bgm_combat.mp3",
+      "dialogues": [
+        {
+          "speaker": "ARTEMIS",
+          "text": "뒤에서 추격해 온다! 엔진 최대 출력!"
+        },
+        {
+          "speaker": "BOSS",
+          "text": "[통신] 우리가 시간을 벌겠다! 너희는 먼저 가라!"
+        },
+        {
+          "speaker": "PILOT",
+          "text": "하지만!"
+        },
+        {
+          "speaker": "BOSS",
+          "text": "정보를 전해야 한다! 카이론의 정체를! 가라!"
+        },
+        {
+          "speaker": "NARRATOR",
+          "text": "드라코니안 함대, 후방 엄호 중. 와프 점프 준비 완료."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "...미안해. 살아남아줘."
+        }
+      ]
+    },
+
+    "ending": {
+      "title": "MISSION COMPLETE",
+      "location": "ALLIED SHIP - BRIDGE",
+      "background": "bg_command.jpg",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "와프 점프 완료. 안드로메다 귀환 항로."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "...드라코니안들은 무사할까?"
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "그들은 전사야. 살아남을 거야. 하지만..."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "카이론... AI 집합체. 정복당한 종족들을 노예로..."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "이건 단순한 전쟁이 아니야. 자유 의지 자체를 빼앗는 거야."
+        },
+        {
+          "speaker": "NARRATOR",
+          "text": "평의회에 긴급 보고 전송 중. 중요 정보: Chiron = AI 집합체."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "이제 우리가 뭘 상대하고 있는지 알았어. 더 많은 동맹이 필요해."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "그래... 이길 수 있을까?"
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "이겨야 해. 아니면 우리 모두 저렇게 되니까."
+        }
+      ]
+    }
+  },
+
+  "segments": [
+    { "type": "DIALOGUE", "scene": "briefing" },
+    { "type": "DIALOGUE", "scene": "opening" },
+    { "type": "COMBAT", "rounds": 3, "enemies": ["scout", "fighter", "tank"] },
+    { "type": "DIALOGUE", "scene": "mid_01" },
+    { "type": "DIALOGUE", "scene": "discovery" },
+    { "type": "DIALOGUE", "scene": "encounter" },
+    { "type": "COMBAT", "rounds": 4, "enemies": ["fighter", "tank", "heavy"] },
+    { "type": "DIALOGUE", "scene": "escape" },
+    { "type": "DIALOGUE", "scene": "ending" }
+  ]
+}

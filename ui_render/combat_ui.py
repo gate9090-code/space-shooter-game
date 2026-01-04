@@ -69,8 +69,15 @@ def draw_boss_health_bar(
 
     # 보스 이름 표시
     name_font = get_font("large")
+    # Enemy 타입인 경우 boss_name 속성이 없으므로 type_config에서 가져옴
+    if hasattr(boss, 'boss_name'):
+        boss_name = boss.boss_name
+    elif hasattr(boss, 'type_config'):
+        boss_name = boss.type_config.get('name', 'BOSS')
+    else:
+        boss_name = 'BOSS'
     name_text = render_text_with_emoji(
-        f"👹 {boss.boss_name} 👹",
+        f"👹 {boss_name} 👹",
         name_font,
         config.UI_COLORS["DANGER"],
         "MEDIUM"

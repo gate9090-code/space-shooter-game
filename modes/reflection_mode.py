@@ -123,9 +123,6 @@ class ReflectionMode(GameMode):
         # 음성 시스템 초기화
         self._init_voice_system()
 
-        # 커스텀 커서
-        self.custom_cursor = self._load_base_cursor()
-
         # 대화 시작
         self.dialogue_state = "intro"
         self.fade_alpha = 255
@@ -498,9 +495,6 @@ class ReflectionMode(GameMode):
         if self.dialogue_state == "waiting":
             self._render_hint(screen)
 
-        # 커스텀 커서
-        self._render_base_cursor(screen, self.custom_cursor)
-
     def _render_portrait(self, screen: pygame.Surface):
         """캐릭터 포트레이트 렌더링"""
         if not self.current_speaker:
@@ -594,11 +588,8 @@ class ReflectionMode(GameMode):
 
     def on_enter(self):
         super().on_enter()
-        if self.custom_cursor:
-            self._enable_custom_cursor()
 
     def on_exit(self):
-        self._disable_custom_cursor()
         super().on_exit()
 
 

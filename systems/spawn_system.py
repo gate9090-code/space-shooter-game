@@ -14,6 +14,7 @@ import config
 # Entity imports from new modules
 from entities.enemies import Enemy
 from entities.collectibles import CoinGem, HealItem
+from entities.droid_carrier import DroidCarrier
 
 
 @dataclass
@@ -58,6 +59,10 @@ class SpawnSystem:
         self.config = spawn_config or SpawnConfig()
         self.last_enemy_spawn_time = 0
         self.last_gem_spawn_time = 0
+
+        # Carrier 스폰 관리
+        self.carriers: List[DroidCarrier] = []  # 활성 캐리어 리스트
+        self.carrier_spawned_waves = set()  # 캐리어가 스폰된 웨이브 기록
 
     def spawn_enemies(
         self,
@@ -325,7 +330,22 @@ class SpawnSystem:
         screen_height: int,
     ) -> Optional[Enemy]:
         """보스 생성"""
-        # 웨이브별 보스 설정
+        # Wave 6: 블루 드래곤 보스
+        if current_wave == 6:
+            try:
+                boss = Enemy(
+                    pos=position.copy(),
+                    screen_height=screen_height,
+                    chase_probability=1.0,
+                    enemy_type="BLUE_DRAGON",
+                )
+                print(f"INFO: Blue Dragon boss spawned for wave {current_wave}")
+                return boss
+            except Exception as e:
+                print(f"WARNING: Failed to create Blue Dragon boss: {e}")
+                return None
+
+        # 다른 웨이브: 기존 보스 설정
         boss_config = config.BOSS_CONFIGS.get(current_wave, {})
 
         try:
@@ -429,6 +449,99 @@ class SpawnSystem:
             import traceback
             traceback.print_exc()
             return None
+
+    def try_spawn_carrier(
+        self,
+        screen_size: Tuple[int, int],
+        current_wave: int,
+        game_data: Dict,
+    ) -> Optional[DroidCarrier]:
+        """
+        Droid Carrier 스폰 시도 (1단계: 짝수 웨이브 전용)
+
+        Wave 6, 8, 10, 12, 14, 16, 18... (보스 웨이브 제외)
+        웨이브당 1회만 등장
+
+        Returns:
+            생성된 Carrier 또는 None
+        """
+        # 보스 웨이브는 제외
+        if current_wave in config.BOSS_WAVES:
+            return None
+
+        # Wave 6 미만은 제외
+        if current_wave < 6:
+            return None
+
+        # 짝수 웨이브만
+        if current_wave % 2 != 0:
+            return None
+
+        # 이미 이 웨이브에서 스폰했으면 제외
+        if current_wave in self.carrier_spawned_waves:
+            return None
+
+        # Carrier 생성
+        carrier = DroidCarrier(screen_size=screen_size, current_wave=current_wave)
+        self.carriers.append(carrier)
+        self.carrier_spawned_waves.add(current_wave)
+        print(f"INFO: Droid Carrier spawned at Wave {current_wave}")
+        return carrier
+
+    def update_carriers(
+        self,
+        dt: float,
+        current_time: float,
+        enemies: List[Enemy],
+    ) -> List[HealItem]:
+        """
+        Carrier 업데이트 (드로이드 투하 포함)
+
+        Returns:
+            생성된 HP 젬 리스트
+        """
+        hp_gems = []
+
+        for carrier in self.carriers[:]:  # 복사본으로 순회
+            # 드로이드 투하
+            newly_spawned = carrier.update(dt, current_time)
+            enemies.extend(newly_spawned)
+
+            # 죽은 캐리어 제거
+            if carrier.dead:
+                self.carriers.remove(carrier)
+
+        return hp_gems
+
+    def check_carrier_hit(
+        self,
+        carrier: DroidCarrier,
+        damage: float,
+        player_pos: Tuple[int, int],
+    ) -> Optional[HealItem]:
+        """
+        Carrier 피격 체크 및 HP 젬 드롭
+
+        Args:
+            carrier: 피격된 캐리어
+            damage: 데미지
+            player_pos: 플레이어 위치 (HP 젬 드롭 위치)
+
+        Returns:
+            생성된 HP 젬 또는 None
+        """
+        should_drop_gem = carrier.take_damage(damage)
+
+        if should_drop_gem:
+            # HP 젬 생성
+            heal_item = HealItem(
+                pos=pygame.math.Vector2(carrier.pos.x, carrier.pos.y),
+                heal_amount=1  # HP 1 회복
+            )
+            print(f"INFO: HP gem dropped from carrier at ({carrier.pos.x}, {carrier.pos.y})")
+            return heal_item
+
+        return None
 
 
 print("INFO: spawn_system.py loaded")

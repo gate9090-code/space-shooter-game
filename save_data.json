@@ -1,5 +1,5 @@
 {
-    "score": 1755,
+    "score": 26480,
     "player_upgrades": {
         "COOLDOWN": 4,
         "MAX_HP": 10,
@@ -29,7 +29,7 @@
     },
     "current_ship": "FIGHTER",
     "player_inventory": {
-        "REPAIR_KIT_50": 1,
+        "REPAIR_KIT_50": 2,
         "MEGA_BOMB": 2,
         "HOMING_MISSILES": 1
     }

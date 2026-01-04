@@ -148,9 +148,6 @@ class ShopMode(GameMode):
         self.back_rect = None
         self.back_hover = False
 
-        # 커스텀 커서
-        self.custom_cursor = self._load_base_cursor()
-
         print("INFO: ShopMode initialized (Unified UI)")
 
     def _create_background(self) -> pygame.Surface:
@@ -232,9 +229,6 @@ class ShopMode(GameMode):
 
         # 키보드 힌트
         self.ui_manager.render_keyboard_hints(screen, "1-5 Categories  |  Scroll Mouse  |  ESC Back")
-
-        # 커스텀 커서
-        self._render_base_cursor(screen, self.custom_cursor)
 
     def _render_items(self, screen: pygame.Surface):
         """아이템 목록 렌더링 - Web Button 디자인 스타일"""
@@ -470,14 +464,11 @@ class ShopMode(GameMode):
 
     def on_enter(self):
         super().on_enter()
-        if self.custom_cursor:
-            self._enable_custom_cursor()
 
     def on_exit(self):
         self.engine.shared_state['global_score'] = self.credits
         self.engine.shared_state['player_inventory'] = self.inventory
         self.engine.save_shared_state()
-        self._disable_custom_cursor()
         super().on_exit()
 
 

@@ -85,10 +85,11 @@ class ParticleSystem:
         if y is None:
             y = random.uniform(0, self.screen_size[1])
 
+        # 밝은 배경용 - 어두운 파티클
         color_choices = [
-            (80, 120, 200),
-            (100, 80, 180),
-            (60, 140, 200),
+            (60, 80, 120),
+            (80, 90, 140),
+            (50, 70, 110),
         ]
 
         self.particles.append(Particle(
@@ -128,6 +129,172 @@ class ParticleSystem:
                     max(1, int(particle.size))
                 )
                 screen.blit(surf, (int(particle.x - 4), int(particle.y - 4)))
+
+
+# =============================================================================
+# 장식용 오브젝트 시스템 (base_set01.png)
+# =============================================================================
+
+@dataclass
+class DecorativeObject:
+    """장식용 오브젝트 - 기지 중심 ↔ 외곽 이동"""
+    x: float
+    y: float
+    size: float
+    alpha: float
+    life: float
+    max_life: float
+    direction: int  # 0: 중심→외곽, 1: 외곽→중심
+    angle: float  # 이동 방향 (라디안)
+    curve_offset: float  # sin/cos 곡선 오프셋
+    curve_speed: float  # 곡선 속도
+    rotation: float = 0.0
+    image_index: int = 0  # 사용할 이미지 인덱스 (0 or 1)
+
+
+class DecorativeObjectSystem:
+    """장식용 오브젝트 매니저"""
+
+    def __init__(self, screen_size: Tuple[int, int], center: Tuple[int, int]):
+        self.screen_size = screen_size
+        self.center = center
+        self.objects: List[DecorativeObject] = []
+        self.spawn_timer = 0.0
+        self.spawn_interval = 15.0  # 15초마다 스폰 (매우 간헐적)
+
+        # base_set01.png, base_set02.png 로드 (두 개 모두)
+        self.images = []
+        try:
+            for i in [1, 2]:
+                img_path = config.ASSET_DIR / "images" / "base" / f"base_set0{i}.png"
+                if img_path.exists():
+                    img = pygame.image.load(str(img_path)).convert_alpha()
+                    self.images.append(img)
+                    print(f"INFO: Loaded decorative object: {img_path}")
+        except Exception as e:
+            print(f"WARNING: Failed to load base_set images: {e}")
+
+    def _spawn_object(self):
+        """오브젝트 생성 - 외곽→중심 진입만"""
+        if not self.images:
+            return
+
+        # 외곽→중심만 (진입하는 우주선)
+        direction = 1
+
+        screen_w, screen_h = self.screen_size
+        # 화면 가장자리 랜덤 위치
+        edge = random.choice(['top', 'bottom', 'left', 'right'])
+        if edge == 'top':
+            x = random.uniform(0, screen_w)
+            y = -150
+        elif edge == 'bottom':
+            x = random.uniform(0, screen_w)
+            y = screen_h + 150
+        elif edge == 'left':
+            x = -150
+            y = random.uniform(0, screen_h)
+        else:  # right
+            x = screen_w + 150
+            y = random.uniform(0, screen_h)
+
+        size = random.uniform(120, 180)  # 크게 증가
+        alpha = 0  # 서서히 나타남
+
+        life = random.uniform(12, 16)  # 더 긴 생명
+
+        # 랜덤 이미지 선택
+        image_index = random.randint(0, len(self.images) - 1)
+
+        obj = DecorativeObject(
+            x=x, y=y,
+            size=size,
+            alpha=alpha,
+            life=life,
+            max_life=life,
+            direction=direction,
+            angle=0,  # 중심을 향하므로 angle은 동적으로 계산
+            curve_offset=random.uniform(0, math.pi * 2),
+            curve_speed=random.uniform(0.3, 0.8),  # 부드러운 곡선
+            rotation=0,  # 회전 없음
+            image_index=image_index  # 이미지 인덱스
+        )
+        self.objects.append(obj)
+
+    def update(self, dt: float):
+        """업데이트"""
+        # 스폰 타이머
+        self.spawn_timer += dt
+        if self.spawn_timer >= self.spawn_interval:
+            self.spawn_timer = 0
+            self._spawn_object()
+
+        # 오브젝트 업데이트 (외곽→중심만)
+        for obj in self.objects[:]:
+            obj.life -= dt
+            progress = 1.0 - (obj.life / obj.max_life)
+
+            # 외곽→중심: 크기 유지, 알파만 페이드
+            if progress < 0.2:
+                # 페이드 인 (처음 20%)
+                obj.alpha = 255 * (progress / 0.2)
+            elif progress > 0.8:
+                # 페이드 아웃 (마지막 20%)
+                obj.alpha = 255 * (1.0 - (progress - 0.8) / 0.2)
+            else:
+                # 중간 유지
+                obj.alpha = 255
+
+            # 중심(기지)으로 직선 비행 (곡선 없음)
+            dx = self.center[0] - obj.x
+            dy = self.center[1] - obj.y
+            distance = math.sqrt(dx * dx + dy * dy)
+
+            if distance > 5:  # 중심에 거의 도달하면 정지
+                # 느린 직선 비행
+                speed = 50
+
+                # 중심을 향해 직선 이동
+                obj.x += (dx / distance) * speed * dt
+                obj.y += (dy / distance) * speed * dt
+
+            # 회전 없음, 직선 비행
+
+            # 제거 조건
+            if obj.life <= 0 or obj.size <= 0 or obj.alpha <= 0:
+                self.objects.remove(obj)
+                continue
+
+            # 화면 밖으로 너무 나가면 제거
+            screen_w, screen_h = self.screen_size
+            if (obj.x < -200 or obj.x > screen_w + 200 or
+                obj.y < -200 or obj.y > screen_h + 200):
+                self.objects.remove(obj)
+
+    def draw(self, screen: pygame.Surface):
+        """렌더링 - 선명하게, 회전 없음"""
+        if not self.images:
+            return
+
+        for obj in self.objects:
+            if obj.alpha > 5 and obj.size > 0:
+                # 이미지 인덱스 확인
+                if obj.image_index >= len(self.images):
+                    continue
+                image = self.images[obj.image_index]
+
+                # 크기 조정 (smoothscale 대신 scale로 더 선명하게)
+                size = max(10, int(obj.size))
+                scaled = pygame.transform.scale(image, (size, size))
+
+                # 회전 없음 - 직선 비행
+
+                # 알파 적용
+                scaled.set_alpha(int(obj.alpha))
+
+                # 렌더링
+                rect = scaled.get_rect(center=(int(obj.x), int(obj.y)))
+                screen.blit(scaled, rect)
 
 
 # =============================================================================
@@ -351,6 +518,11 @@ class BaseHubMode(GameMode):
         self.background = self._load_facility_background()
         self.particle_system = ParticleSystem(self.screen_size, count=25)
 
+        # 장식용 오브젝트 시스템 초기화 (base_set01.png)
+        center_x = SCREEN_WIDTH // 2
+        center_y = (SCREEN_HEIGHT - 100) // 2
+        self.decorative_system = DecorativeObjectSystem(self.screen_size, (center_x, center_y))
+
         # 플레어 시스템 초기화
         flare_path = str(config.ASSET_DIR / "images" / "base" / "facilities" / "facility_flare.png")
         self.flare_system = FlareSystem(flare_path)
@@ -382,20 +554,29 @@ class BaseHubMode(GameMode):
         # 음성 시스템 (컷씬용)
         self.voice_system = None
 
-        # 커스텀 커서 로드
-        self.custom_cursor = self._load_custom_cursor()
-
-        # 커스텀 커서 사용 시 기본 커서 즉시 숨김
-        if self.custom_cursor:
-            pygame.mouse.set_visible(False)
-
         # 우주선 진입 애니메이션
         self.arrival_animation = None
 
         print("INFO: BaseHubMode initialized (Unified Flow)")
 
     def _show_opening_cutscene(self):
-        """게임 오프닝 컷씬 표시"""
+        """게임 오프닝 컷씬 표시 - NarrativeMode 사용"""
+        from modes.narrative_mode import NarrativeMode
+
+        # NarrativeMode로 intro_opening 씬 실행
+        print("INFO: Starting intro_opening cutscene via NarrativeMode")
+
+        # shared_state 설정 (NarrativeMode가 기대하는 형식)
+        self.engine.shared_state['narrative_data'] = {
+            'type': 'BRIEFING',
+            'scene_id': 'intro_opening',
+        }
+
+        # NarrativeMode 푸시 (완료되면 자동으로 팝되어 HUB로 복귀)
+        self.request_push_mode(NarrativeMode)
+
+    def _show_opening_cutscene_legacy(self):
+        """게임 오프닝 컷씬 표시 (레거시)"""
         from cutscenes.story_effects import StoryBriefingEffect
         from mode_configs import config_story_dialogue
 
@@ -436,7 +617,8 @@ class BaseHubMode(GameMode):
             dialogue_data=dialogues,
             background_path=bg_path,
             title=title,
-            location=location
+            location=location,
+            sound_manager=self.sound_manager  # 타이핑 사운드를 위한 사운드 매니저 전달
         )
         briefing.set_fonts(self.fonts)
         briefing.on_complete = self._on_opening_complete
@@ -482,9 +664,7 @@ class BaseHubMode(GameMode):
                         voice=settings.get("voice", "ko-KR-SunHiNeural"),
                         rate=settings.get("rate", "+0%"),
                         pitch=settings.get("pitch", "+0Hz"),
-                        style=settings.get("style"),
-                        style_degree=settings.get("style_degree", 1.0),
-                        auto_emotion=settings.get("auto_emotion", True)
+                        static_effect=settings.get("static_effect", False)
                     )
                 elif adapter_type == "pyttsx3":
                     adapter = Pyttsx3Adapter(
@@ -503,11 +683,11 @@ class BaseHubMode(GameMode):
             self.voice_system = None
 
     def _speak_dialogue(self, speaker: str, text: str):
-        """대사 음성 재생"""
+        """대사 음성 재생 (괄호 안 감정 표현 제거)"""
         if self.voice_system and self.voice_system.enabled:
-            clean_text = text
-            if text.startswith("(") and ")" in text:
-                clean_text = text.strip("()")
+            import re
+            # 괄호로 된 감정 표현 모두 제거: (한숨), (생각), (독백) 등
+            clean_text = re.sub(r'\([^)]*\)\s*', '', text).strip()
             self.voice_system.speak(speaker, clean_text)
 
     def _on_opening_complete(self):
@@ -520,29 +700,21 @@ class BaseHubMode(GameMode):
             self.voice_system = None
         print("INFO: Opening cutscene complete, entering BaseHub")
 
-    def _load_custom_cursor(self) -> Optional[pygame.Surface]:
-        """커스텀 커서 이미지 로드"""
-        cursor_path = config.ASSET_DIR / "images" / "gameplay" / "collectibles" / "mouse_action.png"
-        try:
-            if cursor_path.exists():
-                cursor_img = pygame.image.load(str(cursor_path)).convert_alpha()
-                cursor_size = 64  # 2배 크기
-                cursor_img = pygame.transform.smoothscale(cursor_img, (cursor_size, cursor_size))
-                print("INFO: Custom cursor loaded")
-                return cursor_img
-        except Exception as e:
-            print(f"WARNING: Failed to load custom cursor: {e}")
-        return None
-
     def _load_facility_background(self) -> pygame.Surface:
-        """facility_bg 이미지를 배경으로 로드"""
-        bg_path = config.ASSET_DIR / "images" / "base" / "facilities" / "facility_bg.png"
-        try:
-            if bg_path.exists():
-                img = pygame.image.load(str(bg_path)).convert()
-                return pygame.transform.smoothscale(img, self.screen_size)
-        except Exception as e:
-            print(f"WARNING: Failed to load facility_bg: {e}")
+        """기지 배경 이미지 로드"""
+        # basehub_bg_01.jpg를 우선 로드
+        bg_paths = [
+            config.ASSET_DIR / "images" / "base" / "basehub_bg_01.jpg",
+            config.ASSET_DIR / "images" / "base" / "facilities" / "facility_bg.png",
+        ]
+
+        for bg_path in bg_paths:
+            try:
+                if bg_path.exists():
+                    img = pygame.image.load(str(bg_path)).convert()
+                    return pygame.transform.smoothscale(img, self.screen_size)
+            except Exception as e:
+                print(f"WARNING: Failed to load {bg_path.name}: {e}")
 
         # 폴백: 어두운 우주 배경
         surf = pygame.Surface(self.screen_size)
@@ -721,6 +893,9 @@ class BaseHubMode(GameMode):
         # 파티클
         self.particle_system.update(dt)
 
+        # 장식용 오브젝트 시스템 업데이트
+        self.decorative_system.update(dt)
+
         # 플레어 시스템 업데이트 (시설 아이콘 위치 전달)
         icon_positions = [icon.get_center() for icon in self.facility_icons]
         self.flare_system.update(dt, icon_positions)
@@ -773,6 +948,9 @@ class BaseHubMode(GameMode):
         # 2. 파티클
         self.particle_system.draw(screen)
 
+        # 2.5. 장식용 오브젝트 (배경 위, 모함 아래)
+        self.decorative_system.draw(screen)
+
         # 3. 중앙 모함 이미지
         self._render_carrier(screen)
 
@@ -813,19 +991,6 @@ class BaseHubMode(GameMode):
         if self.arrival_animation:
             self.arrival_animation.draw(screen)
 
-        # 13. 커스텀 커서 (최상단에 렌더링)
-        if self.custom_cursor:
-            mouse_pos = pygame.mouse.get_pos()
-            # 커서 핫스팟을 좌상단에서 약간 이동 (중앙보다 위쪽)
-            cursor_size = self.custom_cursor.get_size()
-            offset_x = cursor_size[0] * 0.35  # 중앙(0.5)보다 왼쪽
-            offset_y = cursor_size[1] * 0.35  # 중앙(0.5)보다 위쪽
-            cursor_rect = self.custom_cursor.get_rect(topleft=(
-                mouse_pos[0] - offset_x,
-                mouse_pos[1] - offset_y
-            ))
-            screen.blit(self.custom_cursor, cursor_rect)
-
     def _render_carrier(self, screen: pygame.Surface):
         """중앙 모함 이미지 렌더링"""
         SCREEN_WIDTH, SCREEN_HEIGHT = self.screen_size
@@ -846,13 +1011,7 @@ class BaseHubMode(GameMode):
             new_w = int(orig_w * scale)
             new_h = int(orig_h * scale)
 
-            # 글로우 효과
-            glow_alpha = int(20 + 15 * math.sin(self.animation_time * 1.5))
-            glow_surf = pygame.Surface((new_w + 60, new_h + 60), pygame.SRCALPHA)
-            pygame.draw.ellipse(glow_surf, (60, 100, 180, glow_alpha),
-                              (0, 0, new_w + 60, new_h + 60))
-            screen.blit(glow_surf, (center_x - (new_w + 60) // 2,
-                                   int(center_y + float_offset) - (new_h + 60) // 2))
+            # 타원형 글로우 효과 삭제 (밝은 배경에서는 불필요)
 
             # 모함 이미지
             scaled_carrier = pygame.transform.smoothscale(self.carrier_image, (new_w, new_h))
@@ -874,9 +1033,9 @@ class BaseHubMode(GameMode):
         # 모함 rect 저장
         self.carrier_rect = carrier_rect
 
-        # 타이틀을 모함 위에 렌더링 - 밝은 색상 (어두운 배경용)
+        # 타이틀을 모함 위에 렌더링 - 어두운 색상 (밝은 배경용)
         if carrier_rect:
-            title_text = self.fonts["large"].render("ECHO CARRIER", True, (180, 200, 230))
+            title_text = self.fonts["large"].render("ECHO CARRIER", True, (40, 50, 70))
             title_rect = title_text.get_rect(centerx=carrier_rect.centerx, bottom=carrier_rect.top - 15)
             screen.blit(title_text, title_rect)
 
@@ -914,7 +1073,7 @@ class BaseHubMode(GameMode):
             self._render_icon_label(screen, icon)
 
     def _render_elbow_connection(self, screen: pygame.Surface, icon: CircularFacilityIcon):
-        """도해 스타일 꺾인선 연결선 렌더링 - 얇은 검은색, 모함 내부로 연장"""
+        """도해 스타일 꺾인선 연결선 렌더링 - 밝은 배경용 진한 색상"""
         if not self.carrier_rect:
             return
 
@@ -938,15 +1097,15 @@ class BaseHubMode(GameMode):
 
         start_point = (start_x, start_y)
 
-        # 직선 연결 (elbow 없이) - 아이콘에서 모함 내부까지
-        line_color = (40, 40, 40)  # 얇은 검은색
-        line_width = 1
+        # 직선 연결 - 밝은 배경에 잘 보이는 진한 색상
+        line_color = (60, 80, 120)  # 진한 청회색
+        line_width = 2  # 좀 더 두껍게
 
         # 선 그리기 (시작점 -> 모함 연결점)
         pygame.draw.line(screen, line_color, start_point, carrier_point, line_width)
 
-        # 모함 연결점에 작은 원 마커 (검은색)
-        pygame.draw.circle(screen, (30, 30, 30), carrier_point, 3)
+        # 모함 연결점에 작은 원 마커
+        pygame.draw.circle(screen, (40, 60, 100), carrier_point, 4)
 
     def _draw_circular_image(self, screen: pygame.Surface, image: pygame.Surface,
                             center: Tuple[int, int], radius: int, inner_image_ratio: float = 1.0):
@@ -976,23 +1135,38 @@ class BaseHubMode(GameMode):
         screen.blit(masked, (center[0] - radius, center[1] - radius))
 
     def _render_icon_label(self, screen: pygame.Surface, icon: CircularFacilityIcon):
-        """아이콘 아래 시설 이름 라벨 - 밝은 색상 (어두운 배경용)"""
+        """아이콘 아래 시설 이름 라벨 - 어두운 색상 (밝은 배경용)"""
         center = icon.get_center()
         hover = icon.hover_progress
 
-        # 시설 이름 - 밝은 색상 (어두운 배경용)
-        name_color = (220, 230, 250) if hover > 0.3 else (160, 170, 190)
+        # 시설 이름 - 어두운 색상 (밝은 배경용), 배경 추가로 가독성 향상
+        name_color = (20, 30, 50) if hover > 0.3 else (60, 70, 90)
         name_font = self.fonts.get("small", self.fonts["tiny"])
         name_text = name_font.render(icon.display_name, True, name_color)
         name_rect = name_text.get_rect(centerx=center[0], top=center[1] + icon.radius + 8)
+
+        # 텍스트 배경 (반투명 흰색)
+        bg_padding = 6
+        bg_rect = name_rect.inflate(bg_padding * 2, bg_padding)
+        bg_surf = pygame.Surface((bg_rect.width, bg_rect.height), pygame.SRCALPHA)
+        pygame.draw.rect(bg_surf, (255, 255, 255, 180), bg_surf.get_rect(), border_radius=4)
+        screen.blit(bg_surf, bg_rect.topleft)
+
         screen.blit(name_text, name_rect)
 
-        # 설명 (호버 시에만) - 밝은 색상
+        # 설명 (호버 시에만) - 어두운 색상
         if hover > 0.2:
-            desc_color = (140, 160, 200)
+            desc_color = (80, 90, 120)
             desc_font = self.fonts.get("tiny", self.fonts["small"])
             desc_text = desc_font.render(icon.description, True, desc_color)
             desc_rect = desc_text.get_rect(centerx=center[0], top=name_rect.bottom + 2)
+
+            # 설명 배경
+            desc_bg_rect = desc_rect.inflate(bg_padding * 2, bg_padding)
+            desc_bg_surf = pygame.Surface((desc_bg_rect.width, desc_bg_rect.height), pygame.SRCALPHA)
+            pygame.draw.rect(desc_bg_surf, (255, 255, 255, 160), desc_bg_surf.get_rect(), border_radius=4)
+            screen.blit(desc_bg_surf, desc_bg_rect.topleft)
+
             screen.blit(desc_text, desc_rect)
 
     def _render_gallery_bar(self, screen: pygame.Surface):
@@ -1031,34 +1205,42 @@ class BaseHubMode(GameMode):
                 char_rect = char_text.get_rect(center=(icon_x, icon_y))
                 screen.blit(char_text, char_rect)
 
-            # 시설 이름 (아이콘 아래) - 밝은 텍스트 (어두운 배경용)
-            label_color = (220, 230, 250) if is_hovered else (150, 160, 180)
+            # 시설 이름 (아이콘 아래) - 어두운 텍스트 (밝은 배경용)
+            label_color = (20, 30, 50) if is_hovered else (60, 70, 90)
             label_font = self.fonts.get("tiny", self.fonts["small"])
             label_text = label_font.render(icon.display_name, True, label_color)
             label_rect = label_text.get_rect(centerx=icon_x, top=icon_y + current_radius + 4)
+
+            # 텍스트 배경 (반투명 흰색)
+            bg_padding = 4
+            bg_rect = label_rect.inflate(bg_padding * 2, bg_padding)
+            bg_surf = pygame.Surface((bg_rect.width, bg_rect.height), pygame.SRCALPHA)
+            pygame.draw.rect(bg_surf, (255, 255, 255, 160), bg_surf.get_rect(), border_radius=3)
+            screen.blit(bg_surf, bg_rect.topleft)
+
             screen.blit(label_text, label_rect)
 
     def _render_tooltip(self, screen: pygame.Surface):
-        """호버 툴팁 렌더링"""
+        """호버 툴팁 렌더링 - 밝은 배경용"""
         mouse_x, mouse_y = pygame.mouse.get_pos()
 
         for icon in self.facility_icons:
             if icon.name == self.hovered_icon:
                 tip_text = f"클릭하여 {icon.display_name} 입장"
                 tip_font = self.fonts.get("small", self.fonts["tiny"])
-                tip_surf = tip_font.render(tip_text, True, (200, 220, 255))
+                tip_surf = tip_font.render(tip_text, True, (30, 40, 60))
 
                 tip_w = tip_surf.get_width() + 20
                 tip_h = tip_surf.get_height() + 12
                 tip_x = min(mouse_x + 15, self.screen_size[0] - tip_w - 10)
                 tip_y = mouse_y - tip_h - 8
 
-                # 툴팁 배경
+                # 툴팁 배경 - 밝은 반투명 배경
                 tip_bg = pygame.Surface((tip_w, tip_h), pygame.SRCALPHA)
-                pygame.draw.rect(tip_bg, (20, 28, 45, 240),
+                pygame.draw.rect(tip_bg, (250, 250, 255, 240),
                                (0, 0, tip_w, tip_h), border_radius=6)
-                pygame.draw.rect(tip_bg, (*icon.color, 180),
-                               (0, 0, tip_w, tip_h), 1, border_radius=6)
+                pygame.draw.rect(tip_bg, (*icon.color, 200),
+                               (0, 0, tip_w, tip_h), 2, border_radius=6)
                 screen.blit(tip_bg, (tip_x, tip_y))
                 screen.blit(tip_surf, (tip_x + 10, tip_y + 6))
                 break
@@ -1085,28 +1267,28 @@ class BaseHubMode(GameMode):
                              SCREEN_HEIGHT // 2 + 150, btn_w, btn_h)
 
     def _render_launch_button(self, screen: pygame.Surface):
-        """출격 버튼 렌더링 (미니멀 디자인)"""
+        """출격 버튼 렌더링 - 밝은 배경용 진한 색상"""
         rect = self._get_launch_button_rect()
         hover = self.launch_glow
 
         # 버튼 배경 Surface
         btn_surf = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
 
-        # 배경 색상 (호버 시 밝아짐)
-        bg_r = int(160 + hover * 40)
-        bg_g = int(60 + hover * 25)
-        bg_b = int(50 + hover * 20)
-        pygame.draw.rect(btn_surf, (bg_r, bg_g, bg_b, 230),
+        # 배경 색상 - 진한 색상 (밝은 배경용, 호버 시 더 밝아짐)
+        bg_r = int(40 + hover * 30)
+        bg_g = int(60 + hover * 40)
+        bg_b = int(100 + hover * 50)
+        pygame.draw.rect(btn_surf, (bg_r, bg_g, bg_b, 240),
                         (0, 0, rect.width, rect.height), border_radius=8)
 
-        # 테두리 (호버 시 밝아짐)
-        border_color = (int(220 + hover * 35), int(100 + hover * 50), int(80 + hover * 40))
+        # 테두리 (호버 시 더 진하게)
+        border_color = (int(20 + hover * 40), int(40 + hover * 60), int(80 + hover * 80))
         pygame.draw.rect(btn_surf, border_color,
-                        (0, 0, rect.width, rect.height), 2, border_radius=8)
+                        (0, 0, rect.width, rect.height), 3, border_radius=8)
 
         screen.blit(btn_surf, rect.topleft)
 
-        # 텍스트 (다른 라벨과 같은 medium 폰트)
+        # 텍스트 - 흰색 유지 (진한 배경 위에)
         text_color = (255, 255, 255) if hover > 0.3 else (240, 240, 240)
         text = self.fonts["medium"].render("LAUNCH", True, text_color)
         text_rect = text.get_rect(center=rect.center)
@@ -1421,12 +1603,9 @@ class BaseHubMode(GameMode):
 
     def on_enter(self):
         super().on_enter()
+        pygame.mouse.set_visible(True)
         if hasattr(self, 'sound_manager') and self.sound_manager:
             self.sound_manager.play_bgm("base_bgm")
-
-        # 커스텀 커서 사용 시 기본 커서 숨김
-        if self.custom_cursor:
-            pygame.mouse.set_visible(False)
 
         # 기지 복귀 애니메이션 시작 (shared_state 플래그 확인)
         if self.engine.shared_state.get('start_arrival_animation', False):
@@ -1444,12 +1623,22 @@ class BaseHubMode(GameMode):
 
     def on_resume(self, return_data=None):
         super().on_resume(return_data)
+        pygame.mouse.set_visible(True)
         self.game_data["credits"] = self.engine.shared_state.get('global_score', 0)
         self.game_data["current_ship"] = self.engine.shared_state.get('current_ship', 'FIGHTER')
 
-        # 커스텀 커서 복원
-        if self.custom_cursor:
-            pygame.mouse.set_visible(False)
+        # NarrativeMode에서 복귀한 경우 처리
+        if return_data and return_data.get('narrative_complete'):
+            scene_id = return_data.get('scene_id')
+            if scene_id == 'intro_opening':
+                # 오프닝 컷씬 완료 처리
+                self.active_cutscene = None
+                self.opening_shown = True
+                # 음성 시스템 정리
+                if self.voice_system:
+                    self.voice_system.stop()
+                    self.voice_system = None
+                print("INFO: Opening cutscene complete, entering BaseHub")
 
     def _start_arrival_animation(self):
         """기지 진입 애니메이션 시작"""

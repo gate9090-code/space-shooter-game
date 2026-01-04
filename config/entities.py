@@ -61,47 +61,48 @@ BULLET_HITBOX_RATIO = 0.3  # 총알 이미지 대비 히트박스 비율
 WEAPON_COOLDOWN_BASE = 1.0  # 기본 발사 쿨다운 (초)
 PIERCING_HIT_COUNT = 3 # 관통 총알의 최대 관통 횟수(50)
 
-ENEMY_BASE_HP = 80.0  # 기본 적 체력
+ENEMY_BASE_HP = 100.0  # 기본 적 체력 (80 → 100으로 증가)
 ENEMY_BASE_SPEED = 120  # 기본 적 이동 속도 (150 → 120으로 낮춤)
-ENEMY_ATTACK_DAMAGE = 10.0 # 적 공격 데미지 (10 )
+ENEMY_ATTACK_DAMAGE = 15.0 # 적 공격 데미지 (10 → 15로 증가)
 ENEMY_ATTACK_COOLDOWN = 2.0 # 적 공격 쿨다운 (미사용일 수 있음)
 ENEMY_HITBOX_RATIO = 0.7  # 적 이미지 대비 히트박스 비율
 
-# === 적 타입 시스템 (5종) ===
-# Wave 6+부터 점진적으로 등장하는 특수 적
+# === 카오스 세력 적 타입 시스템 ===
+# 모든 적은 외계 침략자 "카오스" 세력 소속
+# Wave 6+부터 점진적으로 강력한 변종이 등장
 ENEMY_TYPES = {
     "NORMAL": {
-        "name": "일반",
+        "name": "카오스 전투기",  # 일반 → 카오스 전투기
         "hp_mult": 1.0,
         "speed_mult": 1.0,
-        "damage_mult": 1.0,
+        "damage_mult": 1.0,  # 15 데미지
         "coin_mult": 1.0,
         "color_tint": (255, 255, 255),  # 원본 색상
         "size_mult": 1.0,
         "unlock_wave": 1,  # 처음부터 등장
     },
     "TANK": {
-        "name": "탱크",
-        "hp_mult": 3.0,  # 체력 3배
+        "name": "카오스 탱크",  # 탱크 → 카오스 탱크
+        "hp_mult": 1.5,  # 체력 1.5배 (150 HP)
         "speed_mult": 0.5,  # 속도 0.5배
-        "damage_mult": 1.5,  # 데미지 1.5배
+        "damage_mult": 2.0,  # 데미지 2.0배 (30 데미지)
         "coin_mult": 2.0,  # 코인 2배
         "color_tint": (100, 255, 100),  # 녹색 계열
         "size_mult": 1.3,  # 크기 1.3배
         "unlock_wave": 6,
     },
     "RUNNER": {
-        "name": "러너",
+        "name": "카오스 러너",  # 러너 → 카오스 러너
         "hp_mult": 0.5,  # 체력 0.5배
         "speed_mult": 2.0,  # 속도 2배
-        "damage_mult": 0.7,  # 데미지 0.7배
+        "damage_mult": 0.67,  # 데미지 0.67배 (10 데미지)
         "coin_mult": 1.5,  # 코인 1.5배
         "color_tint": (255, 255, 100),  # 노란색 계열
         "size_mult": 0.8,  # 크기 0.8배
         "unlock_wave": 7,
     },
     "SUMMONER": {
-        "name": "소환사",
+        "name": "카오스 소환사",  # 소환사 → 카오스 소환사
         "hp_mult": 1.2,  # 체력 1.2배
         "speed_mult": 0.8,  # 속도 0.8배
         "damage_mult": 0.8,  # 데미지 0.8배
@@ -113,7 +114,7 @@ ENEMY_TYPES = {
         "summon_count": 2,
     },
     "SHIELDED": {
-        "name": "보호막",
+        "name": "카오스 실드",  # 보호막 → 카오스 실드
         "hp_mult": 1.5,  # 체력 1.5배
         "speed_mult": 0.9,  # 속도 0.9배
         "damage_mult": 1.0,  # 데미지 1.0배
@@ -125,20 +126,20 @@ ENEMY_TYPES = {
         "shield_regen_rate": 0.02,  # 초당 2% 회복
     },
     "KAMIKAZE": {
-        "name": "카미카제",
+        "name": "카오스 카미카제",  # 카미카제 → 카오스 카미카제
         "hp_mult": 0.8,  # 체력 0.8배
         "speed_mult": 1.5,  # 속도 1.5배
-        "damage_mult": 3.0,  # 접촉 시 3배 데미지
+        "damage_mult": 4.0,  # 접촉 시 4배 데미지 (60 데미지)
         "coin_mult": 1.5,  # 코인 1.5배
         "color_tint": (255, 100, 100),  # 빨간색 계열
         "size_mult": 0.9,  # 크기 0.9배
         "unlock_wave": 13,
         "explode_on_contact": True,  # 플레이어 접촉 시 자폭
-        "explosion_damage": 20.0,  # 자폭 데미지
+        "explosion_damage": 60.0,  # 자폭 데미지 (20 → 60)
         "explosion_radius": 100,  # 폭발 범위 (시각 효과용)
     },
     "RESPAWNED": {
-        "name": "리스폰",
+        "name": "카오스 리스폰",  # 리스폰 → 카오스 리스폰
         "hp_mult": 1.0,  # 체력 1.0배
         "speed_mult": 1.0,  # 속도 1.0배
         "damage_mult": 1.0,  # 데미지 1.0배
@@ -147,6 +148,82 @@ ENEMY_TYPES = {
         "size_mult": 1.0,  # 크기 1.0배
         "unlock_wave": 1,  # 모든 웨이브에서 등장 가능
         "is_respawned": True,  # 리스폰 적 플래그
+    },
+    "BLUE_DRAGON": {
+        "name": "카오스 드레이크",  # 블루 드래곤 → 카오스 드레이크
+        "hp_mult": 40.0,  # 체력 40배 (4000 HP)
+        "speed_mult": 0.6,  # 속도 0.6배 (느림)
+        "damage_mult": 6.67,  # 데미지 6.67배 (100 데미지)
+        "coin_mult": 10.0,  # 코인 10배
+        "color_tint": (255, 255, 255),  # 원본 색상 유지
+        "size_mult": 5.0,  # 크기 5.0배 (화면 높이의 25%)
+        "unlock_wave": 5,  # Wave 5에서 등장
+        "use_custom_image": True,  # 커스텀 이미지 사용
+        "image": "wave_blue-dragon.png",  # 이미지 파일
+        "use_rotation": True,  # 회전 활성화
+        "is_boss": True,  # 보스 플래그
+        "has_burn_attack": True,  # BURN_ATTACK 패턴 활성화 (8방향 에너지탄)
+    },
+    "DROID_CARRIER": {
+        "name": "카오스 드로이드 캐리어",
+        "hp_mult": 15.0,  # 체력 15배 (1500 HP)
+        "speed_mult": 0.4,  # 느린 속도
+        "damage_mult": 0.0,  # 충돌 데미지 없음
+        "coin_mult": 0.0,  # 코인 드롭 없음 (HP 젬만)
+        "color_tint": (255, 255, 255),  # 원본 색상 유지
+        "size_mult": 3.0,  # 크기 3배
+        "unlock_wave": 6,  # Wave 6부터 등장
+        "use_custom_image": True,
+        "image": "chaos_droid_carrier.png",
+        "is_carrier": True,  # 캐리어 플래그
+        "drops_hp_gem": True,  # HP 젬 드롭 (피격 시)
+        "spawn_droid_count": 10,  # 드로이드 투하 개수 (5회 x 2개)
+        "spawn_droid_interval": 3.5,  # 드로이드 투하 간격 (초) - 3.5초
+    },
+    "SPHERE_DROID": {
+        "name": "카오스 스피어 드로이드",
+        "hp_mult": 3.0,  # 체력 3배 (300 HP)
+        "speed_mult": 1.0,  # 일반 속도
+        "damage_mult": 1.33,  # 1.33배 (20 데미지)
+        "coin_mult": 0.0,  # 코인 드롭 없음
+        "color_tint": (255, 255, 255),  # 원본 색상 유지
+        "size_mult": 0.45,  # 크기 0.45배 (1/2 크기)
+        "unlock_wave": 6,  # Wave 6부터 등장
+        "use_custom_image": True,
+        "image": "enemy_sphere_droid.png",
+        "is_spawned_by_carrier": True,  # 캐리어가 생성한 적
+    },
+    "BACTERIA_GENERATOR": {
+        "name": "카오스 박테리아 생성기",
+        "hp_mult": 0.0,  # 무적 (공격 불가)
+        "speed_mult": 0.3,  # 느린 진입/회전 속도
+        "damage_mult": 0.0,  # 충돌 데미지 없음
+        "coin_mult": 0.0,  # 코인 드롭 없음
+        "color_tint": (255, 255, 255),  # 원본 색상 유지
+        "size_mult": 2.5,  # 크기 2.5배
+        "unlock_wave": 6,  # Wave 6부터 등장
+        "use_custom_image": True,
+        "image": "bacteria_generator.png",
+        "is_generator": True,  # 생성기 플래그
+        "spawn_bacteria_count": 50,  # 박테리아 투하 개수 (10회 x 5개)
+        "spawn_bacteria_interval": 3.0,  # 투하 간격 3초
+        "orbit_radius_ratio": 0.2,  # 원운동 반지름 (화면 너비의 20%)
+    },
+    "BACTERIA": {
+        "name": "카오스 박테리아",
+        "hp_mult": 999.0,  # 일반 공격 무적 (매우 높은 HP)
+        "speed_mult": 0.8,  # 느린 속도
+        "damage_mult": 1.0,  # 15 데미지 (1초마다)
+        "coin_mult": 0.0,  # 코인 드롭 없음
+        "color_tint": (100, 255, 100),  # 녹색 계열
+        "size_mult": 0.5,  # 크기 증가 (0.3 → 0.5)
+        "unlock_wave": 6,  # Wave 6부터 등장
+        "use_custom_image": True,
+        "image": "coli_bacteria.png",
+        "is_bacteria": True,  # 박테리아 플래그
+        "duration": 15.0,  # 지속 시간 15초 (5초 → 15초)
+        "attach_overlap": 0.1,  # 플레이어와 10% 겹침
+        "vulnerable_to_special": True,  # static field, 번개체인에만 취약
     },
 }
 
@@ -397,6 +474,7 @@ SHIP_TYPES = {
         "color": (255, 255, 100),  # 노란색
         "muzzle_flash": "white_ring_expand",  # 기존 하얀 링 효과 유지
         "image": "fighter_front.png",
+        "exhaust_effect": "gas_effect_01.png",  # 화염 배기가스
     },
     "INTERCEPTOR": {
         "name": "Interceptor",
@@ -413,6 +491,7 @@ SHIP_TYPES = {
         "color": (100, 200, 255),  # 하늘색
         "muzzle_flash": "blue_flash",
         "image": "interceptor_front.png",
+        "exhaust_effect": "gas_effect_02.png",  # 플라즈마 배기가스
     },
     "BOMBER": {
         "name": "Bomber",
@@ -429,6 +508,7 @@ SHIP_TYPES = {
         "color": (255, 100, 50),  # 주황색
         "muzzle_flash": "explosion_flash",
         "image": "bomber_front.png",
+        "exhaust_effect": "gas_effect_01.png",  # 화염 배기가스
     },
     "STEALTH": {
         "name": "Stealth",
@@ -445,6 +525,7 @@ SHIP_TYPES = {
         "color": (180, 100, 255),  # 보라색
         "muzzle_flash": "void_ripple",
         "image": "stealth_front.png",
+        "exhaust_effect": "gas_effect_02.png",  # 플라즈마 배기가스
     },
     "TITAN": {
         "name": "Titan",
@@ -461,6 +542,7 @@ SHIP_TYPES = {
         "color": (255, 50, 50),  # 빨간색
         "muzzle_flash": "massive_flare",
         "image": "titan_front.png",
+        "exhaust_effect": "gas_effect_01.png",  # 화염 배기가스
     },
 }
 
@@ -469,8 +551,8 @@ DEFAULT_SHIP = "FIGHTER"
 
 # 함선 크기에 따른 이미지 비율 (screen_height 기준)
 SHIP_SIZE_RATIOS = {
-    "small": 0.06,
-    "medium": 0.075,
-    "large": 0.09,
-    "huge": 0.12,
+    "small": 0.066,    # 10% 증가: 0.06 * 1.1
+    "medium": 0.0825,  # 10% 증가: 0.075 * 1.1
+    "large": 0.099,    # 10% 증가: 0.09 * 1.1
+    "huge": 0.132,     # 10% 증가: 0.12 * 1.1
 }

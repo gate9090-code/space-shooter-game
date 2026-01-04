@@ -140,6 +140,11 @@ class NarrativeMode(GameMode):
         # PolaroidMemoryEffect, ClassifiedDocumentEffect, ShatteredMirrorEffect, StarMapEffect 등
         self.delegate_effect: Any = None
 
+        # 인트로 배경 시퀀스 (intro_opening.json 전용)
+        self.intro_bg_sequences: List[Any] = []  # IntroBackgroundSequence 리스트
+        self.current_bg_sequence_index: int = -1
+        self.last_dialogue_index_for_bg: int = -1  # 배경 업데이트 추적용
+
         # 음성 시스템
         self.voice_system = None
 
@@ -185,7 +190,8 @@ class NarrativeMode(GameMode):
             self.dialogues = []
 
         # JSON 파일에서 대화 로드 (scene_id가 있는 경우)
-        if self.scene_id and not self.dialogues:
+        # intro_backgrounds도 여기서 함께 로드됨
+        if self.scene_id:
             self._load_scene_from_json()
 
         # 음성 시스템 초기화 (delegate effect 생성 전에 먼저 초기화)
@@ -209,7 +215,8 @@ class NarrativeMode(GameMode):
             return
 
         # 배경 로드 (실패해도 그라데이션 폴백) - 위임 효과가 없을 때만
-        if not self.delegate_effect:
+        # intro_backgrounds가 있으면 기본 배경 로드 스킵
+        if not self.delegate_effect and not self.intro_bg_sequences:
             self._load_background()
 
         # 색상 오버레이 생성 (REFLECTION 타입인 경우)
@@ -274,10 +281,23 @@ class NarrativeMode(GameMode):
         try:
             from systems.dialogue_loader import DialogueLoader
 
-            scripts_path = config.ASSET_DIR / "data" / "episodes" / "ep1" / "scripts"
+            # 여러 경로 시도 (cutscenes 우선, 그 다음 scripts)
+            search_paths = [
+                config.ASSET_DIR / "data" / "dialogues" / "cutscenes",  # intro_opening.json 등
+                config.ASSET_DIR / "data" / "episodes" / "ep1" / "scripts",  # 에피소드 스크립트
+            ]
 
-            loader = DialogueLoader(scripts_path)
-            scene_data = loader.load_scene(self.scene_id)
+            scene_data = None
+            for scripts_path in search_paths:
+                if not scripts_path.exists():
+                    continue
+
+                loader = DialogueLoader(scripts_path)
+                scene_data = loader.load_scene(self.scene_id)
+
+                # dialogues가 있으면 성공
+                if scene_data and scene_data.get("dialogues"):
+                    break
 
             # scene_data는 항상 dict 반환 (DialogueLoader가 보장)
             if scene_data:
@@ -289,6 +309,11 @@ class NarrativeMode(GameMode):
                 if not self.location:
                     self.location = scene_data.get("location", "")
 
+                # 인트로 배경 시퀀스 로드 (intro_opening.json 전용)
+                intro_bg_data = scene_data.get("intro_backgrounds", [])
+                if intro_bg_data:
+                    self._init_intro_backgrounds(intro_bg_data)
+
                 # dialogues가 비어있으면 정보 로그만 출력
                 if self.dialogues:
                     print(f"INFO: Loaded scene from JSON: {self.scene_id}, dialogues: {len(self.dialogues)}")
@@ -298,6 +323,78 @@ class NarrativeMode(GameMode):
         except Exception as e:
             # 어떤 에러가 발생해도 조용히 처리
             print(f"INFO: Could not load scene '{self.scene_id}': {e} (continuing without dialogues)")
+
+    def _init_intro_backgrounds(self, intro_bg_data: List[Dict]):
+        """인트로 배경 시퀀스 초기화"""
+        from effects.visual_novel_effects import IntroBackgroundSequence
+
+        for group_data in intro_bg_data:
+            images = group_data.get("images", [])
+            fade_duration = group_data.get("fade_duration", 1.5)
+            dialogue_range = group_data.get("dialogue_range", [0, 0])
+
+            if images:
+                sequence = IntroBackgroundSequence(images, fade_duration)
+                sequence.dialogue_range = dialogue_range  # 대화 범위 저장
+                self.intro_bg_sequences.append(sequence)
+
+        print(f"INFO: Initialized {len(self.intro_bg_sequences)} intro background sequences")
+
+        # 첫 번째 시퀀스 즉시 활성화 (대화 인덱스 0부터 시작)
+        if self.intro_bg_sequences:
+            self.current_bg_sequence_index = 0
+            first_seq = self.intro_bg_sequences[0]
+            first_seq.current_index = 0
+            first_seq.fade_alpha = 0
+            first_seq.fade_timer = 0
+            first_seq.is_fading = True
+            print(f"INFO: Activated first intro background sequence (dialogue 0)")
+
+    def _update_intro_backgrounds(self):
+        """대화 진행에 따라 인트로 배경 시퀀스 업데이트"""
+        if not self.intro_bg_sequences:
+            return
+
+        # 대화가 바뀌지 않았으면 업데이트하지 않음
+        if self.current_dialogue_index == self.last_dialogue_index_for_bg:
+            return
+
+        self.last_dialogue_index_for_bg = self.current_dialogue_index
+
+        # 현재 대화 인덱스에 맞는 시퀀스 찾기
+        for i, sequence in enumerate(self.intro_bg_sequences):
+            start_idx, end_idx = sequence.dialogue_range
+
+            # 현재 대화가 이 시퀀스 범위 내에 있는지 확인
+            if start_idx <= self.current_dialogue_index <= end_idx:
+                # 새 시퀀스로 전환
+                if i != self.current_bg_sequence_index:
+                    self.current_bg_sequence_index = i
+                    # 첫 이미지 페이드 시작
+                    sequence.current_index = 0
+                    sequence.fade_alpha = 0
+                    sequence.fade_timer = 0
+                    sequence.is_fading = True
+                    print(f"INFO: Started intro background sequence {i} (dialogue {self.current_dialogue_index})")
+
+                # 시퀀스 내에서 이미지 인덱스 계산
+                relative_idx = self.current_dialogue_index - start_idx
+                total_dialogues = end_idx - start_idx + 1
+                total_images = len(sequence.images)
+
+                if total_images > 0 and total_dialogues > 0:
+                    # 대화당 이미지 진행 (균등 분배)
+                    target_image_idx = min(
+                        int(relative_idx * total_images / total_dialogues),
+                        total_images - 1
+                    )
+
+                    # 새로운 이미지로 전환 필요
+                    if target_image_idx > sequence.current_index:
+                        sequence.start_next_image()
+                        print(f"INFO: Switched to image {target_image_idx + 1}/{total_images} in sequence {i}")
+
+                break
 
     def _load_background(self, bg_name: str = None):
         """
@@ -592,6 +689,13 @@ class NarrativeMode(GameMode):
     def update(self, dt: float, current_time: float):
         """업데이트"""
         self.time_elapsed += dt
+
+        # 인트로 배경 시퀀스 업데이트
+        if self.intro_bg_sequences:
+            self._update_intro_backgrounds()
+            # 현재 활성 시퀀스 업데이트
+            if 0 <= self.current_bg_sequence_index < len(self.intro_bg_sequences):
+                self.intro_bg_sequences[self.current_bg_sequence_index].update(dt)
 
         # 대화 중 우주선 애니메이션 업데이트
         if self.dialogue_ship_animation:
@@ -1081,19 +1185,41 @@ class NarrativeMode(GameMode):
         if new_bg and new_bg != self.current_bg_name:
             self._load_background(new_bg)
 
-        # TextBoxExpand 효과 생성 (화자별 방향/속도)
-        # 대화창 크기는 render_dialogue_box와 동일하게 설정 (화면 절반 크기)
-        box_width = (self.screen_size[0] - 100) // 2  # 가로 1/2 크기
-        box_x = (self.screen_size[0] - box_width) // 2  # 중앙 정렬
-        box_y = self.screen_size[1] - 180 - 40  # box_height=180 기본값
-        box_rect = pygame.Rect(box_x, box_y, box_width, 180)
+        # TextBoxExpand 효과 생성 (모든 화자 동일 방식)
+        # 1. 캐릭터 + 대화창 전체 폭 = 화면 1/2
+        # 2. 전체 그룹 중심이 화면 x 중앙
+        # 3. 대화창이 캐릭터 이미지 중심에서 시작
+        # 4. 화자와 텍스트는 캐릭터 이미지 우측에서 시작
 
-        if self.current_speaker == "NARRATOR":
-            # NARRATOR: 좌→우 느리게 (0.8초)
-            self.textbox_expand = TextBoxExpand(box_rect, duration=0.8, direction="horizontal")
+        box_height = 180
+        box_y = self.screen_size[1] - box_height - 150
+
+        # 초상화 크기
+        if self.current_speaker == "ARTEMIS":
+            portrait_size = 364
         else:
-            # PILOT/ARTEMIS: 좌→우 빠르게 (0.2초)
-            self.textbox_expand = TextBoxExpand(box_rect, duration=0.2, direction="horizontal")
+            portrait_size = 338  # PILOT, NARRATOR
+
+        # 전체 그룹 폭 = 화면 2/3 (대화가 길어서 더 넓게)
+        total_width = int(self.screen_size[0] * 0.66)
+
+        # 대화창 폭 = 전체 폭 - 캐릭터 크기
+        box_width = total_width - portrait_size
+
+        # 그룹 시작 x = 화면 중앙에 전체 그룹 배치
+        group_start_x = (self.screen_size[0] - total_width) // 2
+
+        # 캐릭터 x 위치
+        portrait_x = group_start_x
+
+        # 대화창 시작 x = 캐릭터 중심
+        portrait_center_x = portrait_x + portrait_size // 2
+        dialogue_box_start_x = portrait_center_x
+
+        box_rect = pygame.Rect(dialogue_box_start_x, box_y, box_width, box_height)
+
+        # 모든 화자 동일 속도
+        self.textbox_expand = TextBoxExpand(box_rect, duration=0.3, direction="horizontal", start_x=dialogue_box_start_x)
 
         # 음성 재생
         text = current.get("text", "")
@@ -1145,8 +1271,11 @@ class NarrativeMode(GameMode):
                 self.delegate_effect.draw(screen)
             return
 
-        # 배경
-        if self.background:
+        # 배경 (인트로 배경 시퀀스가 있으면 우선)
+        if self.intro_bg_sequences and 0 <= self.current_bg_sequence_index < len(self.intro_bg_sequences):
+            # 인트로 배경 시퀀스 렌더링
+            self.intro_bg_sequences[self.current_bg_sequence_index].render(screen)
+        elif self.background:
             if self.narrative_type == "REFLECTION":
                 bg_rect = self.background.get_rect()
                 bg_rect.centerx = self.screen_size[0] // 2 + int(self.background_offset)
@@ -1180,9 +1309,9 @@ class NarrativeMode(GameMode):
             fade_surf.fill((0, 0, 0, self.fade_alpha))
             screen.blit(fade_surf, (0, 0))
 
-        # 힌트 텍스트
-        if self.dialogue_state == "waiting":
-            self._render_hint(screen)
+        # 힌트 텍스트 (제거됨 - 대화창 내부 진행 마크로 대체)
+        # if self.dialogue_state == "waiting":
+        #     self._render_hint(screen)
 
     def _render_briefing_header(self, screen: pygame.Surface):
         """브리핑 헤더 렌더링 (타이틀 + 위치)"""

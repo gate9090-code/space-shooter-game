@@ -54,7 +54,7 @@ INITIAL_CAMPAIGN_CREDITS = 500
 # 전체 웨이브 설정
 TOTAL_WAVES = 20  # 총 웨이브 수 (웨이브 모드)
 STORY_TOTAL_WAVES = 25  # 스토리 모드 총 웨이브 수
-BOSS_WAVES = [5, 10, 15, 20, 25]  # 보스 웨이브
+BOSS_WAVES = [5, 10, 15, 20, 25]  # 보스 웨이브 (Wave 5: 블루 드래곤)
 
 # 웨이브별 난이도 스케일링 (20 Wave System)
 WAVE_SCALING = {
@@ -63,10 +63,10 @@ WAVE_SCALING = {
     2: {"hp_mult": 1.3,   "speed_mult": 0.9,  "spawn_rate": 1.0,  "target_kills": 11,  "chase_prob": 0.4,  "damage_mult": 1.0},   # +5
     3: {"hp_mult": 1.6,   "speed_mult": 1.0,  "spawn_rate": 1.1,  "target_kills": 12,  "chase_prob": 0.5,  "damage_mult": 1.0},   # +5
     4: {"hp_mult": 2.0,   "speed_mult": 1.1,  "spawn_rate": 1.2,  "target_kills": 13,  "chase_prob": 0.6,  "damage_mult": 1.0},   # +5
-    5: {"hp_mult": 30.0,  "speed_mult": 1.5,  "spawn_rate": 1.0,  "target_kills": 3,   "chase_prob": 1.0,  "damage_mult": 2.0},   # 미니보스 (유지)
+    5: {"hp_mult": 50.0,  "speed_mult": 0.6,  "spawn_rate": 1.0,  "target_kills": 1,   "chase_prob": 1.0,  "damage_mult": 3.0},   # 블루 드래곤 보스
 
     # === Act 2: 스킬 조합 (Wave 6-10) ===
-    6: {"hp_mult": 2.5,   "speed_mult": 1.2,  "spawn_rate": 1.3,  "target_kills": 14,  "chase_prob": 0.7,  "damage_mult": 1.0},   # +5
+    6: {"hp_mult": 2.5,   "speed_mult": 1.2,  "spawn_rate": 1.3,  "target_kills": 14,  "chase_prob": 0.7,  "damage_mult": 1.0},   # +5 (일반 웨이브로 복귀)
     7: {"hp_mult": 3.0,   "speed_mult": 1.3,  "spawn_rate": 1.4,  "target_kills": 15,  "chase_prob": 0.75, "damage_mult": 1.0},   # +5
     8: {"hp_mult": 4.0,   "speed_mult": 1.4,  "spawn_rate": 1.5,  "target_kills": 16,  "chase_prob": 0.8,  "damage_mult": 1.0},   # +5
     9: {"hp_mult": 5.0,   "speed_mult": 1.5,  "spawn_rate": 1.6,  "target_kills": 17,  "chase_prob": 0.85, "damage_mult": 1.0},   # +5

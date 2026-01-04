@@ -28,39 +28,34 @@ def spawn_enemy(enemies: List[Enemy], screen_size: Tuple[int, int], game_data: D
     is_boss_wave = current_wave in config.BOSS_WAVES
 
     if is_boss_wave:
-        # Wave 5: 보스들을 랜덤 위치에서 스폰 (순차 스폰은 handle_spawning에서 관리)
+        # 모든 보스 웨이브: 화면 중앙 상단에서 스폰
+        x = SCREEN_WIDTH // 2
+        y = -padding * 2
+
+        # 웨이브별 보스 이름 설정
         if current_wave == 5:
-            # 이미 목표 보스 수만큼 스폰되었는지 체크
-            target_boss_count = scaling.get("target_kills", 3)
-            boss_spawn_count = game_data.get("boss_sequential_spawn_count", 0)
-            if boss_spawn_count >= target_boss_count:
-                return None  # 이미 목표 보스 수 도달
-
-            # 화면 상단의 랜덤 위치에서 스폰
-            x = random.randint(100, SCREEN_WIDTH - 100)
-            y = -padding * 2
-            boss_name = "The Swarm Queen"
-        # 기타 보스 웨이브 (10, 15, 20): 화면 중앙 상단에서 스폰
+            boss_name = "Blue Dragon"
+        elif current_wave == 10:
+            boss_name = "The Void Core"
+        elif current_wave == 15:
+            boss_name = "The Dark Commander"
+        elif current_wave == 20:
+            boss_name = "The Final Overlord"
         else:
-            # 이미 보스가 스폰되었는지 체크 (handle_spawning에서 플래그 설정됨)
-            boss_already_spawned = game_data.get(f"boss_spawned_wave_{current_wave}", False)
-            if not boss_already_spawned:
-                return None  # 플래그가 설정되지 않았으면 스폰 안함 (handle_spawning 통해서만 스폰)
+            boss_name = f"Boss Wave {current_wave}"
 
-            x = SCREEN_WIDTH // 2
-            y = -padding * 2
-
-            if current_wave == 10:
-                boss_name = "The Void Core"
-            elif current_wave == 15:
-                boss_name = "The Dark Commander"
-            elif current_wave == 20:
-                boss_name = "The Final Overlord"
-            else:
-                boss_name = f"Boss Wave {current_wave}"
-
-        # 보스 생성 (wave_number 전달)
-        new_enemy = Boss(pygame.math.Vector2(x, y), SCREEN_HEIGHT, boss_name, current_wave)
+        # Wave 5: 블루 드래곤 보스 (Enemy 타입으로 생성)
+        if current_wave == 5:
+            new_enemy = Enemy(
+                pos=pygame.math.Vector2(x, y),
+                screen_height=SCREEN_HEIGHT,
+                chase_probability=1.0,
+                enemy_type="BLUE_DRAGON",
+            )
+            print(f"INFO: Blue Dragon boss spawned for wave {current_wave}")
+        else:
+            # 기존 보스 생성 (wave_number 전달)
+            new_enemy = Boss(pygame.math.Vector2(x, y), SCREEN_HEIGHT, boss_name, current_wave)
     else:
         # 스토리 모드: 적이 화면 상단에서만 스폰
         game_mode = config.GAME_MODE
@@ -133,56 +128,10 @@ def handle_spawning(
         # cleanup 또는 victory_animation 페이즈면 스폰 중지
         return
 
-    # ========== 보스 웨이브 스폰 로직 ==========
+    # ========== 보스 웨이브 스폰 로직 (모든 보스 웨이브 통합) ==========
     is_boss_wave = current_wave in config.BOSS_WAVES
 
-    if current_wave == 5:
-
-        # Wave 5는 3마리의 보스를 순차적으로 스폰
-        target_boss_count = scaling["target_kills"]  # 3
-        boss_spawn_count = game_data.get("boss_sequential_spawn_count", 0)
-
-        # 모든 보스를 이미 스폰했으면 종료
-        if boss_spawn_count >= target_boss_count:
-            return
-
-        # 순차 스폰 딜레이 계산
-        boss_spawn_delay = game_data.get("boss_sequential_spawn_delay", 3.0)
-        wave_start_time = game_data.get("wave_start_time", current_time)
-
-        # 다음 보스 스폰 시간 = 웨이브 시작 시간 + (보스 번호 * 딜레이)
-        next_boss_spawn_time = wave_start_time + (boss_spawn_count * boss_spawn_delay)
-
-        # 아직 스폰 시간이 되지 않았으면 대기
-        if current_time < next_boss_spawn_time:
-            return
-
-        # 스폰 카운터 증가 (spawn_enemy 호출 전에 증가시켜 중복 스폰 방지)
-        game_data["boss_sequential_spawn_count"] = boss_spawn_count + 1
-
-        # 보스 스폰
-        new_enemy = spawn_enemy(enemies, screen_size, game_data)
-
-        # 스폰 포털 효과 추가
-        if new_enemy and effects is not None:
-            create_spawn_effect((new_enemy.pos.x, new_enemy.pos.y), effects)
-
-            # 보스 스폰 시 특별 효과
-            if hasattr(new_enemy, 'is_boss') and new_enemy.is_boss:
-                SCREEN_WIDTH, SCREEN_HEIGHT = screen_size
-                # 보스 스폰 사운드
-                if sound_manager:
-                    sound_manager.play_sfx("boss_spawn")
-                # 충격파
-                create_shockwave((new_enemy.pos.x, new_enemy.pos.y), "BOSS_SPAWN", effects)
-                # 보스 이름 텍스트
-                boss_name = getattr(new_enemy, 'boss_name', 'BOSS')
-                create_dynamic_text(f"{boss_name} #{boss_spawn_count + 1} HAS APPEARED!", (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3), "BOSS_SPAWN", effects)
-
-        return
-
-    # ========== Wave 10, 15, 20 단일 보스 스폰 로직 ==========
-    if is_boss_wave and current_wave != 5:
+    if is_boss_wave:
         # 이미 보스가 스폰되었는지 체크
         boss_already_spawned = game_data.get(f"boss_spawned_wave_{current_wave}", False)
         if boss_already_spawned:
@@ -208,7 +157,10 @@ def handle_spawning(
                 # 충격파
                 create_shockwave((new_enemy.pos.x, new_enemy.pos.y), "BOSS_SPAWN", effects)
                 # 보스 이름 텍스트
-                boss_name = getattr(new_enemy, 'boss_name', 'BOSS')
+                if current_wave == 5:
+                    boss_name = "BLUE DRAGON"
+                else:
+                    boss_name = getattr(new_enemy, 'boss_name', 'BOSS')
                 create_dynamic_text(f"{boss_name} HAS APPEARED!", (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3), "BOSS_SPAWN", effects)
 
         return

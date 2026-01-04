@@ -185,9 +185,6 @@ class WorkshopMode(GameMode):
         self.back_rect = None
         self.back_hover = False
 
-        # 커스텀 커서
-        self.custom_cursor = self._load_base_cursor()
-
         print("INFO: WorkshopMode initialized (Unified UI)")
 
     def _create_background(self) -> pygame.Surface:
@@ -312,9 +309,6 @@ class WorkshopMode(GameMode):
 
         # 키보드 힌트
         self.ui_manager.render_keyboard_hints(screen, "1-7 Categories  |  Scroll Mouse  |  ESC Back")
-
-        # 커스텀 커서
-        self._render_base_cursor(screen, self.custom_cursor)
 
     def _render_upgrades(self, screen: pygame.Surface):
         """업그레이드 목록 렌더링"""
@@ -613,14 +607,11 @@ class WorkshopMode(GameMode):
 
     def on_enter(self):
         super().on_enter()
-        if self.custom_cursor:
-            self._enable_custom_cursor()
 
     def on_exit(self):
         self.engine.shared_state['global_score'] = self.credits
         self.engine.shared_state['player_upgrades'] = self.player_upgrades
         self.engine.save_shared_state()
-        self._disable_custom_cursor()
         super().on_exit()
 
 

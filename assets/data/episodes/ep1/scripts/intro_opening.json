@@ -1,0 +1,59 @@
+{
+  "title": "PROLOGUE: ECHOES OF EARTH",
+  "location": "EARTH ORBIT - DEBRIS FIELD ALPHA-7",
+  "background": "bg_ruins.jpg",
+  "dialogues": [
+    {
+      "speaker": "NARRATOR",
+      "text": "서기 2157년. 지구는 침묵했다."
+    },
+    {
+      "speaker": "NARRATOR",
+      "text": "10년 전, 외계 침략자 '카오스'가 하늘을 갈랐다. 붉은 빛이 대륙을 집어삼켰고, 비명은 진공 속으로 사라졌다."
+    },
+    {
+      "speaker": "NARRATOR",
+      "text": "생존자들은 우주로 떠났다. 모함 ARK PRIME에 몸을 싣고, 폐허가 된 고향을 등졌다."
+    },
+    {
+      "speaker": "ARTEMIS",
+      "text": "(한숨) 파일럿... 저기 봐. 지구 궤도의 잔해들. 저 속에 우리의 과거가 떠다니고 있어."
+    },
+    {
+      "speaker": "PILOT",
+      "text": "감상에 빠질 시간이 없다, 아르테미스. 센서에 카오스 함대 반응. 거리 300킬로미터. 접근 중."
+    },
+    {
+      "speaker": "ARTEMIS",
+      "text": "10년 동안 훈련했어. 복수를 위해서가 아니야... 살아남기 위해서지. 우리가 마지막 희망이야."
+    },
+    {
+      "speaker": "PILOT",
+      "text": "논리적으로 승산은 12.7%. 하지만 네 의지력을 계산에 넣으면... 예측 불가능하다."
+    },
+    {
+      "speaker": "ARTEMIS",
+      "text": "(결연한 표정) 예측 가능했다면 벌써 죽었겠지. 시스템 체크 완료. 무기 충전 완료."
+    },
+    {
+      "speaker": "PILOT",
+      "text": "함선 '에코 파이터' 준비 완료. 모든 시스템 그린. 교전 승인을 기다린다."
+    },
+    {
+      "speaker": "ARTEMIS",
+      "text": "승인해. 파일럿... 오늘이 우리의 첫 전투야. 하지만 마지막은 아닐 거야."
+    },
+    {
+      "speaker": "PILOT",
+      "text": "이해했다. 목표: 카오스 선봉대 격파. 지구 잔해 구역 확보. 임무 개시."
+    },
+    {
+      "speaker": "ARTEMIS",
+      "text": "지구여... 우리가 돌아왔다. 그리고 이번엔, 절대 물러서지 않을 거야."
+    },
+    {
+      "speaker": "NARRATOR",
+      "text": "지구의 메아리가 다시 울려 퍼지기 시작했다. 희망의 이름으로."
+    }
+  ]
+}

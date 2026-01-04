@@ -43,6 +43,8 @@ SFX_FILES = {
     "ability_bomb": SFX_DIR / "ability_bomb.wav",         # BOMBER 폭탄
     "ability_cloak": SFX_DIR / "ability_cloak.wav",       # STEALTH 은신
     "ability_shield": SFX_DIR / "ability_shield.wav",     # TITAN 쉴드
+    # UI SFX
+    "typing": SOUND_DIR / "ui" / "sfx_typing.wav",        # 타이핑 사운드
 }
 
 # 웨이브별 BGM 매핑

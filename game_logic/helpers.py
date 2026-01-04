@@ -174,10 +174,10 @@ def update_visual_effects(effects: List, dt: float, screen_size: Tuple[int, int]
         WaveTransitionEffect, PlayerVictoryAnimation, WaveClearFireworksEffect,
         StaticField, SpawnEffect
     )
-    from effects.screen_effects import Particle, Shockwave, DynamicTextEffect, TimeSlowEffect, ScreenFlash, ReviveTextEffect, LightningEffect
+    from effects.screen_effects import Particle, Shockwave, ImageShockwave, DynamicTextEffect, TimeSlowEffect, ScreenFlash, ReviveTextEffect, LightningEffect
 
     for effect in effects[:]:
-        if isinstance(effect, (Particle, Shockwave, SpawnEffect)):
+        if isinstance(effect, (Particle, Shockwave, ImageShockwave, SpawnEffect)):
             effect.update(dt)
             if not effect.is_alive:
                 effects.remove(effect)
@@ -233,13 +233,13 @@ def draw_visual_effects(screen: pygame.Surface, effects: List, screen_offset: py
         WaveTransitionEffect, WaveClearFireworksEffect,
         StaticField, SpawnEffect
     )
-    from effects.screen_effects import Particle, Shockwave, DynamicTextEffect, TimeSlowEffect, ScreenFlash, ReviveTextEffect, LightningEffect
+    from effects.screen_effects import Particle, Shockwave, ImageShockwave, DynamicTextEffect, TimeSlowEffect, ScreenFlash, ReviveTextEffect, LightningEffect
 
     if screen_offset is None:
         screen_offset = pygame.math.Vector2(0, 0)
 
     for effect in effects:
-        if isinstance(effect, (Particle, Shockwave, SpawnEffect, AnimatedEffect, StaticField, ScreenFlash, WaveTransitionEffect, ReviveTextEffect, LightningEffect, WaveClearFireworksEffect)):
+        if isinstance(effect, (Particle, Shockwave, ImageShockwave, SpawnEffect, AnimatedEffect, StaticField, ScreenFlash, WaveTransitionEffect, ReviveTextEffect, LightningEffect, WaveClearFireworksEffect)):
             effect.draw(screen)
 
 

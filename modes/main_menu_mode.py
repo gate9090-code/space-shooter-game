@@ -136,7 +136,6 @@ class MainMenuMode(GameMode):
         # 새 게임 플래그 설정
         self.engine.shared_state['is_new_game'] = True
         self.engine.shared_state['show_opening'] = True
-        self.engine.shared_state['current_mission'] = "act1_m1"
         self.engine.shared_state['completed_missions'] = []
         self.engine.shared_state['current_act'] = 1
 

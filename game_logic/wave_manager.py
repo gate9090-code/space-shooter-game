@@ -411,21 +411,20 @@ def update_game_objects(
             else:
                 impact_pos = pygame.math.Vector2(bullet.pos.x, bullet.pos.y)
 
-            # 다중 파동 효과 생성
+            # 다중 파동 효과 생성 (ImageShockwave 사용)
             settings = config.SHOCKWAVE_SETTINGS["BULLET_HIT"]
             wave_count = settings.get("wave_count", 3)
-            wave_interval = settings.get("wave_interval", 0.08)
+            wave_interval = settings.get("wave_interval", 0.1)
 
             for i in range(wave_count):
-                # 각 파동마다 약간의 지연을 가진 충격파 생성
-                from effects.screen_effects import Shockwave
-                shockwave = Shockwave(
+                # 각 파동마다 약간의 지연을 가진 이미지 기반 충격파 생성
+                from effects.screen_effects import ImageShockwave
+                shockwave = ImageShockwave(
                     center=(impact_pos.x, impact_pos.y),
-                    max_radius=settings["max_radius"],
-                    duration=settings["duration"],
-                    color=settings["color"],
-                    width=settings["width"],
-                    delay=i * wave_interval  # 지연 시간 추가
+                    max_size=settings.get("max_radius", 120) * 2,  # 이미지는 지름이므로 반경*2
+                    duration=settings.get("duration", 0.8),
+                    delay=i * wave_interval,
+                    color_tint=settings.get("color", (255, 255, 255)),
                 )
                 effects.append(shockwave)
 

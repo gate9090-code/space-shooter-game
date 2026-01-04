@@ -214,12 +214,8 @@ class GameEngine:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         self.running = False
-                    elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                        # ESC 키로 언제나 게임 종료
-                        print("INFO: ESC key pressed - Exiting game")
-                        self.running = False
                     else:
-                        # 현재 모드에 이벤트 전달
+                        # 현재 모드에 이벤트 전달 (ESC 키 포함)
                         try:
                             self.current_mode.handle_event(event)
                         except Exception as e:

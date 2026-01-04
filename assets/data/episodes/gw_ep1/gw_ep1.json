@@ -1,0 +1,163 @@
+{
+  "id": "gw_ep1",
+  "act": 1,
+  "title": "지구 귀환",
+  "title_en": "RETURN TO EARTH",
+  "description": "3년 만에 지구로 돌아온 파일럿. 카이론 순찰대와의 첫 전투가 시작된다.",
+
+  "defaults": {
+    "background": "bg_ruins.jpg",
+    "bgm": "bgm_combat.mp3"
+  },
+
+  "scenes": {
+    "briefing": {
+      "title": "MISSION BRIEFING",
+      "location": "COMMAND CENTER",
+      "background": "bg_command.jpg",
+      "bgm": "bgm_briefing.mp3",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "작전 브리핑을 시작합니다. 목표: 지구 궤도 정찰 및 생존자 신호 추적."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "3년 만에 돌아온 고향이야. 준비됐어?"
+        },
+        {
+          "speaker": "PILOT",
+          "text": "...해야겠지. 이제 선택의 여지가 없잖아."
+        }
+      ]
+    },
+
+    "opening": {
+      "title": "ACT 1: RETURN TO EARTH",
+      "location": "EARTH ORBIT - SECTOR 7",
+      "background": "bg_ruins.jpg",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "지구 궤도 진입 완료. 대기권 오염도 치명적 수준입니다."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "3년 만이야... 이게 우리가 떠났던 그 푸른 행성이라고?"
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "감상에 젖을 시간 없어. 카이론 순찰대가 접근 중이야."
+        },
+        {
+          "speaker": "NARRATOR",
+          "text": "경고. 다수의 적 반응. 전투 준비를 권고합니다."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "좋아... 시작하자."
+        }
+      ]
+    },
+
+    "mid_01": {
+      "title": "",
+      "location": "EARTH ORBIT - COMBAT ZONE",
+      "background": "bg_ruins.jpg",
+      "dialogues": [
+        {
+          "speaker": "ARTEMIS",
+          "text": "첫 번째 파도를 물리쳤다. 하지만 끝이 아니야."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "추가 적 부대 감지! 더 많은 카이론이 오고 있어!"
+        },
+        {
+          "speaker": "NARRATOR",
+          "text": "경고. 대형 함선 접근 중. 순찰대 지휘관으로 추정됩니다."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "지휘관이라... 좋아, 한 번에 정리하자."
+        }
+      ]
+    },
+
+    "boss": {
+      "title": "BOSS BATTLE",
+      "location": "EARTH ORBIT",
+      "background": "bg_ruins.jpg",
+      "bgm": "bgm_boss.mp3",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "경고. 대형 적 반응. 카이론 지휘함입니다."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "드디어 진짜 상대가 나타났군."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "조심해! 일반 카이론과는 비교도 안 되는 화력이야!"
+        }
+      ]
+    },
+
+    "boss_victory": {
+      "title": "",
+      "location": "EARTH ORBIT",
+      "background": "bg_ruins.jpg",
+      "dialogues": [
+        {
+          "speaker": "PILOT",
+          "text": "해냈어! 지휘함을 격추했다!"
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "첫 번째 승리야. 하지만 이건 시작일 뿐이야."
+        }
+      ]
+    },
+
+    "ending": {
+      "title": "MISSION COMPLETE",
+      "location": "EARTH ORBIT",
+      "background": "bg_ruins.jpg",
+      "dialogues": [
+        {
+          "speaker": "NARRATOR",
+          "text": "적 섬멸 확인. 지역 확보 완료."
+        },
+        {
+          "speaker": "PILOT",
+          "text": "해냈어... 3년 만에 처음으로 승리다."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "아직 시작일 뿐이야. 더 많은 카이론이 올 거야."
+        },
+        {
+          "speaker": "NARRATOR",
+          "text": "다음 좌표로 이동 권장합니다. 기지로 복귀하십시오."
+        },
+        {
+          "speaker": "ARTEMIS",
+          "text": "알았어. 다음 작전을 준비하자."
+        }
+      ]
+    }
+  },
+
+  "segments": [
+    { "type": "DIALOGUE", "scene": "briefing" },
+    { "type": "DIALOGUE", "scene": "opening" },
+    { "type": "COMBAT", "rounds": 3, "enemies": ["scout", "fighter"] },
+    { "type": "DIALOGUE", "scene": "mid_01" },
+    { "type": "COMBAT", "rounds": 2, "boss": "shadow_scout" },
+    { "type": "DIALOGUE", "scene": "boss" },
+    { "type": "DIALOGUE", "scene": "boss_victory" },
+    { "type": "DIALOGUE", "scene": "ending" }
+  ]
+}

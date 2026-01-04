@@ -104,6 +104,23 @@ class CombatSystem:
                     else:
                         create_hit_particles(effects, bullet.pos)
 
+                    # 충격파 효과 추가
+                    from effects.screen_effects import ImageShockwave
+                    import config
+                    settings = config.SHOCKWAVE_SETTINGS.get("BULLET_HIT", {})
+                    wave_count = settings.get("wave_count", 3)
+                    wave_interval = settings.get("wave_interval", 0.08)
+
+                    for i in range(wave_count):
+                        shockwave = ImageShockwave(
+                            center=(bullet.pos.x, bullet.pos.y),
+                            max_size=settings.get("max_radius", 80) * 2,
+                            duration=settings.get("duration", 0.6),
+                            delay=i * wave_interval,
+                            color_tint=settings.get("color", (255, 255, 255)),
+                        )
+                        effects.append(shockwave)
+
                     # 히트 사운드
                     sound_manager.play_sfx("enemy_hit")
 

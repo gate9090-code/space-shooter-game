@@ -90,7 +90,21 @@
       "Bash(if exist \"assetsimagesgameplayplayerinterceptor_front.png\" del \"assetsimagesgameplayplayerinterceptor_front.png\")",
       "Bash(if exist \"assetsimagesgameplayplayerstealth_front.png\" del \"assetsimagesgameplayplayerstealth_front.png\")",
       "Bash(if exist \"assetsimagesgameplayplayertitan_front.png\" del \"assetsimagesgameplayplayertitan_front.png\")",
-      "Bash(if exist \"temp_old_hangar.txt\" del \"temp_old_hangar.txt\")"
+      "Bash(if exist \"temp_old_hangar.txt\" del \"temp_old_hangar.txt\")",
+      "Bash(if not exist \"assets\\\\images\\\\gameplay\\\\enemies\" mkdir \"assets\\\\images\\\\gameplay\\\\enemies\")",
+      "Bash(if not exist \"c:\\\\Users\\\\gate9\\\\Desktop\\\\working\\\\assets\\\\data\\\\episodes\\\\gw_ep1\" mkdir \"c:\\\\Users\\\\gate9\\\\Desktop\\\\working\\\\assets\\\\data\\\\episodes\\\\gw_ep1\")",
+      "Bash(if not exist \"c:\\\\Users\\\\gate9\\\\Desktop\\\\working\\\\assets\\\\data\\\\episodes\\\\gw_ep2\" mkdir \"c:\\\\Users\\\\gate9\\\\Desktop\\\\working\\\\assets\\\\data\\\\episodes\\\\gw_ep2\")",
+      "Bash(if not exist \"c:\\\\Users\\\\gate9\\\\Desktop\\\\working\\\\assets\\\\data\\\\episodes\\\\gw_ep3\" mkdir \"c:\\\\Users\\\\gate9\\\\Desktop\\\\working\\\\assets\\\\data\\\\episodes\\\\gw_ep3\")",
+      "Bash(if not exist \"c:\\\\Users\\\\gate9\\\\Desktop\\\\working\\\\assets\\\\data\\\\episodes\\\\gw_ep4\" mkdir \"c:\\\\Users\\\\gate9\\\\Desktop\\\\working\\\\assets\\\\data\\\\episodes\\\\gw_ep4\")",
+      "Bash(if not exist \"c:\\\\Users\\\\gate9\\\\Desktop\\\\working\\\\assets\\\\data\\\\episodes\\\\gw_ep5\" mkdir \"c:\\\\Users\\\\gate9\\\\Desktop\\\\working\\\\assets\\\\data\\\\episodes\\\\gw_ep5\")",
+      "Bash(taskkill:*)",
+      "Bash(if not exist \"assets\\\\images\\\\ui\" mkdir \"assets\\\\images\\\\ui\")",
+      "Bash(if not exist \"assets\\\\images\\\\effects\" mkdir \"assets\\\\images\\\\effects\")",
+      "Bash(if exist \"c:\\\\Users\\\\gate9\\\\Desktop\\\\working\\\\test_ship_exhaust.py\" del \"c:\\\\Users\\\\gate9\\\\Desktop\\\\working\\\\test_ship_exhaust.py\")",
+      "Bash(if exist \"c:\\\\Users\\\\gate9\\\\Desktop\\\\working\\\\test_exhaust_position.py\" del \"c:\\\\Users\\\\gate9\\\\Desktop\\\\working\\\\test_exhaust_position.py\")",
+      "Bash(if exist \"c:\\\\Users\\\\gate9\\\\Desktop\\\\working\\\\analyze_exhaust_images.py\" del \"c:\\\\Users\\\\gate9\\\\Desktop\\\\working\\\\analyze_exhaust_images.py\")",
+      "Bash(if exist \"c:\\\\Users\\\\gate9\\\\Desktop\\\\working\\\\test_ring_effect.py\" del \"c:\\\\Users\\\\gate9\\\\Desktop\\\\working\\\\test_ring_effect.py\")",
+      "Bash(if not exist \"assets\\\\config\" mkdir \"assets\\\\config\")"
     ],
     "deny": [],
     "ask": []

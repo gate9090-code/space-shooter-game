@@ -52,8 +52,8 @@ class Player:
         self.is_dead = False
 
         # 3. 이미지 및 히트박스 (Titan 크기로 표준화)
-        # Titan 기준 크기 (589x500) -> 화면 높이 12% 기준으로 계산
-        standard_size = int(screen_height * 0.12)  # Titan 크기 기준
+        # Titan 기준 크기 (589x500) -> 화면 높이 14.52% 기준으로 계산 (21% 증가)
+        standard_size = int(screen_height * 0.1452)  # Titan 크기 기준
 
         # 함선 이미지 로드 시도
         ship_image_path = (
@@ -137,6 +137,10 @@ class Player:
             "add_lightning": 0.0,
             "add_frost": 0.0,
         }
+
+        # 3-9. 박테리아 달라붙기 시스템
+        self.attached_bacteria_count = 0  # 현재 달라붙은 박테리아 수
+        self.bacteria_speed_reduction = 0.0  # 박테리아로 인한 속도 감소 비율
 
         # 4. 무기 초기화 (함선 배율 + Workshop 업그레이드 적용)
         damage_mult = self.ship_stats.get("damage_mult", 1.0)
@@ -225,11 +229,14 @@ class Player:
         self.disable_afterimages = False  # 잔상 비활성화 플래그 (공성 모드용)
         self.disable_trail = False  # 트레일 비활성화 플래그 (승리 애니메이션용)
 
+        # 10-2. 배기가스 이미지 로드
+        self._load_gas_effect_image()
+
         # 10-1. 이동 방향 기울기(틸트) 시스템
         self.current_tilt = 0.0  # 현재 기울기 각도 (도)
         self.target_tilt = 0.0  # 목표 기울기 각도 (도)
         self.tilt_speed = 8.0  # 기울기 보간 속도 (클수록 빠르게 기울어짐)
-        self.max_tilt_angle = 25.0  # 최대 기울기 각도 (도)
+        self.max_tilt_angle = 15.0  # 최대 기울기 각도 (도)
         self.tilt_return_speed = 5.0  # 원위치 복귀 속도
 
         # 11. 함선 특수 능력 시스템 (E 키)
@@ -277,6 +284,24 @@ class Player:
         # Titan 함선일 경우 실드 최대치 설정
         if self.ship_type == "TITAN":
             self.shield_max_hp = int(self.max_hp * 0.5)  # 최대 HP의 50%
+
+    def _load_gas_effect_image(self):
+        """배기가스 이미지 로드 (함선별)"""
+        try:
+            # 함선별 배기가스 효과 파일명 가져오기
+            exhaust_filename = self.ship_data.get("exhaust_effect", "gas_effect_01.png")
+            gas_effect_path = config.ASSET_DIR / "images" / "effects" / exhaust_filename
+
+            if gas_effect_path.exists():
+                # 원본 이미지 로드 (크기 조정 없이)
+                self.gas_effect_image = pygame.image.load(str(gas_effect_path)).convert_alpha()
+                print(f"INFO: Gas effect image loaded for {self.ship_type}: {exhaust_filename}")
+            else:
+                print(f"WARNING: Gas effect image not found: {gas_effect_path}")
+                self.gas_effect_image = None
+        except Exception as e:
+            print(f"WARNING: Failed to load gas effect image: {e}")
+            self.gas_effect_image = None
 
     def calculate_stats_from_upgrades(self):
         """영구 업그레이드 레벨을 기반으로 플레이어 스탯을 계산합니다. (함선 배율 + Workshop 업그레이드 적용)"""
@@ -353,6 +378,28 @@ class Player:
         if defense_level > 0:
             self.damage_reduction = 0.03 * defense_level
 
+    def update_bacteria_attachment(self, bacteria_count: int):
+        """박테리아 달라붙기 업데이트
+
+        Args:
+            bacteria_count: 현재 달라붙은 박테리아 수
+        """
+        self.attached_bacteria_count = bacteria_count
+
+        # 박테리아 수에 따른 속도 감소 (1개당 10% 감소, 최대 90%)
+        if bacteria_count > 0:
+            self.bacteria_speed_reduction = min(0.10 * bacteria_count, 0.90)
+        else:
+            self.bacteria_speed_reduction = 0.0
+
+    def get_effective_speed(self) -> float:
+        """박테리아 속도 감소를 반영한 실제 이동 속도 반환
+
+        Returns:
+            현재 적용되어야 하는 실제 속도
+        """
+        return self.speed * (1.0 - self.bacteria_speed_reduction)
+
     def move(
         self,
         keys: Dict,
@@ -399,13 +446,36 @@ class Player:
 
         # 대각선 이동 시 속도 보정 (정규화)
         if velocity.length_squared() > 0:
-            effective_speed = self.speed * speed_multiplier * self.mouse_move_speed_mult
+            # 박테리아 속도 감소 적용
+            base_speed = self.get_effective_speed()
+            effective_speed = base_speed * speed_multiplier * self.mouse_move_speed_mult
             velocity = velocity.normalize() * effective_speed * dt
             self.velocity = velocity / dt  # 초당 속도 벡터 저장
             self.pos += velocity
 
-            # 이동 효과 생성 (속도에 따라)
-            self._create_movement_effects(current_time)
+            # 이동 효과 생성 (속도에 따라) - 파티클 기법 비활성화, 직접 렌더링 방식으로 변경
+            # self._create_movement_effects(current_time)
+
+            # 고속 이동 시 잔상 효과만 유지
+            speed_magnitude = self.velocity.length()
+            speed_ratio = speed_magnitude / self.speed if self.speed > 0 else 0
+            if speed_ratio > 0.7 and not self.disable_afterimages:
+                # 잔상 생성 (투명도 있는 플레이어 이미지)
+                afterimage = self.image.copy()
+                alpha = int(100 * speed_ratio)
+                afterimage.set_alpha(alpha)
+
+                # 잔상에 현재 기울기 적용
+                if abs(self.current_tilt) > 0.5:
+                    afterimage = pygame.transform.rotate(afterimage, self.current_tilt)
+
+                self.afterimages.append({
+                    "image": afterimage,
+                    "pos": self.pos.copy(),
+                    "alpha": alpha,
+                    "lifetime": 0.15,
+                    "max_lifetime": 0.15,
+                })
         else:
             self.velocity = pygame.math.Vector2(0, 0)
 
@@ -506,39 +576,46 @@ class Player:
             particle_count = int(2 + speed_ratio * 3)
 
             for _ in range(particle_count):
-                # 약간의 랜덤 분산
+                # 약간의 랜덤 분산 (좌우로 더 퍼지도록)
                 spread = pygame.math.Vector2(
-                    random.uniform(-10, 10),
-                    random.uniform(-10, 10)
+                    random.uniform(-15, 15),
+                    random.uniform(-8, 8)
                 )
                 particle_pos = spawn_pos + spread
 
-
-                if speed_ratio < 0.5: # 0.3을 0.5로 변경하여 트레일 색상 변화 구간 확대
-                    color = (150, 200, 255)  # 연한 하늘색
-                elif speed_ratio < 0.98:
-                    color = (100, 100, 255)  # 푸른 보라색
+                # 속도에 따른 색상 틴트 (이미지에 적용)
+                if speed_ratio < 0.4:
+                    color_tint = (150, 150, 160)  # 연한 회색
+                elif speed_ratio < 0.7:
+                    color_tint = (255, 180, 120)  # 주황빛
+                elif speed_ratio < 0.9:
+                    color_tint = (255, 200, 140)  # 밝은 오렌지-노랑
                 else:
-                    color = (100, 255, 255)  # 고열의 마젠타 (가장 고속)if
+                    color_tint = (255, 255, 255)  # 최고속: 원본 색상
 
-                # 속도에 따른 파티클 크기
-                base_size = 3 + speed_ratio * 5
-                size = int(base_size + random.uniform(-1, 2))
-                size = max(1, size) # 최소 크기 보장
+                # 파티클 크기 (스케일)
+                base_scale = 0.8 + speed_ratio * 1.2
+                scale = base_scale + random.uniform(-0.2, 0.3)
+                scale = max(0.5, scale)
 
+                # 파티클 수명 (더 길게)
+                lifetime = 0.5 + speed_ratio * 0.6
 
-
-
-
-                # 파티클 수명 (속도가 빠를수록 길게)
-                lifetime = 0.3 + speed_ratio * 0.3
+                # 회전 각도 (랜덤)
+                rotation = random.uniform(0, 360)
 
                 self.trail_particles.append({
                     'pos': particle_pos.copy(),
                     'lifetime': lifetime,
                     'max_lifetime': lifetime,
-                    'color': color,
-                    'size': size
+                    'color_tint': color_tint,
+                    'scale': scale,
+                    'rotation': rotation,
+                    'use_image': self.gas_effect_image is not None,  # 이미지 사용 여부
+                    'velocity': pygame.math.Vector2(
+                        random.uniform(-30, 30),
+                        random.uniform(-15, 15)
+                    )  # 확산 속도
                 })
 
         # 고속 이동 시 잔상 효과 추가
@@ -1101,6 +1178,12 @@ class Player:
             particle["lifetime"] -= dt
             if particle["lifetime"] <= 0:
                 self.trail_particles.remove(particle)
+            else:
+                # 확산 효과 적용 (배기가스가 퍼짐)
+                if 'velocity' in particle:
+                    particle['pos'] += particle['velocity'] * dt
+                    # 속도 감소 (마찰)
+                    particle['velocity'] *= 0.95
 
         # 잔상 업데이트
         for afterimage in self.afterimages[:]:
@@ -1160,33 +1243,116 @@ class Player:
                 )
                 screen.blit(afterimage["image"], rect)
 
-        # 2. 트레일 파티클 그리기
-        for particle in self.trail_particles:
-            # 페이드 아웃 효과
-            fade_ratio = particle["lifetime"] / particle["max_lifetime"]
-            alpha = int(255 * fade_ratio)
+        # 2. 배기가스 이미지 직접 그리기 (플레이어 뒤, 타원 궤도 기반)
+        if self.gas_effect_image and not self.disable_trail:
+            # 속도 계산
+            speed = self.velocity.length()
+            max_speed = self.speed * 1.5  # 최대 속도 추정
+            speed_ratio = min(1.0, speed / max_speed) if max_speed > 0 else 0
 
-            # 파티클 크기도 점점 작아짐
-            current_size = max(
-                1, int(particle["size"] * fade_ratio * perspective_scale)
-            )
+            # 최소 속도 체크 (낮은 속도에서도 배기가스 표시)
+            if speed_ratio > 0.1:
+                # 이동 방향 계산
+                if self.velocity.length_squared() > 0:
+                    direction = self.velocity.normalize()
 
-            # 투명도를 가진 서페이스 생성
-            particle_surface = pygame.Surface(
-                (current_size * 2, current_size * 2), pygame.SRCALPHA
-            )
-            pygame.draw.circle(
-                particle_surface,
-                (*particle["color"], alpha),
-                (current_size, current_size),
-                current_size,
-            )
+                    # 이동 방향 각도 계산
+                    move_angle = math.atan2(direction.y, direction.x)
 
-            # 파티클 위치에 그리기
-            rect = particle_surface.get_rect(
-                center=(int(particle["pos"].x), int(particle["pos"].y))
-            )
-            screen.blit(particle_surface, rect)
+                    # 우주선 뒤쪽 타원 궤도의 가장자리 지점 계산
+                    # 타원: 가로(a) = 우주선 너비의 25%, 세로(b) = 우주선 높이의 15%
+                    ellipse_a = self.image_rect.width * 0.25  # 가로 반지름 (줄임)
+                    ellipse_b = self.image_rect.height * 0.15  # 세로 반지름 (줄임)
+
+                    # 이동 방향의 반대쪽 타원 경계 지점 (배기가스 시작점)
+                    # 반대 방향이므로 angle + π
+                    back_angle = move_angle + math.pi
+                    ellipse_x = ellipse_a * math.cos(back_angle)
+                    ellipse_y = ellipse_b * math.sin(back_angle)
+
+                    # 배기가스 시작 위치 (우주선 중심 + 타원 경계)
+                    # 우주선 바로 뒤에 배치 (배율 감소: 1.5 → 0.8)
+                    exhaust_offset = pygame.math.Vector2(ellipse_x, ellipse_y) * 0.8
+                    exhaust_base_pos = self.pos + exhaust_offset
+
+                    # 배기가스 타입에 따라 다른 크기 및 크롭 설정
+                    exhaust_filename = self.ship_data.get("exhaust_effect", "gas_effect_01.png")
+
+                    # 원본 이미지 크롭 (속도에 따라)
+                    orig_height = self.gas_effect_image.get_height()
+                    orig_width = self.gas_effect_image.get_width()
+
+                    if "gas_effect_02" in exhaust_filename:
+                        # 플라즈마: 크기 축소, 머리부분(밝은 부분) 잘라냄
+                        gas_length = int(self.image_rect.height * (0.3 + speed_ratio * 0.8) * perspective_scale)  # 길이 축소
+                        gas_width = int(self.image_rect.width * 0.5 * perspective_scale)  # 너비 축소
+
+                        # 하단 40% 잘라내기 (60-80% 구간의 밝은 부분 제거)
+                        # 180도 회전 후 밝은 부분이 우주선 쪽으로 가는 것을 방지
+                        crop_start = 0
+                        crop_height = int(orig_height * 0.6)  # 상단 60%만 사용
+                    else:
+                        # 화염: 더 넓게, 블러 효과 위해 너비 증가
+                        gas_length = int(self.image_rect.height * (0.4 + speed_ratio * 1.2) * perspective_scale)
+                        gas_width = int(self.image_rect.width * 1.0 * perspective_scale)  # 0.6 → 1.0 (넓게)
+
+                        # 상단 20% 잘라내기 (꼬리 부분, 배기가스 적은 곳 제거)
+                        # 하단 80%만 사용 (밝은 배기가스 부분만)
+                        crop_start = int(orig_height * 0.2)
+                        crop_height = orig_height - crop_start
+
+                    if crop_height > 0:
+                        # 크롭된 부분만 추출
+                        cropped_gas = self.gas_effect_image.subsurface(
+                            pygame.Rect(0, crop_start, orig_width, crop_height)
+                        ).copy()
+
+                        # 스케일 (크롭된 이미지를 목표 크기로)
+                        scaled_gas = pygame.transform.smoothscale(
+                            cropped_gas,
+                            (gas_width, gas_length)
+                        )
+
+                        # 타입별 투명도 조절
+                        if "gas_effect_02" in exhaust_filename:
+                            # 플라즈마: 약간 더 투명하게
+                            alpha = int(60 + speed_ratio * 120)  # 60 ~ 180
+                        else:
+                            # 화염: 블러 효과를 위해 더 투명하게
+                            alpha = int(50 + speed_ratio * 100)  # 50 ~ 150 (더 투명)
+
+                        scaled_gas.set_alpha(alpha)
+
+                        # 이미지를 180도 회전 (밝은 부분이 우주선 쪽으로)
+                        scaled_gas = pygame.transform.rotate(scaled_gas, 180)
+
+                        # 회전 (이동 방향에 맞춤)
+                        # 배기가스는 항상 우주선 반대 방향을 향해야 함
+                        angle_deg = math.degrees(move_angle) + 90  # 이동 방향의 반대 방향
+                        rotated_gas = pygame.transform.rotate(scaled_gas, -angle_deg)
+
+                        # 배기가스 최종 위치 계산
+                        # 회전된 이미지의 한쪽 끝(밝은 부분)이 우주선 엔진 출구에 오도록 조정
+                        rotated_rect = rotated_gas.get_rect()
+
+                        # 배기가스 이미지 타입에 따라 다른 오프셋 적용
+                        # gas_effect_01 (화염): 상단 20% 잘림, 밝은 부분만 사용
+                        # gas_effect_02 (플라즈마): 하단 40% 잘림, 어두운 꼬리 부분만 사용
+                        if "gas_effect_02" in exhaust_filename:
+                            offset_ratio = 0.25  # 플라즈마: 밝은 부분 제거로 감소
+                        else:
+                            offset_ratio = 0.4  # 화염: 상단 잘림으로 감소 (0.5 → 0.4)
+
+                        offset_distance = gas_length * offset_ratio
+                        final_offset = pygame.math.Vector2(
+                            -direction.x * offset_distance,
+                            -direction.y * offset_distance
+                        )
+                        exhaust_pos = exhaust_base_pos + final_offset
+
+                        # 화면에 그리기
+                        rect = rotated_gas.get_rect(center=(int(exhaust_pos.x), int(exhaust_pos.y)))
+                        screen.blit(rotated_gas, rect)
 
         # 3. 그릴 이미지 결정 (히트 플래시 적용 + 능력 효과)
         if self.is_flashing:
@@ -1295,8 +1461,6 @@ class Player:
             )
 
             # 펄스 효과 (시간에 따라 크기 변화)
-            import math
-
             pulse = 1.0 + 0.05 * math.sin(pygame.time.get_ticks() * 0.01)
             shield_radius = int(shield_radius * pulse)
 

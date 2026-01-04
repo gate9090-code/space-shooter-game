@@ -43,7 +43,7 @@ CHARACTER_NAMES = {
     "ARTEMIS": "아르테미스",
     "PILOT": "파일럿",
     "BOSS": "???",
-    "NARRATOR": "",
+    "NARRATOR": "안드로이드",
 }
 
 # 캐릭터 초상화 경로 (Episode 시스템으로 이동)
@@ -602,34 +602,30 @@ CHARACTER_VOICE_SETTINGS = {
     "ARTEMIS": {
         "adapter": "edge",
         "voice": "ko-KR-SunHiNeural",
-        "rate": "+5%",
-        "pitch": "+2Hz",
-        "auto_emotion": True,  # 자동 감정 감지
+        "rate": "+30%",  # 빠른 속도
+        "pitch": "+0Hz",  # 표준 톤
     },
     # 파일럿: 차분하고 기계적인 남성 음성
     "PILOT": {
         "adapter": "edge",
         "voice": "ko-KR-InJoonNeural",
-        "rate": "-5%",
-        "pitch": "-3Hz",
-        "auto_emotion": True,
+        "rate": "+30%",  # 빠른 속도
+        "pitch": "+0Hz",  # 표준 톤
     },
-    # 안드로이드 나레이터: 기계적 로봇 음성 (치지직 효과)
+    # 안드로이드 나레이터: 기계적 로봇 음성
     "NARRATOR": {
         "adapter": "edge",
         "voice": "ko-KR-InJoonNeural",
-        "rate": "+15%",
-        "pitch": "-5Hz",
-        "static_effect": True,  # 치지직 정적 잡음
-        "auto_emotion": True,
+        "rate": "+0%",  # 표준 속도
+        "pitch": "+0Hz",  # 표준 톤
+        "static_effect": False,
     },
     # 보스: 낮고 위협적인 음성
     "BOSS": {
         "adapter": "edge",
         "voice": "ko-KR-BongJinNeural",  # 남성 깊은 목소리
-        "rate": "-10%",
-        "pitch": "-8Hz",
-        "auto_emotion": True,
+        "rate": "+0%",  # 표준 속도
+        "pitch": "+0Hz",  # 표준 톤
     },
 }
 

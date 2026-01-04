@@ -913,15 +913,122 @@ class Shockwave:
 
 
 # ============================================================
+# Image-based Shockwave Effect (purse_ring_effect.png)
+# ============================================================
+
+class ImageShockwave:
+    """이미지 기반 충격파 효과 - 동적 이미지 지원"""
+
+    # 클래스 변수로 기본 이미지 캐싱
+    _image_cache = None
+
+    def __init__(
+        self,
+        center: Tuple[float, float],
+        max_size: float,
+        duration: float = 0.6,
+        delay: float = 0.0,
+        color_tint: Tuple[int, int, int] = (255, 255, 255),
+        image_override: pygame.Surface = None,
+    ):
+        """
+        이미지 기반 충격파 초기화
+
+        Args:
+            center: 중심 위치 (x, y)
+            max_size: 최대 크기 (픽셀)
+            duration: 지속 시간 (초)
+            delay: 시작 지연 시간 (초)
+            color_tint: 색상 틴트 (R, G, B)
+            image_override: 커스텀 이미지 (None이면 기본 이미지 사용)
+        """
+        self.center = pygame.math.Vector2(center) if not isinstance(center, pygame.math.Vector2) else center
+        self.max_size = max_size
+        self.duration = duration
+        self.color_tint = color_tint
+        self.delay = delay
+        self.age = -delay  # 지연 시간만큼 음수로 시작
+        self.is_alive = True
+
+        # 이미지 설정: 커스텀 이미지 우선, 없으면 기본 이미지
+        if image_override is not None:
+            self.image = image_override
+        else:
+            # 기본 이미지 로드 (캐싱)
+            if ImageShockwave._image_cache is None:
+                from pathlib import Path
+                import os
+
+                # 상대 경로로 이미지 로드 (프로젝트 루트 기준)
+                base_dir = Path(os.getcwd())
+                image_path = base_dir / "assets" / "images" / "vfx" / "combat" / "purse_ring_effect.png"
+
+                if image_path.exists():
+                    ImageShockwave._image_cache = pygame.image.load(str(image_path)).convert_alpha()
+                    print(f"INFO: ImageShockwave loaded default: {image_path}, size={ImageShockwave._image_cache.get_size()}")
+                else:
+                    # 폴백: 빈 서피스
+                    print(f"WARNING: ImageShockwave image not found at {image_path}")
+                    ImageShockwave._image_cache = pygame.Surface((100, 100), pygame.SRCALPHA)
+
+            self.image = ImageShockwave._image_cache
+
+    def update(self, dt: float):
+        """충격파 업데이트"""
+        self.age += dt
+        if self.age >= self.duration:
+            self.is_alive = False
+
+    def draw(self, screen: pygame.Surface):
+        """충격파 그리기"""
+        if not self.is_alive or self.age < 0 or self.image is None:
+            return
+
+        # 진행도 계산
+        progress = self.age / self.duration
+
+        # 크기 애니메이션 (작게 시작 -> 크게 확장)
+        start_scale = 0.1
+        current_scale = start_scale + (1.0 - start_scale) * progress
+        current_size = int(self.max_size * current_scale)
+
+        # 알파값 계산 (시작: 255, 끝: 0)
+        alpha = int(255 * (1 - progress))
+        alpha = max(0, min(255, alpha))
+
+        # 이미지 스케일링 (인스턴스 이미지 사용)
+        scaled_image = pygame.transform.scale(
+            self.image,
+            (current_size, current_size)
+        )
+
+        # 임시 서피스 생성 (투명 배경 유지)
+        temp_surface = pygame.Surface((current_size, current_size), pygame.SRCALPHA)
+        temp_surface.fill((0, 0, 0, 0))  # 완전 투명
+
+        # 원본 이미지를 임시 서피스에 블릿
+        temp_surface.blit(scaled_image, (0, 0))
+
+        # 색상 틴트 적용 (선택적) - RGBA_MULT로 투명도 유지
+        if self.color_tint != (255, 255, 255):
+            color_overlay = pygame.Surface((current_size, current_size), pygame.SRCALPHA)
+            color_overlay.fill(self.color_tint + (255,))
+            temp_surface.blit(color_overlay, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
+
+        # 전체 알파값 적용 (페이드 아웃)
+        temp_surface.set_alpha(alpha)
+
+        # 중심 기준으로 그리기
+        rect = temp_surface.get_rect(center=(int(self.center.x), int(self.center.y)))
+        screen.blit(temp_surface, rect)
+
+
+# ============================================================
 # Lightning Effect
 # ============================================================
 
 class LightningEffect:
-    """번개 체인 시각 효과 - 이미지 기반"""
-
-    # 클래스 변수로 이미지 캐싱
-    _lightning_image = None
-    _image_loaded = False
+    """번개 체인 시각 효과 - 프로시저럴 드로잉"""
 
     def __init__(
         self,
@@ -943,73 +1050,6 @@ class LightningEffect:
         self.elapsed = 0.0
         self.is_alive = True
 
-        # 이미지 로드 (최초 1회만)
-        if not LightningEffect._image_loaded:
-            LightningEffect._load_image()
-
-        # 이미지 기반 번개 준비
-        if LightningEffect._lightning_image:
-            self._prepare_image_lightning()
-        else:
-            self.scaled_image = None
-
-    @classmethod
-    def _load_image(cls):
-        """번개 이미지 로드 (클래스 메서드)"""
-        cls._image_loaded = True
-        try:
-            from pathlib import Path
-
-            image_path = Path("assets/images/effects/lightning_chain.png")
-            if image_path.exists():
-                cls._lightning_image = pygame.image.load(
-                    str(image_path)
-                ).convert_alpha()
-            else:
-                cls._lightning_image = None
-        except:
-            cls._lightning_image = None
-
-    def _prepare_image_lightning(self):
-        """이미지 기반 번개 준비"""
-        # 시작-끝 거리와 각도 계산
-        direction = self.end_pos - self.start_pos
-        distance = direction.length()
-
-        if distance == 0:
-            self.scaled_image = None
-            return
-
-        angle = math.degrees(math.atan2(direction.y, direction.x))
-
-        # 이미지를 거리에 맞게 스케일링
-        img_width = LightningEffect._lightning_image.get_width()
-        scale_factor = distance / img_width if img_width > 0 else 1.0
-
-        scaled_width = int(img_width * scale_factor)
-        scaled_height = int(
-            LightningEffect._lightning_image.get_height() * scale_factor
-        )
-
-        if scaled_width <= 0 or scaled_height <= 0:
-            self.scaled_image = None
-            return
-
-        self.scaled_image = pygame.transform.scale(
-            LightningEffect._lightning_image, (scaled_width, scaled_height)
-        )
-
-        # 이미지 회전
-        self.rotated_image = pygame.transform.rotate(self.scaled_image, -angle)
-
-        # 렌더링 위치 계산
-        rect = self.rotated_image.get_rect()
-        rect.center = (
-            (self.start_pos.x + self.end_pos.x) / 2,
-            (self.start_pos.y + self.end_pos.y) / 2,
-        )
-        self.render_rect = rect
-
     def update(self, dt: float):
         """번개 효과 업데이트"""
         self.elapsed += dt
@@ -1024,14 +1064,8 @@ class LightningEffect:
         # 알파값 계산 (페이드아웃)
         alpha = int(255 * (1.0 - self.elapsed / self.duration))
 
-        if self.scaled_image and hasattr(self, "rotated_image"):
-            # 이미지 기반 번개
-            temp_image = self.rotated_image.copy()
-            temp_image.set_alpha(alpha)
-            screen.blit(temp_image, self.render_rect)
-        else:
-            # 폴백: 프로시저럴 번개
-            self._draw_procedural(screen, alpha)
+        # 프로시저럴 번개 그리기
+        self._draw_procedural(screen, alpha)
 
     def _draw_procedural(self, screen: pygame.Surface, alpha: int):
         """프로시저럴 번개 그리기 (이미지가 없을 때 폴백)"""

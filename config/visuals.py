@@ -150,14 +150,14 @@ SHOCKWAVE_SETTINGS = {
         "width": 3,
     },
     "BULLET_HIT": {
-        "max_radius": 80,  # 총알 충격파 반경 (40 → 80, 2배 증가)
-        "duration": 0.6,  # 지속 시간 (0.3 → 0.6, 2배 증가)
+        "max_radius": 120,  # 총알 충격파 반경 (더 크게 - 이미지는 지름이므로 240px)
+        "duration": 0.8,  # 지속 시간 (더 오래 보이도록)
         "color": (255, 255, 255),  # 하얀색
         "width": 3,  # 선 두께 (2 → 3)
         "alpha_start": 220,  # 시작 투명도 (더 밝게)
         "expand_speed": 2.0,  # 확장 속도 배율 (1.5 → 2.0, 더 빠르게)
         "wave_count": 3,  # 파동 개수 (다중 파동)
-        "wave_interval": 0.08,  # 파동 간격 (초)
+        "wave_interval": 0.1,  # 파동 간격 (0.08 → 0.1, 더 명확하게)
     },
 }
 
