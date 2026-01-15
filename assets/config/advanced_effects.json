@@ -1,0 +1,402 @@
+{
+  "_comment": "확장 가능한 동적 이펙트 시스템 설정",
+  "_version": "2.0",
+  "_guide": {
+    "tweens": "속성 애니메이션 (scale, alpha, rotation, x, y)",
+    "easing": "linear, ease_in, ease_out, ease_in_out, ease_out_bounce, ease_out_elastic, ease_out_back",
+    "sprite_sheet": "프레임 애니메이션용 스프라이트 시트 설정",
+    "particles": "파티클 방출 설정"
+  },
+
+  "effects": {
+    "hit_normal": {
+      "image": "assets/images/vfx/combat/purse_ring_effect.png",
+      "duration": 0.6,
+      "color_tint": [255, 255, 255],
+      "tweens": [
+        {"property": "scale", "from": 0.1, "to": 1.5, "duration": 0.6, "easing": "ease_out_cubic"},
+        {"property": "alpha", "from": 255, "to": 0, "duration": 0.6, "easing": "ease_in_quad"}
+      ]
+    },
+
+    "hit_fire": {
+      "image": "assets/images/vfx/combat/hit_effects/ring_fire.png",
+      "duration": 0.8,
+      "color_tint": [255, 120, 50],
+      "tweens": [
+        {"property": "scale", "from": 0.2, "to": 2.0, "duration": 0.8, "easing": "ease_out_elastic"},
+        {"property": "alpha", "from": 255, "to": 0, "duration": 0.8, "easing": "ease_in"},
+        {"property": "rotation", "from": 0, "to": 180, "duration": 0.8, "easing": "linear"}
+      ],
+      "particles": {
+        "emit_rate": 30,
+        "min_size": 2,
+        "max_size": 6,
+        "min_speed": 80,
+        "max_speed": 200,
+        "min_lifetime": 0.3,
+        "max_lifetime": 0.8,
+        "colors": [[255, 150, 50], [255, 100, 30], [255, 200, 100]],
+        "gravity": true
+      }
+    },
+
+    "hit_ice": {
+      "image": "assets/images/vfx/combat/purse_ring_effect.png",
+      "duration": 0.7,
+      "color_tint": [100, 200, 255],
+      "tweens": [
+        {"property": "scale", "from": 0.15, "to": 1.8, "duration": 0.7, "easing": "ease_out"},
+        {"property": "alpha", "from": 255, "to": 0, "duration": 0.7, "easing": "ease_in_quad"},
+        {"property": "rotation", "from": 0, "to": -90, "duration": 0.7, "easing": "ease_out"}
+      ],
+      "particles": {
+        "emit_rate": 20,
+        "min_size": 2,
+        "max_size": 5,
+        "min_speed": 50,
+        "max_speed": 120,
+        "min_lifetime": 0.5,
+        "max_lifetime": 1.2,
+        "colors": [[150, 220, 255], [200, 240, 255], [100, 180, 255]],
+        "gravity": false
+      }
+    },
+
+    "hit_electric": {
+      "image": "assets/images/vfx/combat/hit_effects/ring_electric.png",
+      "duration": 0.5,
+      "color_tint": [200, 200, 255],
+      "tweens": [
+        {"property": "scale", "from": 0.5, "to": 1.2, "duration": 0.15, "easing": "ease_out_back"},
+        {"property": "scale", "from": 1.2, "to": 0.8, "duration": 0.1, "delay": 0.15, "easing": "ease_in"},
+        {"property": "scale", "from": 0.8, "to": 1.5, "duration": 0.25, "delay": 0.25, "easing": "ease_out"},
+        {"property": "alpha", "from": 255, "to": 0, "duration": 0.5, "easing": "linear"}
+      ]
+    },
+
+    "hit_poison": {
+      "image": "assets/images/vfx/combat/purse_ring_effect.png",
+      "duration": 1.2,
+      "color_tint": [100, 255, 100],
+      "tweens": [
+        {"property": "scale", "from": 0.2, "to": 1.6, "duration": 1.2, "easing": "ease_out_cubic"},
+        {"property": "alpha", "from": 200, "to": 0, "duration": 1.2, "easing": "ease_in"},
+        {"property": "rotation", "from": 0, "to": 360, "duration": 1.2, "easing": "linear"}
+      ],
+      "particles": {
+        "emit_rate": 15,
+        "min_size": 3,
+        "max_size": 8,
+        "min_speed": 30,
+        "max_speed": 80,
+        "angle_min": 0,
+        "angle_max": 360,
+        "min_lifetime": 0.8,
+        "max_lifetime": 1.5,
+        "colors": [[100, 255, 100], [50, 200, 50], [150, 255, 150]],
+        "gravity": false
+      }
+    },
+
+    "critical_hit": {
+      "image": "assets/images/vfx/combat/critical_effects/burst.png",
+      "duration": 0.7,
+      "color_tint": [255, 255, 100],
+      "tweens": [
+        {"property": "scale", "from": 0.3, "to": 2.5, "duration": 0.2, "easing": "ease_out_back"},
+        {"property": "scale", "from": 2.5, "to": 2.0, "duration": 0.5, "delay": 0.2, "easing": "ease_out"},
+        {"property": "alpha", "from": 255, "to": 0, "duration": 0.7, "easing": "ease_in_quad"},
+        {"property": "rotation", "from": 0, "to": 45, "duration": 0.7, "easing": "ease_out"}
+      ],
+      "particles": {
+        "emit_rate": 50,
+        "min_size": 3,
+        "max_size": 8,
+        "min_speed": 150,
+        "max_speed": 350,
+        "min_lifetime": 0.4,
+        "max_lifetime": 1.0,
+        "colors": [[255, 255, 100], [255, 200, 50], [255, 255, 200]],
+        "gravity": true
+      }
+    },
+
+    "boss_hit": {
+      "image": "assets/images/vfx/combat/boss_effects/explosion.png",
+      "duration": 1.0,
+      "color_tint": [255, 150, 255],
+      "tweens": [
+        {"property": "scale", "from": 0.2, "to": 3.0, "duration": 1.0, "easing": "ease_out_elastic"},
+        {"property": "alpha", "from": 255, "to": 0, "duration": 1.0, "easing": "ease_in_cubic"}
+      ],
+      "particles": {
+        "emit_rate": 40,
+        "min_size": 4,
+        "max_size": 12,
+        "min_speed": 100,
+        "max_speed": 300,
+        "min_lifetime": 0.6,
+        "max_lifetime": 1.2,
+        "colors": [[255, 150, 255], [255, 100, 200], [200, 100, 255]],
+        "gravity": true
+      }
+    },
+
+    "boss_death": {
+      "image": "assets/images/vfx/combat/boss_effects/explosion.png",
+      "duration": 2.0,
+      "color_tint": [255, 50, 50],
+      "tweens": [
+        {"property": "scale", "from": 0.5, "to": 5.0, "duration": 2.0, "easing": "ease_out_bounce"},
+        {"property": "alpha", "from": 255, "to": 0, "duration": 2.0, "easing": "ease_in_quad"},
+        {"property": "rotation", "from": 0, "to": 720, "duration": 2.0, "easing": "ease_out"}
+      ],
+      "particles": {
+        "emit_rate": 100,
+        "min_size": 5,
+        "max_size": 20,
+        "min_speed": 200,
+        "max_speed": 500,
+        "min_lifetime": 1.0,
+        "max_lifetime": 2.5,
+        "colors": [[255, 100, 50], [255, 200, 100], [255, 50, 50], [255, 255, 200]],
+        "gravity": true
+      }
+    },
+
+    "shockwave_small": {
+      "image": "assets/images/vfx/combat/purse_ring_effect.png",
+      "duration": 0.4,
+      "color_tint": [255, 255, 255],
+      "tweens": [
+        {"property": "scale", "from": 0.1, "to": 1.0, "duration": 0.4, "easing": "ease_out"},
+        {"property": "alpha", "from": 200, "to": 0, "duration": 0.4, "easing": "linear"}
+      ]
+    },
+
+    "shockwave_medium": {
+      "image": "assets/images/vfx/combat/purse_ring_effect.png",
+      "duration": 0.6,
+      "color_tint": [255, 200, 100],
+      "tweens": [
+        {"property": "scale", "from": 0.2, "to": 2.0, "duration": 0.6, "easing": "ease_out_cubic"},
+        {"property": "alpha", "from": 255, "to": 0, "duration": 0.6, "easing": "ease_in"}
+      ]
+    },
+
+    "shockwave_large": {
+      "image": "assets/images/vfx/combat/purse_ring_effect.png",
+      "duration": 0.8,
+      "color_tint": [255, 100, 100],
+      "tweens": [
+        {"property": "scale", "from": 0.3, "to": 4.0, "duration": 0.8, "easing": "ease_out_elastic"},
+        {"property": "alpha", "from": 255, "to": 0, "duration": 0.8, "easing": "ease_in_quad"}
+      ]
+    },
+
+    "skill_meteor_impact": {
+      "image": "assets/images/vfx/combat/skill_effects/meteor.png",
+      "duration": 1.0,
+      "color_tint": [255, 150, 0],
+      "tweens": [
+        {"property": "scale", "from": 0.5, "to": 3.5, "duration": 0.3, "easing": "ease_out_back"},
+        {"property": "scale", "from": 3.5, "to": 3.0, "duration": 0.7, "delay": 0.3, "easing": "ease_out"},
+        {"property": "alpha", "from": 255, "to": 0, "duration": 1.0, "easing": "ease_in_cubic"},
+        {"property": "rotation", "from": 0, "to": 360, "duration": 1.0, "easing": "linear"}
+      ],
+      "particles": {
+        "emit_rate": 80,
+        "min_size": 4,
+        "max_size": 15,
+        "min_speed": 150,
+        "max_speed": 400,
+        "min_lifetime": 0.5,
+        "max_lifetime": 1.5,
+        "colors": [[255, 200, 50], [255, 150, 0], [255, 100, 0], [255, 255, 150]],
+        "gravity": true
+      }
+    },
+
+    "skill_heal": {
+      "image": "assets/images/vfx/combat/purse_ring_effect.png",
+      "duration": 1.5,
+      "color_tint": [150, 255, 150],
+      "tweens": [
+        {"property": "scale", "from": 0.5, "to": 1.5, "duration": 0.5, "easing": "ease_out"},
+        {"property": "scale", "from": 1.5, "to": 1.2, "duration": 1.0, "delay": 0.5, "easing": "ease_in_out", "yoyo": true},
+        {"property": "alpha", "from": 200, "to": 0, "duration": 1.5, "easing": "ease_in_quad"},
+        {"property": "rotation", "from": 0, "to": 180, "duration": 1.5, "easing": "ease_in_out"}
+      ],
+      "particles": {
+        "emit_rate": 25,
+        "min_size": 2,
+        "max_size": 6,
+        "min_speed": 20,
+        "max_speed": 60,
+        "angle_min": 250,
+        "angle_max": 290,
+        "min_lifetime": 0.8,
+        "max_lifetime": 1.5,
+        "colors": [[150, 255, 150], [200, 255, 200], [100, 255, 100]],
+        "gravity": false
+      }
+    },
+
+    "spawn_portal": {
+      "image": "assets/images/vfx/combat/warp_transition.png",
+      "duration": 1.2,
+      "color_tint": [100, 150, 255],
+      "tweens": [
+        {"property": "scale", "from": 0.0, "to": 1.5, "duration": 0.4, "easing": "ease_out_back"},
+        {"property": "scale", "from": 1.5, "to": 0.0, "duration": 0.8, "delay": 0.4, "easing": "ease_in_cubic"},
+        {"property": "alpha", "from": 0, "to": 255, "duration": 0.4, "easing": "ease_out"},
+        {"property": "alpha", "from": 255, "to": 0, "duration": 0.8, "delay": 0.4, "easing": "ease_in"},
+        {"property": "rotation", "from": 0, "to": 720, "duration": 1.2, "easing": "ease_in_out"}
+      ]
+    },
+
+    "collect_coin": {
+      "image": "assets/images/vfx/combat/coin_gem-6.png",
+      "duration": 0.5,
+      "color_tint": [255, 215, 0],
+      "tweens": [
+        {"property": "scale", "from": 1.0, "to": 1.5, "duration": 0.2, "easing": "ease_out_back"},
+        {"property": "scale", "from": 1.5, "to": 0.0, "duration": 0.3, "delay": 0.2, "easing": "ease_in"},
+        {"property": "alpha", "from": 255, "to": 0, "duration": 0.5, "easing": "ease_in"},
+        {"property": "y", "from": 0, "to": -30, "duration": 0.5, "easing": "ease_out"}
+      ],
+      "particles": {
+        "emit_rate": 20,
+        "min_size": 2,
+        "max_size": 4,
+        "min_speed": 50,
+        "max_speed": 100,
+        "min_lifetime": 0.3,
+        "max_lifetime": 0.6,
+        "colors": [[255, 215, 0], [255, 255, 100], [255, 200, 50]],
+        "gravity": false
+      }
+    },
+
+    "level_up_glow": {
+      "image": "assets/images/vfx/combat/purse_ring_effect.png",
+      "duration": 1.5,
+      "color_tint": [255, 215, 0],
+      "tweens": [
+        {"property": "scale", "from": 0.5, "to": 3.0, "duration": 0.5, "easing": "ease_out_elastic"},
+        {"property": "scale", "from": 3.0, "to": 2.5, "duration": 1.0, "delay": 0.5, "easing": "ease_in_out", "yoyo": true},
+        {"property": "alpha", "from": 255, "to": 0, "duration": 1.5, "easing": "ease_in_quad"},
+        {"property": "rotation", "from": 0, "to": 360, "duration": 1.5, "easing": "linear"}
+      ],
+      "particles": {
+        "emit_rate": 50,
+        "min_size": 3,
+        "max_size": 8,
+        "min_speed": 100,
+        "max_speed": 250,
+        "angle_min": 250,
+        "angle_max": 290,
+        "min_lifetime": 0.8,
+        "max_lifetime": 1.5,
+        "colors": [[255, 215, 0], [255, 255, 150], [255, 200, 50]],
+        "gravity": false
+      }
+    },
+
+    "explosion_particle_burst": {
+      "image": "assets/images/vfx/combat/Particle Burst.png",
+      "duration": 0.8,
+      "color_tint": [255, 200, 100],
+      "tweens": [
+        {"property": "scale", "from": 0.3, "to": 2.0, "duration": 0.3, "easing": "ease_out_back"},
+        {"property": "scale", "from": 2.0, "to": 1.5, "duration": 0.5, "delay": 0.3, "easing": "ease_out"},
+        {"property": "alpha", "from": 255, "to": 0, "duration": 0.8, "easing": "ease_in_quad"},
+        {"property": "rotation", "from": 0, "to": 90, "duration": 0.8, "easing": "linear"}
+      ]
+    },
+
+    "death_dissolve": {
+      "image": "assets/images/vfx/combat/disslove.png",
+      "duration": 1.0,
+      "color_tint": [255, 255, 255],
+      "tweens": [
+        {"property": "scale", "from": 1.0, "to": 1.2, "duration": 0.3, "easing": "ease_out"},
+        {"property": "scale", "from": 1.2, "to": 0.5, "duration": 0.7, "delay": 0.3, "easing": "ease_in_cubic"},
+        {"property": "alpha", "from": 255, "to": 0, "duration": 1.0, "easing": "ease_in_quad"}
+      ],
+      "particles": {
+        "emit_rate": 40,
+        "min_size": 2,
+        "max_size": 6,
+        "min_speed": 50,
+        "max_speed": 150,
+        "min_lifetime": 0.5,
+        "max_lifetime": 1.2,
+        "colors": [[200, 200, 200], [150, 150, 150], [255, 255, 255]],
+        "gravity": true
+      }
+    },
+
+    "lightning_strike": {
+      "image": "assets/images/vfx/combat/lightning_chain.png",
+      "duration": 0.4,
+      "color_tint": [200, 220, 255],
+      "tweens": [
+        {"property": "scale", "from": 1.0, "to": 1.2, "duration": 0.1, "easing": "ease_out"},
+        {"property": "scale", "from": 1.2, "to": 1.0, "duration": 0.1, "delay": 0.1, "easing": "ease_in"},
+        {"property": "alpha", "from": 255, "to": 0, "duration": 0.4, "easing": "linear"}
+      ]
+    },
+
+    "phoenix_ring": {
+      "image": "assets/images/vfx/combat/phoenix_ring.png",
+      "duration": 1.2,
+      "color_tint": [255, 100, 50],
+      "tweens": [
+        {"property": "scale", "from": 0.2, "to": 2.5, "duration": 0.4, "easing": "ease_out_elastic"},
+        {"property": "scale", "from": 2.5, "to": 2.0, "duration": 0.8, "delay": 0.4, "easing": "ease_out"},
+        {"property": "alpha", "from": 255, "to": 0, "duration": 1.2, "easing": "ease_in_quad"},
+        {"property": "rotation", "from": 0, "to": 180, "duration": 1.2, "easing": "ease_out"}
+      ],
+      "particles": {
+        "emit_rate": 60,
+        "min_size": 3,
+        "max_size": 10,
+        "min_speed": 80,
+        "max_speed": 200,
+        "angle_min": 0,
+        "angle_max": 360,
+        "min_lifetime": 0.6,
+        "max_lifetime": 1.2,
+        "colors": [[255, 150, 50], [255, 100, 30], [255, 200, 100], [255, 255, 150]],
+        "gravity": false
+      }
+    }
+  },
+
+  "composites": {
+    "explosion_full": ["shockwave_large", "explosion_particle_burst", "shockwave_medium"],
+    "boss_death_full": ["boss_death", "shockwave_large", "phoenix_ring"],
+    "critical_combo": ["critical_hit", "shockwave_small"],
+    "meteor_full": ["skill_meteor_impact", "shockwave_large"],
+    "level_up_full": ["level_up_glow", "shockwave_medium"],
+    "spawn_full": ["spawn_portal", "shockwave_small"],
+    "fire_explosion": ["hit_fire", "shockwave_medium"],
+    "ice_explosion": ["hit_ice", "shockwave_small"]
+  },
+
+  "presets": {
+    "_comment": "게임 상황별 권장 이펙트 조합",
+    "enemy_death_normal": "death_dissolve",
+    "enemy_death_elite": "explosion_full",
+    "enemy_death_boss": "boss_death_full",
+    "player_hit": "hit_normal",
+    "player_critical": "critical_combo",
+    "player_skill_meteor": "meteor_full",
+    "player_skill_heal": "skill_heal",
+    "item_collect_coin": "collect_coin",
+    "player_level_up": "level_up_full",
+    "enemy_spawn": "spawn_full"
+  }
+}
